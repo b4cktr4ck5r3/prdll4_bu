@@ -1,0 +1,14 @@
+node_modules/
+.next/
+out/
+
+*.local
+
+.vscode/*
+
+.env
+.env.development
+.env.production
+
+package-lock.json
+yarn.lock
