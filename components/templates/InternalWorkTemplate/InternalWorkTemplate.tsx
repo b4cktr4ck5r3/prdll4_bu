@@ -2,6 +2,7 @@ import { DefaultLayout } from "@components/layouts";
 import { InternalWorkForm, SimplePlanning } from "@components/organisms";
 import { PlanningContext } from "@lib/contexts";
 import { styled } from "@stitches";
+import { Event } from "@utils/calendar";
 import { FC, useState } from "react";
 
 export const InternalWorkTemplateSC = styled("div", {
@@ -11,7 +12,7 @@ export const InternalWorkTemplateSC = styled("div", {
   "& > * + *": {
     marginTop: "$24",
   },
-  "@md": {
+  "@tablet": {
     alignItems: "flex-start",
     flexDirection: "row",
     "& > * + *": {
@@ -22,13 +23,16 @@ export const InternalWorkTemplateSC = styled("div", {
 });
 
 export const InternalWorkTemplate: FC = () => {
+  const [synchronizedDate, setSynchronizedDate] = useState(new Date());
   const [refresh, setRefresh] = useState(false);
 
   return (
-    <PlanningContext.Provider value={{ refresh, setRefresh }}>
+    <PlanningContext.Provider
+      value={{ refresh, synchronizedDate, setRefresh, setSynchronizedDate }}
+    >
       <DefaultLayout>
         <InternalWorkTemplateSC>
-          <SimplePlanning />
+          <SimplePlanning type={Event.InternalWork} />
           <InternalWorkForm />
         </InternalWorkTemplateSC>
       </DefaultLayout>

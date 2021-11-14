@@ -12,6 +12,7 @@ model User {
   username       String           @unique
   password       String
   full_name      String
+  role           String           @default("USER")
   Unavailability Unavailability[]
   InternalWork   InternalWork[]
 }

@@ -1,19 +1,22 @@
 import { BoxSC } from "@components/atoms";
 import { MiniCalendar, MiniEvent, MiniEventSC } from "@components/molecules";
 import { CalendarContext, PlanningContext } from "@lib/contexts";
+import { useLocalStorageValue } from "@mantine/hooks";
 import { styled } from "@stitches";
 import {
   AllEventsSimplified,
   CompareDateToDateSimplified,
-  CourseEventSimplified,
   Event,
   FormatDateString,
   GetDaysInMonth,
   InternalWorkEventDTO,
   InternalWorkEventSimplified,
+  UnavailabilityEventDTO,
   UnavailabilityEventSimplified,
 } from "@utils/calendar";
+import { BooleanString, Preferences } from "@utils/user";
 import axios from "axios";
+import dayjs from "dayjs";
 import {
   FC,
   useCallback,
@@ -57,13 +60,16 @@ export const SimplePlanningSC = styled("div", BoxSC, {
 });
 
 export type SimplePlanningProps = {
-  type: "ALL" | Event;
+  type?: "ALL" | Event;
 };
 
-export const SimplePlanning: FC = () => {
-  const { refresh, setRefresh } = useContext(PlanningContext);
+export const SimplePlanning: FC<SimplePlanningProps> = ({ type = "ALL" }) => {
+  const { refresh, setRefresh, synchronizedDate } = useContext(PlanningContext);
+  const [syncCalendarForm] = useLocalStorageValue<BooleanString>({
+    key: Preferences.SyncCalendarForm,
+    defaultValue: "false",
+  });
   const [dateSelected, setDateSelected] = useState(new Date());
-  const [courses, setCourses] = useState<CourseEventSimplified[]>([]);
   const [internalWorks, setInternalWorks] = useState<
     InternalWorkEventSimplified[]
   >([]);
@@ -86,22 +92,24 @@ export const SimplePlanning: FC = () => {
 
   const allEvents = useMemo<AllEventsSimplified>(
     () => ({
-      courses,
+      courses: [],
       internalWorks,
       unavailabilities,
     }),
-    [courses, internalWorks, unavailabilities]
+    [internalWorks, unavailabilities]
   );
 
   const dayEvents = useMemo<AllEventsSimplified>(
     () => ({
       courses: [],
-      unavailabilities: [],
+      unavailabilities: unavailabilities.filter(({ date }) =>
+        CompareDateToDateSimplified(dateSelected, date)
+      ),
       internalWorks: internalWorks.filter(({ date }) =>
         CompareDateToDateSimplified(dateSelected, date)
       ),
     }),
-    [dateSelected, internalWorks]
+    [dateSelected, internalWorks, unavailabilities]
   );
 
   const dayEventsCount = useMemo(
@@ -113,44 +121,81 @@ export const SimplePlanning: FC = () => {
   );
 
   const findInternalWorks = useCallback(() => {
-    axios
-      .get<InternalWorkEventDTO[]>("/api/internalWork", {
-        params: {
-          startDate,
-          endDate,
-        },
-      })
-      .then(({ data }) =>
-        setInternalWorks(
-          data.map<InternalWorkEventSimplified>((props) => {
-            const date = new Date(props.date);
-            return {
-              ...props,
-              date: {
-                date: date.getDate(),
-                month: date.getMonth(),
-                year: date.getFullYear(),
-              },
-            };
-          })
-        )
-      );
-  }, [startDate, endDate]);
+    if (type === "ALL" || type === Event.InternalWork)
+      axios
+        .get<InternalWorkEventDTO[]>("/api/internalWork", {
+          params: {
+            startDate,
+            endDate,
+          },
+        })
+        .then(({ data }) =>
+          setInternalWorks(
+            data.map<InternalWorkEventSimplified>((props) => {
+              const date = new Date(props.date);
+              return {
+                ...props,
+                date: {
+                  date: date.getDate(),
+                  month: date.getMonth(),
+                  year: date.getFullYear(),
+                },
+              };
+            })
+          )
+        );
+  }, [startDate, endDate, type]);
+
+  const findUnavailabilities = useCallback(() => {
+    if (type === "ALL" || type === Event.Unavailability)
+      axios
+        .get<UnavailabilityEventDTO[]>("/api/unavailability", {
+          params: {
+            startDate,
+            endDate,
+          },
+        })
+        .then(({ data }) =>
+          setUnavailabilities(
+            data.map<UnavailabilityEventSimplified>((props) => {
+              const startDate = new Date(props.startDate);
+              const endDate = new Date(props.endDate);
+              return {
+                ...props,
+                startDate,
+                endDate,
+                date: {
+                  date: startDate.getDate(),
+                  month: startDate.getMonth(),
+                  year: startDate.getFullYear(),
+                },
+              };
+            })
+          )
+        );
+  }, [startDate, endDate, type]);
 
   const refreshData = useCallback(() => {
     if (refresh) {
       setRefresh(false);
       findInternalWorks();
+      findUnavailabilities();
     }
-  }, [refresh, setRefresh, findInternalWorks]);
+  }, [refresh, setRefresh, findInternalWorks, findUnavailabilities]);
 
   useEffect(() => {
     findInternalWorks();
-  }, [findInternalWorks]);
+    findUnavailabilities();
+  }, [findInternalWorks, findUnavailabilities]);
 
   useEffect(() => {
     refreshData();
   }, [refreshData]);
+
+  useEffect(() => {
+    if (syncCalendarForm === "true" && synchronizedDate)
+      setDateSelected(synchronizedDate);
+  }, [syncCalendarForm, synchronizedDate]);
 
   return (
     <CalendarContext.Provider
@@ -173,6 +218,22 @@ export const SimplePlanning: FC = () => {
             infoLeft={`${duration}h`}
           />
         ))}
+        {dayEvents.unavailabilities.map(({ startDate, endDate }, i) => {
+          const leftTime = dayjs(startDate).format("HH:mm");
+          const rightTime = dayjs(endDate).format("HH:mm");
+          return (
+            <MiniEvent
+              key={i}
+              color="red"
+              title={"Indisponibilité"}
+              description={`${startDate.getDate()} ${startDate.toLocaleString(
+                "default",
+                { month: "long" }
+              )} ${startDate.getFullYear()}`}
+              infoLeft={[leftTime, rightTime]}
+            />
+          );
+        })}
         {dayEventsCount === 0 && (
           <SimplePlanningNoEventSC>
             {"Pas d'événements"}

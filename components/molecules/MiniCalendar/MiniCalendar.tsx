@@ -1,5 +1,5 @@
 import { ChevronLeft16, ChevronRight16 } from "@carbon/icons-react";
-import { CalendarContext } from "@lib/contexts";
+import { CalendarContext, PlanningContext } from "@lib/contexts";
 import { CSS, styled } from "@stitches";
 import {
   CompareDateSimplified,
@@ -8,7 +8,7 @@ import {
   GetAllDayNames,
   GetMonthLabel,
 } from "@utils/calendar";
-import { FC, useContext, useMemo } from "react";
+import { FC, useCallback, useContext, useMemo } from "react";
 
 const AllDayNames = GetAllDayNames();
 
@@ -125,6 +125,7 @@ export type MiniCalendarProps = {
 type AllDateItemsType = { date: DateSimplified; count: number }[];
 
 export const MiniCalendar: FC<MiniCalendarProps> = ({ css }) => {
+  const { setSynchronizedDate } = useContext(PlanningContext);
   const { allEvents, daysInMonth, dateSelected, setDateSelected } =
     useContext(CalendarContext);
 
@@ -150,6 +151,14 @@ export const MiniCalendar: FC<MiniCalendarProps> = ({ css }) => {
     [dateSelected, daysInMonth]
   );
 
+  const changeDate = useCallback(
+    (date: Date) => {
+      setDateSelected(date);
+      setSynchronizedDate(date);
+    },
+    [setDateSelected, setSynchronizedDate]
+  );
+
   return (
     <MiniCalendarSC css={css}>
       <MiniCalendarMonthSC>
@@ -157,7 +166,7 @@ export const MiniCalendar: FC<MiniCalendarProps> = ({ css }) => {
           <ChevronLeft16
             className="left icon"
             onClick={() =>
-              setDateSelected(
+              changeDate(
                 new Date(
                   dateSelected.getFullYear(),
                   dateSelected.getMonth() - 1,
@@ -169,7 +178,7 @@ export const MiniCalendar: FC<MiniCalendarProps> = ({ css }) => {
           <ChevronRight16
             className="right icon"
             onClick={() =>
-              setDateSelected(
+              changeDate(
                 new Date(
                   dateSelected.getFullYear(),
                   dateSelected.getMonth() + 1,
@@ -206,7 +215,7 @@ export const MiniCalendar: FC<MiniCalendarProps> = ({ css }) => {
                 cursor="pointer"
                 greyed={month !== dateSelected.getMonth()}
                 key={date}
-                onClick={() => setDateSelected(new Date(year, month, date))}
+                onClick={() => changeDate(new Date(year, month, date))}
               >
                 <span className="label">{date}</span>
                 <div className="dots">

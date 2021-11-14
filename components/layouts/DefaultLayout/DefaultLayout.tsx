@@ -1,8 +1,11 @@
 import { Thumbnail_232 } from "@carbon/icons-react";
 import { NavBar, NavBarSC } from "@components/organisms";
+import userOptions from "@data/navbar/userOptions";
 import { Group, Title } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
 import { styled } from "@stitches";
+import { Role } from "@utils/user";
+import { useRouter } from "next/router";
 import { FC, useEffect, useState } from "react";
 
 export const DefaultMainSC = styled("main", {
@@ -19,7 +22,7 @@ export const DefaultLayoutSC = styled("div", {
     transitionProperty: "transform, margin",
     transitionDuration: "1.0s",
   },
-  "@lg": {
+  "@desktop": {
     [`& ${NavBarSC}`]: {
       left: 0,
     },
@@ -36,14 +39,14 @@ export const DefaultLayoutSC = styled("div", {
         [`& ${DefaultMainSC}`]: {
           transform: "translateX($sizes$sidebar)",
         },
-        "@lg": {
+        "@desktop": {
           [`& ${DefaultMainSC}`]: {
             transform: "none",
           },
         },
       },
       false: {
-        "@lg": {
+        "@desktop": {
           [`& ${NavBarSC}`]: {
             left: "-$sidebar",
           },
@@ -56,7 +59,15 @@ export const DefaultLayoutSC = styled("div", {
   },
 });
 
-export const DefaultLayout: FC = ({ children }) => {
+export type DefaultLayoutProps = {
+  mode?: Role;
+};
+
+export const DefaultLayout: FC<DefaultLayoutProps> = ({
+  children,
+  // mode = Role.USER,
+}) => {
+  const router = useRouter();
   const { width } = useViewportSize();
   const [displayMenu, setDisplayMenu] = useState(width >= 1024);
 
@@ -67,14 +78,19 @@ export const DefaultLayout: FC = ({ children }) => {
 
   return (
     <DefaultLayoutSC displayMenu={displayMenu}>
-      <NavBar />
+      <NavBar
+      //  color={mode === Role.ADMIN ? "orange" : "default"}
+      />
       <DefaultMainSC>
         <Group spacing="xs" mb="sm">
           <Thumbnail_232
             style={{ cursor: "pointer" }}
             onClick={() => setDisplayMenu((value) => !value)}
           />
-          <Title style={{ fontFamily: "roboto" }}>Planning</Title>
+          <Title style={{ fontFamily: "roboto" }}>
+            {userOptions.find(({ path }) => path === router.pathname)?.label ||
+              "Administrateur"}
+          </Title>
         </Group>
         {children}
       </DefaultMainSC>

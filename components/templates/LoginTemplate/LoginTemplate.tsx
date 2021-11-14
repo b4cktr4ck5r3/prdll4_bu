@@ -5,6 +5,7 @@ import type { FC } from "react";
 const LoginLayoutSC = styled("div", {
   background: "$neutral1",
   display: "flex",
+  minHeight: "100vh",
 });
 
 const MainSC = styled("main", {
@@ -29,7 +30,7 @@ export const LoginTemplate: FC = () => {
       <SideBar />
       <MainSC>
         <Login />
-        <VersionningSC>v0.0.1</VersionningSC>
+        <VersionningSC>v0.1.0</VersionningSC>
       </MainSC>
     </LoginLayoutSC>
   );

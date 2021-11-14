@@ -18,6 +18,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width"
         />
+        <title>CPlanner</title>
       </Head>
       <SessionProvider>
         <NotificationsProvider autoClose={4000}>

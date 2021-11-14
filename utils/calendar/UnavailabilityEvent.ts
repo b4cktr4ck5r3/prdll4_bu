@@ -1,5 +1,10 @@
 import { DateSimplified } from "./Date";
 
+export type UnavailabilityItemForm = {
+  startDate: Date;
+  endDate: Date;
+};
+
 export type UnavailabilityEvent = {
   id: string;
   userId: string;

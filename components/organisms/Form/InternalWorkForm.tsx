@@ -3,11 +3,12 @@ import { BoxSC } from "@components/atoms";
 import { PlanningContext } from "@lib/contexts";
 import { Button, Group, NumberInput, Textarea } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
-import { useForm } from "@mantine/hooks";
+import { useForm, useLocalStorageValue } from "@mantine/hooks";
 import { styled } from "@stitches";
+import { BooleanString, Preferences } from "@utils/user";
 import axios from "axios";
 import dayjs from "dayjs";
-import { FC, useContext } from "react";
+import { FC, useCallback, useContext, useEffect } from "react";
 
 export const InternalWorkFormSC = styled("form", BoxSC, {
   width: "100%",
@@ -15,7 +16,12 @@ export const InternalWorkFormSC = styled("form", BoxSC, {
 });
 
 export const InternalWorkForm: FC = () => {
-  const { setRefresh } = useContext(PlanningContext);
+  const { setRefresh, synchronizedDate, setSynchronizedDate } =
+    useContext(PlanningContext);
+  const [syncCalendarForm] = useLocalStorageValue<BooleanString>({
+    key: Preferences.SyncCalendarForm,
+    defaultValue: "false",
+  });
   const form = useForm({
     initialValues: {
       date: new Date(),
@@ -35,6 +41,23 @@ export const InternalWorkForm: FC = () => {
       duration: (value) => value > 0,
     },
   });
+
+  const changeDate = useCallback(
+    (date: Date) => {
+      form.setFieldValue("date", date);
+      setSynchronizedDate(date);
+    },
+    [form, setSynchronizedDate]
+  );
+
+  useEffect(() => {
+    if (
+      syncCalendarForm === "true" &&
+      synchronizedDate &&
+      synchronizedDate.getTime() !== form.values.date.getTime()
+    )
+      form.setFieldValue("date", synchronizedDate);
+  }, [form, syncCalendarForm, synchronizedDate]);
 
   return (
     <InternalWorkFormSC
@@ -59,7 +82,7 @@ export const InternalWorkForm: FC = () => {
           error={form.errors.date}
           value={form.values.date}
           maxDate={new Date()}
-          onChange={(date) => date && form.setFieldValue("date", date)}
+          onChange={(date) => date && changeDate(date)}
         />
         <NumberInput
           label="Durée (en heure)"

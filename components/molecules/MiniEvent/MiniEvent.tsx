@@ -1,4 +1,4 @@
-import { styled } from "@stitches";
+import { styled, VariantProps } from "@stitches";
 import { FC, useMemo } from "react";
 
 export const MiniEventTimeSC = styled("div", {
@@ -21,6 +21,7 @@ export const MiniEventTimeSC = styled("div", {
 export const MiniEventTitleSC = styled("div", {
   position: "relative",
   paddingLeft: "68px",
+  minHeight: "$48",
   "&::before": {
     content: "''",
     position: "absolute",
@@ -28,7 +29,6 @@ export const MiniEventTitleSC = styled("div", {
     top: "$0",
     bottom: "$0",
     width: "4px",
-    background: "$primary7",
     borderRadius: "$lg",
   },
   span: {
@@ -38,21 +38,38 @@ export const MiniEventTitleSC = styled("div", {
     fontSize: "$lg",
     fontWeight: "$bold",
   },
+  variants: {
+    color: {
+      default: {
+        "&::before": {
+          background: "$primary7",
+        },
+      },
+      red: {
+        "&::before": {
+          background: "$red7",
+        },
+      },
+    },
+  },
+  defaultVariants: {
+    color: "default",
+  },
 });
 
-export const MiniEventSC = styled("div");
+export const MiniEventSC = styled("div", {
+  position: "relative",
+  minHeight: "$48",
+});
 
-export type MiniEventProps = {
+export type MiniEventProps = VariantProps<typeof MiniEventTitleSC> & {
   title: string;
   description: string;
   infoLeft: string | [string, string];
 };
 
-// Session
-// Sécurité des systèmes d'informations
-// 8:30
-// 9:300
 export const MiniEvent: FC<MiniEventProps> = ({
+  color,
   title,
   description,
   infoLeft,
@@ -65,9 +82,10 @@ export const MiniEvent: FC<MiniEventProps> = ({
     if (Array.isArray(infoLeft)) return infoLeft[1];
     else return null;
   }, [infoLeft]);
+
   return (
     <MiniEventSC>
-      <MiniEventTitleSC>
+      <MiniEventTitleSC color={color}>
         <span className="event-title">{title}</span>
         <span className="event-name">{description}</span>
       </MiniEventTitleSC>

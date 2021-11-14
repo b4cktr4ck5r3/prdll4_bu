@@ -185,10 +185,20 @@ export const { createTheme, styled, getCssText, globalCss, config, theme } =
       },
     },
     media: {
-      sm: "(min-width: 640px)",
-      md: "(min-width: 768px)",
-      lg: "(min-width: 1024px)",
-      xl: "(min-width: 1280px)",
+      tablet: "(min-width: 768px)",
+      desktop: "(min-width: 1024px)",
+      widescreen: "(min-width: 1216px)",
+      fullhd: "(min-width: 1408px)",
+
+      mobile: "(max-width: 767px)",
+      touch: "(max-width: 1023px)",
+
+      untilWidescreen: "(max-width: 1215px)",
+      untilFullhd: "(max-width: 1407px)",
+
+      tabletOnly: "(min-width: 768px and max-width: 1023px)",
+      desktopOnly: "(min-width: 1024px and max-width: 1215px)",
+      widescreenOnly: "(min-width: 1216px and max-width: 1407px)",
     },
     utils: {
       fontSize: (value: PropertyValue<"fontSize">) => ({
@@ -245,6 +255,9 @@ export const globalStyles = globalCss({
     fontSize: "$base",
     fontWeight: "$regular",
     position: "relative",
+  },
+  'input[type="checkbox"]': {
+    appearance: "none",
   },
 });
 

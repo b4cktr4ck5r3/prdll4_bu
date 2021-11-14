@@ -1,14 +1,7 @@
-import {
-  Calendar16,
-  CheckmarkOutline16,
-  Error16,
-  Exit16,
-  Home16,
-  Settings16,
-} from "@carbon/icons-react";
 import { CPlannerHorizontal } from "@components/icons";
+import userOptions from "@data/navbar/userOptions";
 import { Text } from "@mantine/core";
-import { styled } from "@stitches";
+import { styled, VariantProps } from "@stitches";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -76,7 +69,6 @@ export const NavBarSC = styled("nav", {
   paddingTop: "$12",
   paddingBottom: "$12",
   top: 0,
-  background: "$primary7",
   color: "white",
   display: "flex",
   flexDirection: "column",
@@ -87,30 +79,32 @@ export const NavBarSC = styled("nav", {
   "& > *:not(.shrink)": {
     flexShrink: 0,
   },
+  variants: {
+    color: {
+      default: {
+        background: "$primary7",
+      },
+      orange: {
+        background: "$orange7",
+      },
+    },
+  },
+  defaultVariants: {
+    color: "default",
+  },
 });
 
-const options = [
-  { icon: Home16, label: "Tableau de bord", path: "/" },
-  { icon: Calendar16, label: "Planning", path: "/planning" },
-  { icon: CheckmarkOutline16, label: "Travail Interne", path: "/internalWork" },
-  {
-    icon: Error16,
-    label: "Indisponibilités",
-    path: "/unavailability",
-  },
-  { icon: Settings16, label: "Réglages", path: "#" },
-  { icon: Exit16, label: "Déconnexion", path: "#", action: "SignOut" },
-];
+export type NavBarProps = VariantProps<typeof NavBarSC>;
 
-export const NavBar: FC = () => {
+export const NavBar: FC<NavBarProps> = ({ color }) => {
   const router = useRouter();
 
   return (
-    <NavBarSC>
+    <NavBarSC color={color}>
       <CPlannerHorizontal />
       <Scrollbars className="shrink">
         <NavListSC>
-          {options.map(({ action, icon: Icon, label, path }) => (
+          {userOptions.map(({ action, icon: Icon, label, path }) => (
             <li key={label}>
               <Link href={path} passHref>
                 <NavListItemSC
