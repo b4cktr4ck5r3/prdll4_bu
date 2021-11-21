@@ -16,6 +16,7 @@ export const UnavailabilityFormSC = styled("div", BoxSC, {
   marginBottom: "$128",
   width: "100%",
   maxWidth: "$384",
+  minWidth: "$256",
   "& > * + *": {
     marginTop: "$16",
   },
@@ -25,18 +26,14 @@ export const UnavailabilityFormDateSC = styled("form", {
   display: "flex",
   flexDirection: "column",
   alignItems: "stretch",
-  "& > * + *": {
-    marginTop: "$16",
-  },
+  gap: "$16",
 });
 
 export const UnavailabilityFormListSC = styled("form", {
   display: "flex",
   flexDirection: "column",
   alignItems: "stretch",
-  "& > * + *": {
-    marginTop: "$16",
-  },
+  gap: "$16",
 });
 
 export const UnavailabilityForm: FC = () => {

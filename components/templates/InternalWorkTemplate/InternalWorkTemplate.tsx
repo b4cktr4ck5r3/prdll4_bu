@@ -8,17 +8,12 @@ import { FC, useState } from "react";
 export const InternalWorkTemplateSC = styled("div", {
   display: "flex",
   flexDirection: "column",
+  flexWrap: "wrap",
   alignItems: "center",
-  "& > * + *": {
-    marginTop: "$24",
-  },
+  gap: "$24",
   "@tablet": {
     alignItems: "flex-start",
     flexDirection: "row",
-    "& > * + *": {
-      marginTop: "$0",
-      marginLeft: "$24",
-    },
   },
 });
 

@@ -2,7 +2,7 @@ import { Thumbnail_232 } from "@carbon/icons-react";
 import { NavBar, NavBarSC } from "@components/organisms";
 import userOptions from "@data/navbar/userOptions";
 import { Group, Title } from "@mantine/core";
-import { useViewportSize } from "@mantine/hooks";
+import { useViewportSize, useWindowScroll } from "@mantine/hooks";
 import { bp, styled } from "@stitches";
 import { Role } from "@utils/user";
 import { useRouter } from "next/router";
@@ -70,6 +70,7 @@ export const DefaultLayout: FC<DefaultLayoutProps> = ({
   const router = useRouter();
   const { width } = useViewportSize();
   const [displayMenu, setDisplayMenu] = useState(width >= 1024);
+  const [scroll] = useWindowScroll();
 
   useEffect(() => {
     if (width >= bp.tablet) setDisplayMenu(true);
@@ -78,15 +79,21 @@ export const DefaultLayout: FC<DefaultLayoutProps> = ({
 
   useEffect(() => {
     if (displayMenu && width < bp.tablet) {
-      document.documentElement.style.overflow = "hidden";
-      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflowX = "hidden";
+      document.body.style.overflowX = "hidden";
     }
 
     return () => {
-      document.documentElement.style.overflow = "initial";
-      document.body.style.overflow = "initial";
+      document.documentElement.style.overflowX = "initial";
+      document.body.style.overflowX = "initial";
     };
   }, [width, displayMenu]);
+
+  useEffect(() => {
+    if (width < bp.tablet) {
+      setDisplayMenu(false);
+    }
+  }, [scroll, width]);
 
   return (
     <DefaultLayoutSC displayMenu={displayMenu}>

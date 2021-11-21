@@ -13,6 +13,7 @@ import { FC, useCallback, useContext, useEffect } from "react";
 export const InternalWorkFormSC = styled("form", BoxSC, {
   width: "100%",
   maxWidth: "$384",
+  minWidth: "$256",
 });
 
 export const InternalWorkForm: FC = () => {

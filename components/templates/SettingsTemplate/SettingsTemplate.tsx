@@ -11,9 +11,8 @@ export const SettingsTemplateSC = styled("div", {
   maxWidth: "420px",
   display: "flex",
   flexDirection: "column",
-  "& > * + *": {
-    marginTop: "$24",
-  },
+  flexWrap: "wrap",
+  gap: "$24",
 });
 
 export const SettingsTemplate: FC = () => {

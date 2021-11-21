@@ -10,10 +10,9 @@ import { FC, Fragment, useCallback, useEffect, useState } from "react";
 export const AdminHomeTemplateSC = styled("div", {
   display: "flex",
   flexDirection: "column",
+  flexWrap: "wrap",
   maxWidth: "$384",
-  "& > * + *": {
-    marginTop: "$24",
-  },
+  gap: "$24",
 });
 
 const TmpGrid = styled("div", {
