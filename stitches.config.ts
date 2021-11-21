@@ -2,6 +2,13 @@ import type * as Stitches from "@stitches/react";
 import { createStitches, PropertyValue } from "@stitches/react";
 import colors from "open-color/open-color.json";
 
+export const bp = {
+  tablet: 768,
+  desktop: 1024,
+  widescreen: 1216,
+  fullhd: 1408,
+};
+
 export const { createTheme, styled, getCssText, globalCss, config, theme } =
   createStitches({
     theme: {
@@ -192,7 +199,6 @@ export const { createTheme, styled, getCssText, globalCss, config, theme } =
 
       mobile: "(max-width: 767px)",
       touch: "(max-width: 1023px)",
-
       untilWidescreen: "(max-width: 1215px)",
       untilFullhd: "(max-width: 1407px)",
 
@@ -243,7 +249,6 @@ export const globalStyles = globalCss({
     overscrollBehaviorY: "none",
     scrollBehavior: "smooth",
     scrollPaddingTop: "10px",
-    overflowX: "hidden",
   },
   ".mantine-date-picker-dropdownWrapper": {
     textAlign: "center",

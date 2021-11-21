@@ -34,6 +34,7 @@ export const SimplePlanningNoEventSC = styled("div", {
 export const SimplePlanningSC = styled("div", BoxSC, {
   width: "100%",
   maxWidth: "$384",
+  minWidth: "$256",
   ".title": {
     color: "$neutral9",
     marginTop: "$12",

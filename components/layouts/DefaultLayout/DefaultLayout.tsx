@@ -3,7 +3,7 @@ import { NavBar, NavBarSC } from "@components/organisms";
 import userOptions from "@data/navbar/userOptions";
 import { Group, Title } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
-import { styled } from "@stitches";
+import { bp, styled } from "@stitches";
 import { Role } from "@utils/user";
 import { useRouter } from "next/router";
 import { FC, useEffect, useState } from "react";
@@ -14,20 +14,23 @@ export const DefaultMainSC = styled("main", {
 
 export const DefaultLayoutSC = styled("div", {
   [`& ${NavBarSC}`]: {
-    left: "-$sidebar",
-    transitionProperty: "left",
-    transitionDuration: "1.0s",
+    transition: "left 1.0s",
   },
-  [`& ${DefaultMainSC}`]: {
-    transitionProperty: "transform, margin",
-    transitionDuration: "1.0s",
+  "@mobile": {
+    [`& ${NavBarSC}`]: {
+      left: "-$sidebar",
+    },
+    [`& ${DefaultMainSC}`]: {
+      transition: "transform 1.0s",
+    },
   },
-  "@desktop": {
+  "@tablet": {
     [`& ${NavBarSC}`]: {
       left: 0,
     },
     [`& ${DefaultMainSC}`]: {
       marginLeft: "$sidebar",
+      transition: "margin 1.0s",
     },
   },
   variants: {
@@ -36,17 +39,14 @@ export const DefaultLayoutSC = styled("div", {
         [`& ${NavBarSC}`]: {
           left: "0",
         },
-        [`& ${DefaultMainSC}`]: {
-          transform: "translateX($sizes$sidebar)",
-        },
-        "@desktop": {
+        "@mobile": {
           [`& ${DefaultMainSC}`]: {
-            transform: "none",
+            transform: "translateX($sizes$sidebar)",
           },
         },
       },
       false: {
-        "@desktop": {
+        "@tablet": {
           [`& ${NavBarSC}`]: {
             left: "-$sidebar",
           },
@@ -72,16 +72,34 @@ export const DefaultLayout: FC<DefaultLayoutProps> = ({
   const [displayMenu, setDisplayMenu] = useState(width >= 1024);
 
   useEffect(() => {
-    if (width >= 1024) setDisplayMenu(true);
+    if (width >= bp.tablet) setDisplayMenu(true);
     else setDisplayMenu(false);
   }, [width]);
+
+  useEffect(() => {
+    if (displayMenu && width < bp.tablet) {
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.documentElement.style.overflow = "initial";
+      document.body.style.overflow = "initial";
+    };
+  }, [width, displayMenu]);
 
   return (
     <DefaultLayoutSC displayMenu={displayMenu}>
       <NavBar
       //  color={mode === Role.ADMIN ? "orange" : "default"}
       />
-      <DefaultMainSC>
+      <DefaultMainSC
+        onClick={() => {
+          if (displayMenu && width < bp.tablet) {
+            setDisplayMenu(false);
+          }
+        }}
+      >
         <Group spacing="xs" mb="sm">
           <Thumbnail_232
             style={{ cursor: "pointer" }}
