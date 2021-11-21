@@ -1,15 +1,16 @@
 import { LoadingTemplate } from "@components/templates";
+import { GetDisplayName } from "@utils/react";
 import { NextPage } from "next";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { FC, useEffect } from "react";
 
 export type ProtectedPageProps = {
   active: boolean;
 };
 
 export const redirectIfUnauthenticated = (Page: NextPage) => {
-  return () => {
+  const RedirectIfUnauthenticated: FC = () => {
     const router = useRouter();
     const { status } = useSession({
       required: false,
@@ -22,4 +23,10 @@ export const redirectIfUnauthenticated = (Page: NextPage) => {
     if (status === "authenticated") return <Page />;
     else return <LoadingTemplate />;
   };
+
+  RedirectIfUnauthenticated.displayName = `RedirectIfUnauthenticated(${GetDisplayName(
+    Page
+  )})`;
+
+  return RedirectIfUnauthenticated;
 };

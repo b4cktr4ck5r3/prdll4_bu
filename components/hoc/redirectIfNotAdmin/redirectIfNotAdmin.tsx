@@ -1,13 +1,14 @@
 import { LoadingTemplate } from "@components/templates";
+import { GetDisplayName } from "@utils/react";
 import { Role } from "@utils/user";
 import axios from "axios";
 import { NextPage } from "next";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 
 export const redirectIfNotAdmin = (Page: NextPage) => {
-  return () => {
+  const RedirectIfNotAdmin: FC = () => {
     const router = useRouter();
     const { status } = useSession({
       required: false,
@@ -27,4 +28,10 @@ export const redirectIfNotAdmin = (Page: NextPage) => {
     if (isAdmin) return <Page />;
     else return <LoadingTemplate />;
   };
+
+  RedirectIfNotAdmin.displayName = `RedirectIfNotAdmin(${GetDisplayName(
+    Page
+  )})`;
+
+  return RedirectIfNotAdmin;
 };
