@@ -46,7 +46,7 @@ export const { createTheme, styled, getCssText, globalCss, config, theme } =
         widest: "0.1em",
       },
       fonts: {
-        main: "Roboto, sans-serif",
+        main: "Century Gothic, sans-serif",
       },
       fontWeights: {
         regular: 400,
@@ -245,6 +245,36 @@ export const { createTheme, styled, getCssText, globalCss, config, theme } =
   });
 
 export const globalStyles = globalCss({
+  "@font-face": [
+    {
+      fontDisplay: "swap",
+      fontStyle: "normal",
+      fontWeight: 400,
+      fontFamily: "Century Gothic",
+      src: 'url("/fonts/CenturyGothicRegular.woff2") format("woff2")',
+    },
+    {
+      fontDisplay: "swap",
+      fontStyle: "italic",
+      fontWeight: 400,
+      fontFamily: "Century Gothic",
+      src: 'url("/fonts/CenturyGothicRegularItalic.woff2") format("woff2")',
+    },
+    {
+      fontDisplay: "swap",
+      fontStyle: "normal",
+      fontWeight: 700,
+      fontFamily: "Century Gothic",
+      src: 'url("/fonts/CenturyGothicBold.woff2") format("woff2")',
+    },
+    {
+      fontDisplay: "swap",
+      fontStyle: "italic",
+      fontWeight: 700,
+      fontFamily: "Century Gothic",
+      src: 'url("/fonts/CenturyGothicBoldItalic.woff2") format("woff2")',
+    },
+  ],
   "html, body": {
     overscrollBehaviorY: "none",
     scrollBehavior: "smooth",

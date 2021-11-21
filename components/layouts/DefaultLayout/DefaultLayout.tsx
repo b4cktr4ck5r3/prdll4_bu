@@ -112,7 +112,7 @@ export const DefaultLayout: FC<DefaultLayoutProps> = ({
             style={{ cursor: "pointer" }}
             onClick={() => setDisplayMenu((value) => !value)}
           />
-          <Title style={{ fontFamily: "roboto" }}>
+          <Title>
             {userOptions.find(({ path }) => path === router.pathname)?.label ||
               "Administrateur"}
           </Title>
