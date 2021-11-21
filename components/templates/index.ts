@@ -1,4 +1,3 @@
-export * from "./AdminHomeTemplate";
 export * from "./HomeTemplate";
 export * from "./InternalWorkTemplate";
 export * from "./LoadingTemplate";
