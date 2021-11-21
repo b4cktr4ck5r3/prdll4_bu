@@ -3,15 +3,15 @@ import { styled } from "@stitches";
 import { FC } from "react";
 
 export const SideBarSC = styled("header", {
-  display: "none",
+  display: "flex",
   background: "$primary7",
   color: "white",
   justifyContent: "center",
   alignItems: "center",
   width: "$sidebar",
   height: "100vh",
-  "@tablet": {
-    display: "flex",
+  "@mobile": {
+    display: "none",
   },
 });
 

@@ -1,36 +1,48 @@
-import { Thumbnail_232 } from "@carbon/icons-react";
+import { OpenPanelFilledLeft32 } from "@carbon/icons-react";
 import { NavBar, NavBarSC } from "@components/organisms";
 import userOptions from "@data/navbar/userOptions";
-import { Group, Title } from "@mantine/core";
-import { useViewportSize, useWindowScroll } from "@mantine/hooks";
+import { ActionIcon, Group, Title } from "@mantine/core";
+import { useScrollLock, useViewportSize } from "@mantine/hooks";
 import { bp, styled } from "@stitches";
 import { Role } from "@utils/user";
 import { useRouter } from "next/router";
 import { FC, useEffect, useState } from "react";
 
 export const DefaultMainSC = styled("main", {
-  padding: "$12",
+  padding: "$8 $16",
 });
 
 export const DefaultLayoutSC = styled("div", {
-  [`& ${NavBarSC}`]: {
-    transition: "left 1.0s",
+  ".open-menu": {
+    marginLeft: 0,
+    marginRight: 0,
+    transform: "translateY(1px)",
   },
   "@mobile": {
-    [`& ${NavBarSC}`]: {
-      left: "-$sidebar",
-    },
-    [`& ${DefaultMainSC}`]: {
-      transition: "transform 1.0s",
+    ".title-main": {
+      fontSize: "28px",
     },
   },
-  "@tablet": {
+  "@touch": {
+    [`& ${NavBarSC}`]: {
+      left: "-100vw",
+      width: "100vw",
+      transition: "left 0.6s",
+    },
+    [`& ${DefaultMainSC}`]: {
+      transition: "transform 0.6s",
+    },
+  },
+  "@desktop": {
+    // NavBar always visible
+    ".open-menu": {
+      display: "none",
+    },
     [`& ${NavBarSC}`]: {
       left: 0,
     },
     [`& ${DefaultMainSC}`]: {
       marginLeft: "$sidebar",
-      transition: "margin 1.0s",
     },
   },
   variants: {
@@ -38,21 +50,6 @@ export const DefaultLayoutSC = styled("div", {
       true: {
         [`& ${NavBarSC}`]: {
           left: "0",
-        },
-        "@mobile": {
-          [`& ${DefaultMainSC}`]: {
-            transform: "translateX($sizes$sidebar)",
-          },
-        },
-      },
-      false: {
-        "@tablet": {
-          [`& ${NavBarSC}`]: {
-            left: "-$sidebar",
-          },
-          [`& ${DefaultMainSC}`]: {
-            marginLeft: "0",
-          },
         },
       },
     },
@@ -63,56 +60,54 @@ export type DefaultLayoutProps = {
   mode?: Role;
 };
 
-export const DefaultLayout: FC<DefaultLayoutProps> = ({
-  children,
-  // mode = Role.USER,
-}) => {
+export const DefaultLayout: FC<DefaultLayoutProps> = ({ children }) => {
   const router = useRouter();
   const { width } = useViewportSize();
-  const [displayMenu, setDisplayMenu] = useState(width >= 1024);
-  const [scroll] = useWindowScroll();
+  const [displayMenu, setDisplayMenu] = useState(width >= bp.desktop);
+  const [, setScrollLocked] = useScrollLock();
 
   useEffect(() => {
-    if (width >= bp.tablet) setDisplayMenu(true);
+    if (width >= bp.desktop) setDisplayMenu(true);
     else setDisplayMenu(false);
   }, [width]);
 
   useEffect(() => {
-    if (displayMenu && width < bp.tablet) {
-      document.documentElement.style.overflowX = "hidden";
-      document.body.style.overflowX = "hidden";
+    if (displayMenu && width < bp.desktop) {
+      setScrollLocked(true);
     }
 
     return () => {
-      document.documentElement.style.overflowX = "initial";
-      document.body.style.overflowX = "initial";
+      setScrollLocked(false);
     };
-  }, [width, displayMenu]);
-
-  useEffect(() => {
-    if (width < bp.tablet) {
-      setDisplayMenu(false);
-    }
-  }, [scroll, width]);
+  }, [displayMenu, width, setScrollLocked]);
 
   return (
     <DefaultLayoutSC displayMenu={displayMenu}>
       <NavBar
-      //  color={mode === Role.ADMIN ? "orange" : "default"}
+        closeMenu={() => {
+          setDisplayMenu(false);
+        }}
+        onItemClick={() => {
+          if (width < bp.desktop) setDisplayMenu(false);
+        }}
       />
       <DefaultMainSC
         onClick={() => {
-          if (displayMenu && width < bp.tablet) {
+          if (displayMenu && width < bp.desktop) {
             setDisplayMenu(false);
           }
         }}
       >
-        <Group spacing="xs" mb="sm">
-          <Thumbnail_232
-            style={{ cursor: "pointer" }}
-            onClick={() => setDisplayMenu((value) => !value)}
-          />
-          <Title>
+        <Group mb="sm" align="center">
+          <ActionIcon
+            color="gray"
+            size="xl"
+            className="open-menu"
+            onClick={() => setDisplayMenu(true)}
+          >
+            <OpenPanelFilledLeft32 />
+          </ActionIcon>
+          <Title className="title-main">
             {userOptions.find(({ path }) => path === router.pathname)?.label ||
               "Administrateur"}
           </Title>

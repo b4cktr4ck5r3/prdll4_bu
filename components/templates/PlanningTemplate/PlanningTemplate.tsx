@@ -9,7 +9,7 @@ export const PlanningTemplate: FC = () => {
   const { width } = useViewportSize();
   return (
     <DefaultLayout>
-      {width <= bp.tablet ? (
+      {width <= bp.desktop ? (
         <SimplePlanning type={Event.Course} />
       ) : (
         <Planning />

@@ -11,7 +11,7 @@ export const InternalWorkTemplateSC = styled("div", {
   flexWrap: "wrap",
   alignItems: "center",
   gap: "$24",
-  "@tablet": {
+  "@desktop": {
     alignItems: "flex-start",
     flexDirection: "row",
   },
