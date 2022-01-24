@@ -1,10 +1,11 @@
-import { Checkmark16 } from "@carbon/icons-react";
 import { BoxSC } from "@components/atoms";
+import { FormList } from "@components/molecules/FormList";
 import { PlanningContext } from "@lib/contexts";
-import { Button, Group, NumberInput, Textarea } from "@mantine/core";
+import { NumberInput, Textarea } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
-import { useForm, useLocalStorageValue } from "@mantine/hooks";
+import { useForm, useListState, useLocalStorageValue } from "@mantine/hooks";
 import { styled } from "@stitches";
+import { Event, InternalWorkItemForm } from "@utils/calendar";
 import { BooleanString, Preferences } from "@utils/user";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -23,7 +24,10 @@ export const InternalWorkForm: FC = () => {
     key: Preferences.SyncCalendarForm,
     defaultValue: "false",
   });
-  const form = useForm({
+  const [internalWorks, internalWorksHandlers] =
+    useListState<InternalWorkItemForm>([]);
+
+  const formNewIW = useForm({
     initialValues: {
       date: new Date(),
       duration: 0,
@@ -45,68 +49,74 @@ export const InternalWorkForm: FC = () => {
 
   const changeDate = useCallback(
     (date: Date) => {
-      form.setFieldValue("date", date);
+      formNewIW.setFieldValue("date", date);
       setSynchronizedDate(date);
     },
-    [form, setSynchronizedDate]
+    [formNewIW, setSynchronizedDate]
   );
 
   useEffect(() => {
     if (
       syncCalendarForm === "true" &&
       synchronizedDate &&
-      synchronizedDate.getTime() !== form.values.date.getTime()
+      synchronizedDate.getTime() !== formNewIW.values.date.getTime()
     )
-      form.setFieldValue("date", synchronizedDate);
-  }, [form, syncCalendarForm, synchronizedDate]);
+      formNewIW.setFieldValue("date", synchronizedDate);
+  }, [formNewIW, syncCalendarForm, synchronizedDate]);
 
   return (
-    <InternalWorkFormSC
-      onSubmit={form.onSubmit((values) => {
-        const date = dayjs(values.date);
+    <FormList
+      data={internalWorks}
+      type={Event.InternalWork}
+      onSubmitItem={formNewIW.onSubmit((newInternalWork) => {
+        internalWorksHandlers.append({
+          date: new Date(newInternalWork.date),
+          description: newInternalWork.description,
+          duration: newInternalWork.duration,
+        });
+      })}
+      disabled={internalWorks.length === 0}
+      onSubmitAll={() => {
+        const iw = internalWorks[0];
+        const date = dayjs(iw.date);
         axios
           .post("/api/internalWork", {
-            ...values,
+            ...iw,
             date: date.add(date.utcOffset(), "m").toJSON(),
           })
           .then(() => {
             setRefresh(true);
-            form.reset();
+            formNewIW.reset();
           })
           .catch(() => alert("Erreur"));
-      })}
+      }}
     >
-      <Group direction="column" align="stretch">
-        <DatePicker
-          clearable={false}
-          label="Date de travail interne"
-          error={form.errors.date}
-          value={form.values.date}
-          maxDate={new Date()}
-          onChange={(date) => date && changeDate(date)}
-        />
-        <NumberInput
-          label="Durée (en heure)"
-          step={0.5}
-          precision={1}
-          min={0}
-          max={24}
-          error={form.errors.duration}
-          value={form.values.duration}
-          onChange={(value) => form.setFieldValue("duration", value || 0)}
-        />
-        <Textarea
-          label="Description"
-          error={form.errors.description}
-          value={form.values.description}
-          onChange={(event) =>
-            form.setFieldValue("description", event.currentTarget.value)
-          }
-        />
-        <Button type="submit" color="green" leftIcon={<Checkmark16 />}>
-          Valider
-        </Button>
-      </Group>
-    </InternalWorkFormSC>
+      <DatePicker
+        clearable={false}
+        label="Date de travail interne"
+        error={formNewIW.errors.date}
+        value={formNewIW.values.date}
+        maxDate={new Date()}
+        onChange={(date) => date && changeDate(date)}
+      />
+      <NumberInput
+        label="Durée (en heure)"
+        step={0.5}
+        precision={1}
+        min={0}
+        max={24}
+        error={formNewIW.errors.duration}
+        value={formNewIW.values.duration}
+        onChange={(value) => formNewIW.setFieldValue("duration", value || 0)}
+      />
+      <Textarea
+        label="Description"
+        error={formNewIW.errors.description}
+        value={formNewIW.values.description}
+        onChange={(event) =>
+          formNewIW.setFieldValue("description", event.currentTarget.value)
+        }
+      />
+    </FormList>
   );
 };

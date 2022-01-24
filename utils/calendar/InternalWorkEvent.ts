@@ -1,5 +1,11 @@
 import { DateSimplified } from "./Date";
 
+export type InternalWorkItemForm = {
+  date: Date;
+  description: string;
+  duration: number;
+};
+
 export type InternalWorkEvent = {
   id: string;
   userId: string;

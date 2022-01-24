@@ -20,6 +20,8 @@ export const MiniEventTimeSC = styled("div", {
 
 export const MiniEventTitleSC = styled("div", {
   position: "relative",
+  display: "flex",
+  flexDirection: "column",
   paddingLeft: "68px",
   minHeight: "$48",
   "&::before": {
@@ -31,12 +33,10 @@ export const MiniEventTitleSC = styled("div", {
     width: "4px",
     borderRadius: "$lg",
   },
-  span: {
-    display: "block",
-  },
   ".event-title": {
     fontSize: "$lg",
     fontWeight: "$bold",
+    margin: "auto 0",
   },
   variants: {
     color: {
@@ -86,7 +86,9 @@ export const MiniEvent: FC<MiniEventProps> = ({
   return (
     <MiniEventSC>
       <MiniEventTitleSC color={color}>
-        <span className="event-title">{title}</span>
+        <span className={`event-title ${description ? "" : "center"}`}>
+          {title}
+        </span>
         <span className="event-name">{description}</span>
       </MiniEventTitleSC>
       <MiniEventTimeSC>
