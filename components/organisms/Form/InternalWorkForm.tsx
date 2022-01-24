@@ -93,7 +93,7 @@ export const InternalWorkForm: FC = () => {
           max={24}
           error={form.errors.duration}
           value={form.values.duration}
-          onChange={(value) => form.setFieldValue("duration", value)}
+          onChange={(value) => form.setFieldValue("duration", value || 0)}
         />
         <Textarea
           label="Description"
