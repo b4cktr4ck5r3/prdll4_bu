@@ -3,12 +3,10 @@ import {
   CheckmarkOutline16,
   Error16,
   Exit16,
-  Home16,
   Settings16,
 } from "@carbon/icons-react";
 
 const userOptions = [
-  { icon: Home16, label: "Tableau de bord", path: "/" },
   { icon: Calendar16, label: "Planning", path: "/planning" },
   {
     icon: CheckmarkOutline16,
