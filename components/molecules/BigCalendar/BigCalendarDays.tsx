@@ -1,6 +1,10 @@
 import { Text } from "@mantine/core";
 import { styled } from "@stitches";
-import { GetAllDayNames, GetDaysInMonth } from "@utils/calendar";
+import {
+  GetActiveWeekIndex,
+  GetAllDayNames,
+  GetDaysInMonth,
+} from "@utils/calendar";
 import { FC, useMemo } from "react";
 
 const AllDayNames = GetAllDayNames();
@@ -61,8 +65,11 @@ export const BigCalendarDays: FC<BigCalendarDaysProps> = ({
   currentDate,
   dateSelected,
 }) => {
-  const daysInMonth = useMemo(
-    () => GetDaysInMonth(dateSelected),
+  const daysInWeek = useMemo(
+    () =>
+      GetDaysInMonth(dateSelected)[
+        GetActiveWeekIndex(dateSelected, GetDaysInMonth(dateSelected))
+      ],
     [dateSelected]
   );
 
@@ -73,45 +80,43 @@ export const BigCalendarDays: FC<BigCalendarDaysProps> = ({
           <span className="label">{day.substring(0, 3)}</span>
         </BigCalendarDaysTitleSC>
       ))}
-      {daysInMonth.map((week) =>
-        week.map(({ date, month }) => (
-          <BigCalendarDaysItemSC
-            active={
-              date === currentDate.getDate() && month === currentDate.getMonth()
-            }
-            key={date}
-          >
-            <BigCalendarDaysItemLabelSC className="label">
-              {date.toString().padStart(2, "0")}
-            </BigCalendarDaysItemLabelSC>
-            {date % 7 === 4 && month === currentDate.getMonth() && (
-              <ul>
-                <li>
-                  <Text lineClamp={2} size="xs" weight="bold" color="black">
-                    {"Sécurité des systèmes d'informations"}
-                  </Text>
-                  <Text color="gray" size="xs">
-                    {"8:30 - 9:30"}
-                  </Text>
-                </li>
-                <li style={{ marginTop: "8px" }}>
-                  <Text lineClamp={2} size="xs" weight="bold" color="black">
-                    {"Sécurité des systèmes d'informations"}
-                  </Text>
-                  <Text color="gray" size="xs">
-                    {"10:30 - 11:30"}
-                  </Text>
-                </li>
-                <li style={{ marginTop: "4px" }}>
-                  <Text lineClamp={2} size="xs" weight="bold" color="">
-                    {"+3 séances"}
-                  </Text>
-                </li>
-              </ul>
-            )}
-          </BigCalendarDaysItemSC>
-        ))
-      )}
+      {daysInWeek.map(({ date, month }) => (
+        <BigCalendarDaysItemSC
+          active={
+            date === currentDate.getDate() && month === currentDate.getMonth()
+          }
+          key={date}
+        >
+          <BigCalendarDaysItemLabelSC className="label">
+            {date.toString().padStart(2, "0")}
+          </BigCalendarDaysItemLabelSC>
+          {date % 7 === 4 && month === currentDate.getMonth() && (
+            <ul>
+              <li>
+                <Text lineClamp={2} size="xs" weight="bold" color="black">
+                  {"Sécurité des systèmes d'informations"}
+                </Text>
+                <Text color="gray" size="xs">
+                  {"8:30 - 9:30"}
+                </Text>
+              </li>
+              <li style={{ marginTop: "8px" }}>
+                <Text lineClamp={2} size="xs" weight="bold" color="black">
+                  {"Sécurité des systèmes d'informations"}
+                </Text>
+                <Text color="gray" size="xs">
+                  {"10:30 - 11:30"}
+                </Text>
+              </li>
+              <li style={{ marginTop: "4px" }}>
+                <Text lineClamp={2} size="xs" weight="bold" color="">
+                  {"+3 séances"}
+                </Text>
+              </li>
+            </ul>
+          )}
+        </BigCalendarDaysItemSC>
+      ))}
     </BigCalendarDaysSC>
   );
 };

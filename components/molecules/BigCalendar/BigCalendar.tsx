@@ -21,9 +21,7 @@ export const BigCalendarSC = styled("div", {
 
 export const BigCalendar: FC = () => {
   const currentDate = useMemo(() => new Date(), []);
-  const [dateSelected, setDateSelected] = useState(
-    new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
-  );
+  const [dateSelected, setDateSelected] = useState(new Date());
   const monthLabel = useMemo(
     () => dateSelected.toLocaleString("default", { month: "long" }),
     [dateSelected]

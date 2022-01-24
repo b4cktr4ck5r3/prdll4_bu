@@ -32,10 +32,10 @@ export const MiniCalendarMonthSC = styled("div", {
   ".label": {
     userSelect: "none",
     position: "relative",
-    width: "100px",
+    width: "105px",
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
+    textAlign: "center",
   },
   ".month": {
     color: "$primary7",
