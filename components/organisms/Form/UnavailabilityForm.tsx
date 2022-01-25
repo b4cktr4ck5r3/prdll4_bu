@@ -5,6 +5,7 @@ import { useForm, useListState, useLocalStorageValue } from "@mantine/hooks";
 import { Event, UnavailabilityItemForm } from "@utils/calendar";
 import { BooleanString, Preferences } from "@utils/user";
 import axios from "axios";
+import dayjs from "dayjs";
 import { FC, useCallback, useContext, useEffect, useMemo } from "react";
 
 export const UnavailabilityForm: FC = () => {
@@ -74,10 +75,26 @@ export const UnavailabilityForm: FC = () => {
       type={Event.Unavailability}
       disabled={unavailabilities.length === 0}
       onSubmitAll={sendUnavailabilities}
-      onSubmitItem={formNewDate.onSubmit((dates) => {
+      onSubmitItem={formNewDate.onSubmit(({ startDate, endDate }) => {
+        let start = dayjs(startDate).second(0);
+        const startMinute = startDate.getMinutes();
+
+        if (startMinute < 15) start = start.minute(0);
+        else if (startMinute < 30) start = start.minute(15);
+        else if (startMinute < 45) start = start.minute(30);
+        else start = start.minute(45);
+
+        let end = dayjs(endDate).second(0);
+        const endMinute = endDate.getMinutes();
+
+        if (endMinute < 15) end = end.minute(0);
+        else if (startMinute < 30) end = end.minute(30);
+        else if (startMinute < 45) end = end.minute(45);
+        else end = end.minute(15);
+
         unavailabilitiesHandlers.append({
-          startDate: new Date(dates.startDate),
-          endDate: new Date(dates.endDate),
+          startDate: start.toDate(),
+          endDate: end.toDate(),
         });
       })}
     >
@@ -97,9 +114,12 @@ export const UnavailabilityForm: FC = () => {
       <TimeRangeInput
         label="Horaire de l'indisponibilité"
         value={[startDate, endDate]}
-        onChange={([startDate, endDate]) => {
-          return formNewDate.setValues({ startDate, endDate });
-        }}
+        onChange={([startDate, endDate]) =>
+          formNewDate.setValues({
+            startDate,
+            endDate,
+          })
+        }
         error={formNewDate.errors.startDate}
       />
     </FormList>
