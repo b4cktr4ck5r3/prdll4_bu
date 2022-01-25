@@ -1,13 +1,15 @@
 import { Close32 } from "@carbon/icons-react";
 import { CPlannerHorizontal } from "@components/icons";
 import userOptions from "@data/navbar/userOptions";
+import FetchUserRole from "@lib/swr/fetchers/FetchUserRole";
 import { Text } from "@mantine/core";
-import { styled, VariantProps } from "@stitches";
+import { styled } from "@stitches";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC } from "react";
 import { Scrollbars } from "react-custom-scrollbars";
+import useSWR from "swr";
 
 export const MobileCloseIcon = styled("button", {
   color: "$white",
@@ -34,6 +36,9 @@ export const NavListItemSC = styled("a", {
   alignItems: "center",
   borderRadius: "$full",
   padding: "$16",
+  svg: {
+    color: "white",
+  },
   "& > .label": {
     color: "$white",
     fontWeight: "$bold",
@@ -47,9 +52,11 @@ export const NavListItemSC = styled("a", {
     active: {
       true: {
         background: "$white",
-        color: "$primary7",
+        svg: {
+          color: "currentColor",
+        },
         "& > .label": {
-          color: "$primary7",
+          color: "currentColor",
         },
         "@desktop": {
           "&::before": {
@@ -124,9 +131,11 @@ export const NavBarSC = styled("nav", {
     color: {
       default: {
         background: "$primary7",
+        color: "$primary7",
       },
       orange: {
         background: "$orange7",
+        color: "$orange7",
       },
     },
   },
@@ -135,42 +144,45 @@ export const NavBarSC = styled("nav", {
   },
 });
 
-export type NavBarProps = VariantProps<typeof NavBarSC> & {
+export type NavBarProps = {
   closeMenu?: () => void;
   onItemClick?: () => void;
 };
 
-export const NavBar: FC<NavBarProps> = ({ closeMenu, color, onItemClick }) => {
+export const NavBar: FC<NavBarProps> = ({ closeMenu, onItemClick }) => {
+  const { data: isAdmin } = useSWR("user_role", FetchUserRole);
   const router = useRouter();
 
   return (
-    <NavBarSC color={color}>
+    <NavBarSC color={isAdmin ? "orange" : "default"}>
       <MobileCloseIcon onClick={closeMenu}>
         <Close32 />
       </MobileCloseIcon>
       <CPlannerHorizontal />
       <Scrollbars className="shrink">
         <NavListSC>
-          {userOptions.map(({ action, icon: Icon, label, path }) => (
-            <li key={label}>
-              <Link href={path} passHref>
-                <NavListItemSC
-                  active={router.pathname === path}
-                  onClick={() => {
-                    if (onItemClick) onItemClick();
-                    if (action === "SignOut")
-                      signOut({
-                        callbackUrl: "/login",
-                        redirect: true,
-                      });
-                  }}
-                >
-                  <Icon height={30} width={30} />
-                  <Text className="label">{label}</Text>
-                </NavListItemSC>
-              </Link>
-            </li>
-          ))}
+          {userOptions
+            .filter(({ forAdmin }) => isAdmin || !forAdmin)
+            .map(({ action, icon: Icon, label, path }) => (
+              <li key={label}>
+                <Link href={path} passHref>
+                  <NavListItemSC
+                    active={router.pathname === path}
+                    onClick={() => {
+                      if (onItemClick) onItemClick();
+                      if (action === "SignOut")
+                        signOut({
+                          callbackUrl: "/login",
+                          redirect: true,
+                        });
+                    }}
+                  >
+                    <Icon height={30} width={30} />
+                    <Text className="label">{label}</Text>
+                  </NavListItemSC>
+                </Link>
+              </li>
+            ))}
         </NavListSC>
       </Scrollbars>
     </NavBarSC>

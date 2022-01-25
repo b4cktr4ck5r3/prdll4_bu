@@ -4,6 +4,7 @@ import {
   Error16,
   Exit16,
   Settings16,
+  User16,
 } from "@carbon/icons-react";
 
 const userOptions = [
@@ -18,6 +19,7 @@ const userOptions = [
     label: "Indisponibilités",
     path: "/unavailability",
   },
+  { icon: User16, label: "Utilisateurs", path: "/users", forAdmin: true },
   { icon: Settings16, label: "Réglages", path: "/settings" },
   { icon: Exit16, label: "Déconnexion", path: "#", action: "SignOut" },
 ];

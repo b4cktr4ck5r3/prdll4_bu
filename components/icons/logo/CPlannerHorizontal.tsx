@@ -6,7 +6,7 @@ export const CPlannerHorizontal: FC<IconProps> = (props) => {
     <BaseIcon
       defaultSize={{ height: 48, width: 172 }}
       viewBox="0 0 172 48"
-      fill="currentColor"
+      fill="white"
       {...props}
     >
       <path d="M12.6877,4.8461a1.1718,1.1718,0,0,0-1.1719,1.1718V7.19a2.3438,2.3438,0,1,0,4.6875,0V6.0179a1.1718,1.1718,0,0,0-1.1719-1.1718Z" />
