@@ -77,16 +77,21 @@ export const InternalWorkForm: FC = () => {
       })}
       disabled={internalWorks.length === 0}
       onSubmitAll={() => {
-        const iw = internalWorks[0];
-        const date = dayjs(iw.date);
         axios
-          .post("/api/internalWork", {
-            ...iw,
-            date: date.add(date.utcOffset(), "m").toJSON(),
-          })
+          .post(
+            "/api/internalWork",
+            internalWorks.map((iw) => {
+              const date = dayjs(iw.date);
+              return {
+                ...iw,
+                date: date.add(date.utcOffset(), "m").toJSON(),
+              };
+            })
+          )
           .then(() => {
             setRefresh(true);
             formNewIW.reset();
+            internalWorksHandlers.setState([]);
           })
           .catch(() => alert("Erreur"));
       }}

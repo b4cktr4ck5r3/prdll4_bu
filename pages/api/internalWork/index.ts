@@ -23,11 +23,13 @@ const QueryGetSchema = z.object({
     }),
 });
 
-const BodyPostSchema = z.object({
-  date: z.string().transform((value) => new Date(value)),
-  duration: z.number(),
-  description: z.string(),
-});
+const BodyPostSchema = z.array(
+  z.object({
+    date: z.string().transform((value) => new Date(value)),
+    duration: z.number(),
+    description: z.string(),
+  })
+);
 
 const handler: NextApiHandler = async (req, res) => {
   const { method } = req;
@@ -52,14 +54,12 @@ const handler: NextApiHandler = async (req, res) => {
     }
     case "POST": {
       if (userId) {
-        const { date, description, duration } = BodyPostSchema.parse(req.body);
-        const done = await CreateInternalWork(
-          userId,
-          date,
-          duration,
-          description
-        );
-
+        const listInternalWork = BodyPostSchema.parse(req.body);
+        const done = await Promise.all(
+          listInternalWork.map(({ date, description, duration }) =>
+            CreateInternalWork(userId, date, duration, description)
+          )
+        ).then((values) => values.every(Boolean));
         res.json({
           result: done,
         });
