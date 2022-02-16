@@ -24,19 +24,22 @@ export default NextAuth({
           },
         });
 
-        if (!user) throw new Error("User doesn't exist");
+        if (!user) return null;
 
         const allow = await compare(password, user.password);
 
         if (allow) return user;
-        else throw new Error("Incorrect password");
+        else return null;
+      },
+      credentials: {
+        username: { label: "Username", type: "text" },
+        password: { label: "Password", type: "password" },
       },
     }),
   ],
   callbacks: {
     redirect({ url, baseUrl }) {
       if (url.startsWith(baseUrl)) return url;
-      // Allows relative callback URLs
       else if (url.startsWith("/")) return new URL(url, baseUrl).toString();
       return baseUrl;
     },
@@ -45,12 +48,9 @@ export default NextAuth({
     signIn: "/login",
   },
   session: {
-    jwt: true,
+    strategy: "jwt",
   },
   jwt: {
-    encryption: true,
     secret: process.env.JWT_SECRET,
-    signingKey: process.env.JWT_SIGNING_KEY,
-    encryptionKey: process.env.JWT_ENCRYPTION_KEY,
   },
 });

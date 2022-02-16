@@ -1,7 +1,9 @@
+import { MisuseOutline32, Save20 } from "@carbon/icons-react";
 import { FormList } from "@components/molecules/FormList";
 import { PlanningContext } from "@lib/contexts";
 import { DatePicker, TimeRangeInput } from "@mantine/dates";
 import { useForm, useListState, useLocalStorageValue } from "@mantine/hooks";
+import { useNotifications } from "@mantine/notifications";
 import { Event, UnavailabilityItemForm } from "@utils/calendar";
 import { BooleanString, Preferences } from "@utils/user";
 import axios from "axios";
@@ -44,15 +46,32 @@ export const UnavailabilityForm: FC = () => {
     return newDate;
   }, []);
 
+  const notifications = useNotifications();
+
   const sendUnavailabilities = useCallback(() => {
     axios
       .post("/api/unavailability", unavailabilities)
       .then(() => {
         setRefresh(true);
         unavailabilitiesHandlers.setState([]);
+        notifications.showNotification({
+          color: "dark",
+          title: "Ajout d'une indisponibilité",
+          message: "Indisponibilité ajoutée",
+          icon: <Save20 />,
+          autoClose: 4000,
+        });
       })
-      .catch(() => alert("Erreur"));
-  }, [unavailabilities, unavailabilitiesHandlers, setRefresh]);
+      .catch(() => {
+        notifications.showNotification({
+          color: "dark",
+          title: "Ajout d'une indisponibilité",
+          message: "Erreur dans l'ajout",
+          icon: <MisuseOutline32 />,
+          autoClose: 4000,
+        });
+      });
+  }, [unavailabilities, setRefresh, unavailabilitiesHandlers, notifications]);
 
   useEffect(() => {
     const { startDate, endDate } = formNewDate.values;
