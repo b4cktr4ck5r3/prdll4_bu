@@ -65,7 +65,7 @@ export const UnavailabilityForm: FC = () => {
       .catch(() => {
         notifications.showNotification({
           color: "dark",
-          title: "Ajout d'une indisponibilité",
+          title: `Ajout de ${unavailabilities.length} indisponibilité(s)`,
           message: "Erreur dans l'ajout",
           icon: <MisuseOutline32 />,
           autoClose: 4000,

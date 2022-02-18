@@ -85,7 +85,7 @@ export const InternalWorkForm: FC = () => {
         notifications.showNotification({
           color: "dark",
           title: `Ajout de ${internalWorks.length} travaux interne`,
-          message: `${internalWorks.length} travaux interne ajouté(s)`,
+          message: "Erreur dans l'ajout",
           icon: <MisuseOutline32 />,
           autoClose: 4000,
         });
