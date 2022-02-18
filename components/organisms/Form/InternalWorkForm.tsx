@@ -1,9 +1,12 @@
+import { MisuseOutline32, Save20 } from "@carbon/icons-react";
 import { BoxSC } from "@components/atoms";
 import { FormList } from "@components/molecules/FormList";
+import { InternalWorkTemplateSC } from "@components/templates";
 import { PlanningContext } from "@lib/contexts";
 import { NumberInput, Textarea } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useForm, useListState, useLocalStorageValue } from "@mantine/hooks";
+import { useNotifications } from "@mantine/notifications";
 import { styled } from "@stitches";
 import { Event, InternalWorkItemForm } from "@utils/calendar";
 import { BooleanString, Preferences } from "@utils/user";
@@ -55,6 +58,40 @@ export const InternalWorkForm: FC = () => {
     [formNewIW, setSynchronizedDate]
   );
 
+  const notifications = useNotifications();
+
+  const sendInternalWorks = useCallback(() => {
+    axios
+      .post("/api/internalWork",
+      internalWorks.map((iw) => {
+        const date = dayjs(iw.date);
+        return {
+          ...iw,
+          date: date.add(date.utcOffset(), "m").toJSON(),
+        };
+      }))
+      .then(() => {
+        setRefresh(true);
+        internalWorksHandlers.setState([]);
+        notifications.showNotification({
+          color: "dark",
+          title: `Ajout de ${internalWorks.length} travaux interne`,
+          message: `${internalWorks.length} travaux interne ajouté(s)`,
+          icon: <Save20 />,
+          autoClose: 4000,
+        });
+      })
+      .catch(() => {
+        notifications.showNotification({
+          color: "dark",
+          title: `Ajout de ${internalWorks.length} travaux interne`,
+          message: "Erreur dans l'ajout",
+          icon: <MisuseOutline32 />,
+          autoClose: 4000,
+        });
+      });
+  }, [internalWorks, setRefresh, internalWorksHandlers, notifications]);
+
   useEffect(() => {
     if (
       syncCalendarForm === "true" &&
@@ -68,6 +105,8 @@ export const InternalWorkForm: FC = () => {
     <FormList
       data={internalWorks}
       type={Event.InternalWork}
+      disabled={internalWorks.length === 0}
+      onSubmitAll={sendInternalWorks}
       onSubmitItem={formNewIW.onSubmit((newInternalWork) => {
         internalWorksHandlers.append({
           date: new Date(newInternalWork.date),
@@ -75,26 +114,6 @@ export const InternalWorkForm: FC = () => {
           duration: newInternalWork.duration,
         });
       })}
-      disabled={internalWorks.length === 0}
-      onSubmitAll={() => {
-        axios
-          .post(
-            "/api/internalWork",
-            internalWorks.map((iw) => {
-              const date = dayjs(iw.date);
-              return {
-                ...iw,
-                date: date.add(date.utcOffset(), "m").toJSON(),
-              };
-            })
-          )
-          .then(() => {
-            setRefresh(true);
-            formNewIW.reset();
-            internalWorksHandlers.setState([]);
-          })
-          .catch(() => alert("Erreur"));
-      }}
     >
       <DatePicker
         clearable={false}

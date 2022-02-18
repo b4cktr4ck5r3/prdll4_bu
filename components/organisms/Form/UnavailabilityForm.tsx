@@ -56,8 +56,8 @@ export const UnavailabilityForm: FC = () => {
         unavailabilitiesHandlers.setState([]);
         notifications.showNotification({
           color: "dark",
-          title: "Ajout d'une indisponibilité",
-          message: "Indisponibilité ajoutée",
+          title: `Ajout de ${unavailabilities.length} indisponibilité(s)`,
+          message: `${unavailabilities.length} indisponibilité(s) ajoutée(s)`,
           icon: <Save20 />,
           autoClose: 4000,
         });
@@ -65,7 +65,7 @@ export const UnavailabilityForm: FC = () => {
       .catch(() => {
         notifications.showNotification({
           color: "dark",
-          title: "Ajout d'une indisponibilité",
+          title: `Ajout de ${unavailabilities.length} indisponibilité(s)`,
           message: "Erreur dans l'ajout",
           icon: <MisuseOutline32 />,
           autoClose: 4000,
