@@ -1,5 +1,5 @@
 import { DefaultLayout } from "@components/layouts";
-import { InternalWorkForm, SimplePlanning } from "@components/organisms";
+import { InternalWorkForm, SimplePlanning, History } from "@components/organisms";
 import { PlanningContext } from "@lib/contexts";
 import { styled } from "@stitches";
 import { Event } from "@utils/calendar";
@@ -29,6 +29,7 @@ export const InternalWorkTemplate: FC = () => {
         <InternalWorkTemplateSC>
           <SimplePlanning type={Event.InternalWork} />
           <InternalWorkForm />
+          <History type={Event.InternalWork} />
         </InternalWorkTemplateSC>
       </DefaultLayout>
     </PlanningContext.Provider>
