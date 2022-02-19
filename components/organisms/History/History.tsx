@@ -44,10 +44,8 @@ export const History: FC<HistoryProps> = ({
           axios
             .get<InternalWorkEventDTO[]>("/api/internalWork", {})
             .then(({ data }) => {
-                console.log(data);
-                const sortedData = data.sort((a, b) => +new Date(b.date) - +new Date(a.date));
-                console.log(sortedData);
-                setInternalWorks(sortedData);
+                data.sort((a, b) => +new Date(b.date) - +new Date(a.date));
+                setInternalWorks(data);
             });
       }, [type]);
 
