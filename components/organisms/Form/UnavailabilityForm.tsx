@@ -10,7 +10,11 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { FC, useCallback, useContext, useEffect, useMemo } from "react";
 
-export const UnavailabilityForm: FC = () => {
+type UnavailabilityFormProps = {
+  onSubmit : () => void;
+}
+
+export const UnavailabilityForm: FC<UnavailabilityFormProps> = ({onSubmit}) => {
   const { setRefresh, synchronizedDate, setSynchronizedDate } =
     useContext(PlanningContext);
   const [syncCalendarForm] = useLocalStorageValue<BooleanString>({
@@ -53,6 +57,7 @@ export const UnavailabilityForm: FC = () => {
       .post("/api/unavailability", unavailabilities)
       .then(() => {
         setRefresh(true);
+        onSubmit();
         unavailabilitiesHandlers.setState([]);
         notifications.showNotification({
           color: "dark",
@@ -71,7 +76,7 @@ export const UnavailabilityForm: FC = () => {
           autoClose: 4000,
         });
       });
-  }, [unavailabilities, setRefresh, unavailabilitiesHandlers, notifications]);
+  }, [unavailabilities, setRefresh, onSubmit, unavailabilitiesHandlers, notifications]);
 
   useEffect(() => {
     const { startDate, endDate } = formNewDate.values;

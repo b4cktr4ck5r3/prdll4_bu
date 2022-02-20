@@ -4,6 +4,7 @@ import { styled } from "@stitches/react";
 import { Event, InternalWorkEventDTO, InternalWorkEventSimplified, UnavailabilityEventDTO, UnavailabilityEventSimplified} from "@utils/calendar"
 import axios from "axios";
 import dayjs from "dayjs";
+import React from "react";
 import { FC, useCallback, useEffect, useState } from "react"
 
 export const HistorySC = styled("div", BoxSC, {
@@ -24,11 +25,24 @@ export const HistorySC = styled("div", BoxSC, {
     },
   });
 
-export type HistoryProps = {
+type HistoryProps = {
     type: Event,
 }
 
-export const History: FC<HistoryProps> = ({type}) => {
+type HistoryHandle = {
+    refresh: () => void,
+}
+
+const HistoryComponent: React.ForwardRefRenderFunction<HistoryHandle, HistoryProps> = (
+    {type},
+    forwardedRef,
+    ) => {
+    React.useImperativeHandle(forwardedRef, ()=>({
+        refresh() {
+            refreshData();
+        }
+    }));
+
     const [items, setItems] = useState<
     InternalWorkEventSimplified[] |  UnavailabilityEventSimplified[]
     >([]);
@@ -80,6 +94,13 @@ export const History: FC<HistoryProps> = ({type}) => {
             );
       }, [type]);
 
+    const refreshData = useCallback(() => {
+        if (type === Event.InternalWork) {
+            findInternalWorks();
+        } else if (type === Event.Unavailability) {
+            findUnavailabilities();
+        }
+    }, [findInternalWorks, findUnavailabilities, type]);
       
     useEffect(() => {
         if (type === Event.InternalWork) {
@@ -93,10 +114,12 @@ export const History: FC<HistoryProps> = ({type}) => {
         }
     }, [findUnavailabilities, type])
 
+    useEffect(refreshData, [refreshData]);
+
     return(
         <HistorySC>
             <div className="title">Historique</div>
-            {type === Event.InternalWork && (items as InternalWorkEventSimplified[]).map(({ date, duration, description }, i) => {
+            {type === Event.InternalWork && (items as InternalWorkEventSimplified[]).map(({ date, duration }, i) => {
             const dateObject = new Date(date.year, date.month, date.date);
             return (
                 <MiniEvent
@@ -130,3 +153,5 @@ export const History: FC<HistoryProps> = ({type}) => {
         </HistorySC>
     );
 };
+
+export const History = React.forwardRef(HistoryComponent);
