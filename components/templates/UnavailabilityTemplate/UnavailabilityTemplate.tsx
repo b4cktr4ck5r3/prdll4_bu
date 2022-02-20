@@ -1,5 +1,5 @@
 import { DefaultLayout } from "@components/layouts";
-import { SimplePlanning, UnavailabilityForm } from "@components/organisms";
+import { SimplePlanning, UnavailabilityForm, History } from "@components/organisms";
 import { PlanningContext } from "@lib/contexts";
 import { styled } from "@stitches";
 import { Event } from "@utils/calendar";
@@ -29,6 +29,7 @@ export const UnavailabilityTemplate: FC = () => {
         <UnavailabilityTemplateSC>
           <SimplePlanning type={Event.Unavailability} />
           <UnavailabilityForm />
+          <History type={Event.Unavailability} />
         </UnavailabilityTemplateSC>
       </DefaultLayout>
     </PlanningContext.Provider>

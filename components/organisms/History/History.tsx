@@ -1,8 +1,9 @@
 import { BoxSC } from "@components/atoms";
 import { MiniEvent } from "@components/molecules";
 import { styled } from "@stitches/react";
-import { InternalWorkItemForm, UnavailabilityItemForm, Event, InternalWorkEventDTO, UnavailabilityEventDTO} from "@utils/calendar"
+import { Event, InternalWorkEventDTO, InternalWorkEventSimplified, UnavailabilityEventDTO, UnavailabilityEventSimplified} from "@utils/calendar"
 import axios from "axios";
+import dayjs from "dayjs";
 import { FC, useCallback, useEffect, useState } from "react"
 
 export const HistorySC = styled("div", BoxSC, {
@@ -24,46 +25,108 @@ export const HistorySC = styled("div", BoxSC, {
   });
 
 export type HistoryProps = {
-    type: "ALL" | Event,
-    data?: (InternalWorkEventDTO | UnavailabilityEventDTO)[];
+    type: Event,
 }
 
-export const History: FC<HistoryProps> = ({
-    type,
-    data
-}) => {
-    const [internalWorks, setInternalWorks] = useState<
-    InternalWorkEventDTO[]
-    >([]);
-    const [unavailabilities, setUnavailabilities] = useState<
-    UnavailabilityEventDTO[]
+export const History: FC<HistoryProps> = ({type}) => {
+    const [items, setItems] = useState<
+    InternalWorkEventSimplified[] |  UnavailabilityEventSimplified[]
     >([]);
 
     const findInternalWorks = useCallback(() => {
-        if (type === "ALL" || type === Event.InternalWork)
+        if (type === Event.InternalWork) {
+            axios
+              .get<InternalWorkEventDTO[]>("/api/internalWork", {})
+              .then(({ data }) => {
+                setItems(
+                    data.map<InternalWorkEventSimplified>((props) => {
+                        const date = new Date(props.date);
+                        return {
+                            ...props,
+                            date: {
+                                date: date.getDate(),
+                                month: date.getMonth(),
+                                year: date.getFullYear(),
+                            },
+                        };
+                    })
+                  );
+              });
+        }
+    }, [type]);
+
+    const findUnavailabilities = useCallback(() => {
+        if (type === Event.Unavailability)
           axios
-            .get<InternalWorkEventDTO[]>("/api/internalWork", {})
+            .get<UnavailabilityEventDTO[]>("/api/unavailability", {})
             .then(({ data }) => {
-                data.sort((a, b) => +new Date(b.date) - +new Date(a.date));
-                setInternalWorks(data);
-            });
+                setItems(
+                    data.map<UnavailabilityEventSimplified>((props) => {
+                      const startDate = new Date(props.startDate);
+                      const endDate = new Date(props.endDate);
+                      return {
+                        ...props,
+                        startDate,
+                        endDate,
+                        date: {
+                          date: startDate.getDate(),
+                          month: startDate.getMonth(),
+                          year: startDate.getFullYear(),
+                        },
+                      };
+                    })
+                  )
+            }
+            );
       }, [type]);
 
+      
     useEffect(() => {
-        findInternalWorks();
-      }, [findInternalWorks]);
-         
+        if (type === Event.InternalWork) {
+            findInternalWorks();
+        }
+      }, [findInternalWorks, type]);
+    
+    useEffect(() => {
+        if (type === Event.Unavailability) {
+            findUnavailabilities();
+        }
+    }, [findUnavailabilities, type])
+
     return(
         <HistorySC>
             <div className="title">Historique</div>
-            {internalWorks.map(({ duration, description }, i) => (
-            <MiniEvent
+            {type === Event.InternalWork && (items as InternalWorkEventSimplified[]).map(({ date, duration, description }, i) => {
+            const dateObject = new Date(date.year, date.month, date.date);
+            return (
+                <MiniEvent
                 key={i}
-                title={"Travail Interne"}
-                description={description || "Sans description"}
+                title={`${dateObject.getDate()} ${dateObject.toLocaleString(
+                    "default",
+                    { month: "long" }
+                  )} ${dateObject.getFullYear()}`}
+                description={""}
                 infoLeft={`${duration}h`}
-            />
-            ))}
+                />
+            )
+            })}
+                
+            {type === Event.Unavailability && (items as UnavailabilityEventSimplified[]).map(({ startDate, endDate }, i) => {
+            const leftTime = dayjs(startDate).format("HH:mm");
+            const rightTime = dayjs(endDate).format("HH:mm");
+            return (
+                <MiniEvent
+                key={i}
+                color="red"
+                title={`${startDate.getDate()} ${startDate.toLocaleString(
+                    "default",
+                    { month: "long" }
+                  )} ${startDate.getFullYear()}`}
+                description={""}
+                infoLeft={[leftTime, rightTime]}            
+                />
+            )
+            })}
         </HistorySC>
     );
 };
