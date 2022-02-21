@@ -20,7 +20,11 @@ export const InternalWorkFormSC = styled("form", BoxSC, {
   minWidth: "$256",
 });
 
-export const InternalWorkForm: FC = () => {
+type InternalWorkFormProps = {
+  onSubmit : () => void;
+}
+
+export const InternalWorkForm: FC<InternalWorkFormProps> = ({onSubmit}) => {
   const { setRefresh, synchronizedDate, setSynchronizedDate } =
     useContext(PlanningContext);
   const [syncCalendarForm] = useLocalStorageValue<BooleanString>({
@@ -72,6 +76,7 @@ export const InternalWorkForm: FC = () => {
       }))
       .then(() => {
         setRefresh(true);
+        onSubmit();
         internalWorksHandlers.setState([]);
         notifications.showNotification({
           color: "dark",
@@ -90,7 +95,7 @@ export const InternalWorkForm: FC = () => {
           autoClose: 4000,
         });
       });
-  }, [internalWorks, setRefresh, internalWorksHandlers, notifications]);
+  }, [internalWorks, setRefresh, onSubmit, internalWorksHandlers, notifications]);
 
   useEffect(() => {
     if (
