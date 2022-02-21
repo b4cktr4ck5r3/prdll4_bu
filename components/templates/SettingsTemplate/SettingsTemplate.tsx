@@ -5,6 +5,7 @@ import { useForm, useLocalStorageValue } from "@mantine/hooks";
 import { styled } from "@stitches";
 import { BooleanString, Preferences } from "@utils/user";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 import type { FC } from "react";
 
 export const SettingsTemplateSC = styled("div", {
@@ -16,6 +17,7 @@ export const SettingsTemplateSC = styled("div", {
 });
 
 export const SettingsTemplate: FC = () => {
+  const { data } = useSession();
   const [syncCalendarForm, setSyncCalendarForm] =
     useLocalStorageValue<BooleanString>({
       key: Preferences.SyncCalendarForm,
@@ -69,10 +71,11 @@ export const SettingsTemplate: FC = () => {
         <SettingBoxSC
           as="form"
           onSubmit={newPasswordForm.onSubmit((values) => {
-            axios.put("api/user/password", {
-              currentPassword: values.currentPassword,
-              newPassword: values.newPassword,
-            });
+            if (data?.user?.sub)
+              axios.put(`/api/user/${data.user?.sub}/password`, {
+                currentPassword: values.currentPassword,
+                newPassword: values.newPassword,
+              });
             newPasswordForm.reset();
           })}
         >

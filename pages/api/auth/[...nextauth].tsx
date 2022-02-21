@@ -43,6 +43,25 @@ export default NextAuth({
       else if (url.startsWith("/")) return new URL(url, baseUrl).toString();
       return baseUrl;
     },
+    session({ session, token }) {
+      if (token) {
+        session.user = {
+          sub: token.sub,
+          full_name: token.full_name,
+          username: token.username,
+          role: token.role,
+        };
+      }
+      return session;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.full_name = user.full_name;
+        token.username = user.username;
+        token.role = user.role;
+      }
+      return token;
+    },
   },
   pages: {
     signIn: "/login",

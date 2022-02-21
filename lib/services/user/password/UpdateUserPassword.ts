@@ -6,17 +6,14 @@ const UpdateUserPassword = z
   .function()
   .args(z.string(), z.string())
   .implement(async (userId, newPassword) => {
-    return prisma.user
-      .update({
-        where: {
-          id: userId,
-        },
-        data: {
-          password: await hash(newPassword, 12),
-        },
-      })
-      .then(() => true)
-      .catch(() => false);
+    return prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        password: await hash(newPassword, 12),
+      },
+    });
   });
 
 export default UpdateUserPassword;

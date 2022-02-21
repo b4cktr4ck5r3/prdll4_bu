@@ -24,3 +24,5 @@ export const SettingBoxSC = styled("div", BoxSC, {
     marginTop: "$12",
   },
 });
+
+export const UsersBoxSC = styled("div", SettingBoxSC);
