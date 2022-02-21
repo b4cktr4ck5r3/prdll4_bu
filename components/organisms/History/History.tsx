@@ -157,7 +157,7 @@ const HistoryComponent: React.ForwardRefRenderFunction<HistoryHandle, HistoryPro
                     { month: "long" }
                   )} ${startDate.getFullYear()}`}
                 description={""}
-                infoLeft={[leftTime, rightTime]}  
+                infoLeft={[leftTime, rightTime]}
                 onDelete={() => deleteEvent(id)} 
                 />
             )

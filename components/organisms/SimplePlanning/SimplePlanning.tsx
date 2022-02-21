@@ -176,6 +176,40 @@ export const SimplePlanning: FC<SimplePlanningProps> = ({ type = "ALL" }) => {
         );
   }, [startDate, endDate, type]);
 
+  const deleteInternalWork = (eventId : string) => {
+    if (type === Event.InternalWork) {
+      axios
+      .delete("/api/internalWork", {
+          params: {
+              id: eventId,
+          }
+      })
+      .then((res) => {
+          console.log(res);
+          if(res.status === 200) {
+            findInternalWorks();
+          }
+      })
+    }
+  }
+
+  const deleteUnavailability = (eventId : string) => {
+    if (type === Event.Unavailability) {
+      axios
+      .delete("/api/unavailability", {
+          params: {
+              id: eventId,
+          }
+      })
+      .then((res) => {
+          console.log(res);
+          if(res.status === 200) {
+            findUnavailabilities();
+          }
+      })
+    }
+  }
+
   const refreshData = useCallback(() => {
     if (refresh) {
       setRefresh(false);
@@ -211,15 +245,16 @@ export const SimplePlanning: FC<SimplePlanningProps> = ({ type = "ALL" }) => {
       <SimplePlanningSC>
         <MiniCalendar />
         <div className="title">Agenda du jour</div>
-        {dayEvents.internalWorks.map(({ duration, description }, i) => (
+        {dayEvents.internalWorks.map(({ id, duration, description }, i) => (
           <MiniEvent
             key={i}
             title={"Travail Interne"}
             description={description || "Sans description"}
             infoLeft={`${duration}h`}
+            onDelete={() => deleteInternalWork(id)}
           />
         ))}
-        {dayEvents.unavailabilities.map(({ startDate, endDate }, i) => {
+        {dayEvents.unavailabilities.map(({ id, startDate, endDate }, i) => {
           const leftTime = dayjs(startDate).format("HH:mm");
           const rightTime = dayjs(endDate).format("HH:mm");
           return (
@@ -232,6 +267,7 @@ export const SimplePlanning: FC<SimplePlanningProps> = ({ type = "ALL" }) => {
                 { month: "long" }
               )} ${startDate.getFullYear()}`}
               infoLeft={[leftTime, rightTime]}
+              onDelete={() => deleteUnavailability(id)}
             />
           );
         })}

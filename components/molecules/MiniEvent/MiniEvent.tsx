@@ -78,7 +78,7 @@ export type MiniEventProps = VariantProps<typeof MiniEventTitleSC> & {
   title: string;
   description: string;
   infoLeft: string | [string, string];
-  onDelete: () => void;
+  onDelete?: () => void;
 };
 
 export const MiniEvent: FC<MiniEventProps> = ({
@@ -111,7 +111,8 @@ export const MiniEvent: FC<MiniEventProps> = ({
         <div className="end">{endText}</div>
       </MiniEventTimeSC>
 
-      <MiniEventButtonsSC>
+      {onDelete &&
+        <MiniEventButtonsSC>
         <ActionIcon variant="default">
           <Pen20/>
         </ActionIcon>
@@ -119,7 +120,7 @@ export const MiniEvent: FC<MiniEventProps> = ({
           <TrashCan20 color="red"/>
         </ActionIcon>
       </MiniEventButtonsSC>
-
+      }
     </MiniEventSC>
   );
 };
