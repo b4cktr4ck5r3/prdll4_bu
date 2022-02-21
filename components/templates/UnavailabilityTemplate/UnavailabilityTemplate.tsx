@@ -23,12 +23,24 @@ export const UnavailabilityTemplate: FC = () => {
   const [refresh, setRefresh] = useState(false);
 
   type HistoryHandle = React.ElementRef<typeof History>;
-  const ref = React.useRef<HistoryHandle>(null);
+  const historyRef = React.useRef<HistoryHandle>(null);
+
+  type SimplePlanningHandle = React.ElementRef<typeof SimplePlanning>;
+  const simplePlanningRef = React.useRef<SimplePlanningHandle>(null);
 
   const onSubmit = () => {
-    if (ref.current)
-      ref.current.refresh();
+    if (historyRef.current)
+    historyRef.current.refresh();
   }
+
+  const onDeleteEvent = () => {
+    if (historyRef.current)
+    historyRef.current.refresh();
+
+    if (simplePlanningRef.current)
+    simplePlanningRef.current.refresh();
+  }
+
 
   return (
     <PlanningContext.Provider
@@ -36,9 +48,9 @@ export const UnavailabilityTemplate: FC = () => {
     >
       <DefaultLayout>
         <UnavailabilityTemplateSC>
-          <SimplePlanning type={Event.Unavailability} />
+          <SimplePlanning ref={simplePlanningRef} type={Event.Unavailability} onDeleteEvent={onDeleteEvent}/>
           <UnavailabilityForm onSubmit={onSubmit} />
-          <History ref={ref} type={Event.Unavailability} />
+          <History ref={historyRef} type={Event.Unavailability} onDeleteEvent={onDeleteEvent}/>
         </UnavailabilityTemplateSC>
       </DefaultLayout>
     </PlanningContext.Provider>

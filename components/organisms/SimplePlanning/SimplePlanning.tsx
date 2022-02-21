@@ -17,8 +17,8 @@ import {
 import { BooleanString, Preferences } from "@utils/user";
 import axios from "axios";
 import dayjs from "dayjs";
+import React from "react";
 import {
-  FC,
   useCallback,
   useContext,
   useEffect,
@@ -62,9 +62,27 @@ export const SimplePlanningSC = styled("div", BoxSC, {
 
 export type SimplePlanningProps = {
   type?: "ALL" | Event;
+  onDeleteEvent: () => void;
 };
 
-export const SimplePlanning: FC<SimplePlanningProps> = ({ type = "ALL" }) => {
+type SimplePlanningHandle = {
+  refresh: () => void,
+}
+
+const SimplePlanningComponent : React.ForwardRefRenderFunction<SimplePlanningHandle, SimplePlanningProps> = (
+  { type = "ALL", onDeleteEvent },
+  forwardedRef,
+  ) => {
+
+  React.useImperativeHandle(forwardedRef, () => ({
+    refresh() {
+      if (type === Event.InternalWork) {
+        findInternalWorks();
+      } else if (type === Event.Unavailability) {
+        findUnavailabilities();
+      }
+    }
+  }))
   const { refresh, setRefresh, synchronizedDate } = useContext(PlanningContext);
   const [syncCalendarForm] = useLocalStorageValue<BooleanString>({
     key: Preferences.SyncCalendarForm,
@@ -185,9 +203,9 @@ export const SimplePlanning: FC<SimplePlanningProps> = ({ type = "ALL" }) => {
           }
       })
       .then((res) => {
-          console.log(res);
           if(res.status === 200) {
             findInternalWorks();
+            onDeleteEvent();
           }
       })
     }
@@ -202,9 +220,8 @@ export const SimplePlanning: FC<SimplePlanningProps> = ({ type = "ALL" }) => {
           }
       })
       .then((res) => {
-          console.log(res);
           if(res.status === 200) {
-            findUnavailabilities();
+            onDeleteEvent();
           }
       })
     }
@@ -280,3 +297,5 @@ export const SimplePlanning: FC<SimplePlanningProps> = ({ type = "ALL" }) => {
     </CalendarContext.Provider>
   );
 };
+
+export const SimplePlanning = React.forwardRef(SimplePlanningComponent);

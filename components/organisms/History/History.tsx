@@ -5,7 +5,7 @@ import { Event, InternalWorkEventDTO, InternalWorkEventSimplified, Unavailabilit
 import axios from "axios";
 import dayjs from "dayjs";
 import React from "react";
-import { FC, useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 export const HistorySC = styled("div", BoxSC, {
     marginBottom: "$128",
@@ -26,7 +26,8 @@ export const HistorySC = styled("div", BoxSC, {
   });
 
 type HistoryProps = {
-    type: Event,
+    type: Event;
+    onDeleteEvent: () => void;
 }
 
 type HistoryHandle = {
@@ -34,14 +35,15 @@ type HistoryHandle = {
 }
 
 const HistoryComponent: React.ForwardRefRenderFunction<HistoryHandle, HistoryProps> = (
-    {type},
+    { type,  onDeleteEvent },
     forwardedRef,
     ) => {
-    React.useImperativeHandle(forwardedRef, ()=>({
+
+    React.useImperativeHandle(forwardedRef, () => ({
         refresh() {
             refreshData();
         }
-    }));
+    }))
 
     const [items, setItems] = useState<
     InternalWorkEventSimplified[] |  UnavailabilityEventSimplified[]
@@ -119,9 +121,8 @@ const HistoryComponent: React.ForwardRefRenderFunction<HistoryHandle, HistoryPro
             }
         })
         .then((res) => {
-            console.log(res);
             if(res.status === 200) {
-                refreshData();
+                onDeleteEvent();
             }
         })
     }

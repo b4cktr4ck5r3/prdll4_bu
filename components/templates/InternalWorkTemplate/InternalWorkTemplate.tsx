@@ -23,11 +23,22 @@ export const InternalWorkTemplate: FC = () => {
   const [refresh, setRefresh] = useState(false);
 
   type HistoryHandle = React.ElementRef<typeof History>;
-  const ref = React.useRef<HistoryHandle>(null);
+  const historyRef = React.useRef<HistoryHandle>(null);
+
+  type SimplePlanningHandle = React.ElementRef<typeof SimplePlanning>;
+  const simplePlanningRef = React.useRef<SimplePlanningHandle>(null);
 
   const onSubmit = () => {
-    if (ref.current)
-      ref.current.refresh();
+    if (historyRef.current)
+    historyRef.current.refresh();
+  }
+
+  const onDeleteEvent = () => {
+    if (historyRef.current)
+    historyRef.current.refresh();
+
+    if (simplePlanningRef.current)
+    simplePlanningRef.current.refresh();
   }
 
   return (
@@ -36,9 +47,9 @@ export const InternalWorkTemplate: FC = () => {
     >
       <DefaultLayout>
         <InternalWorkTemplateSC>
-          <SimplePlanning type={Event.InternalWork} />
+          <SimplePlanning ref={simplePlanningRef} type={Event.InternalWork} onDeleteEvent={onDeleteEvent}/>
           <InternalWorkForm onSubmit={onSubmit}/>
-          <History ref={ref} type={Event.InternalWork} />
+          <History ref={historyRef} type={Event.InternalWork} onDeleteEvent={onDeleteEvent}/>
         </InternalWorkTemplateSC>
       </DefaultLayout>
     </PlanningContext.Provider>
