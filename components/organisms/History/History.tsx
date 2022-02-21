@@ -102,18 +102,6 @@ const HistoryComponent: React.ForwardRefRenderFunction<HistoryHandle, HistoryPro
         }
     }, [findInternalWorks, findUnavailabilities, type]);
       
-    useEffect(() => {
-        if (type === Event.InternalWork) {
-            findInternalWorks();
-        }
-      }, [findInternalWorks, type]);
-    
-    useEffect(() => {
-        if (type === Event.Unavailability) {
-            findUnavailabilities();
-        }
-    }, [findUnavailabilities, type])
-
     useEffect(refreshData, [refreshData]);
 
     return(
