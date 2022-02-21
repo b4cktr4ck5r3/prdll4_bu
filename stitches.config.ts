@@ -257,7 +257,7 @@ export const globalStyles = globalCss({
     scrollBehavior: "smooth",
     scrollPaddingTop: "10px",
   },
-  ".mantine-date-picker-dropdownWrapper": {
+  ".mantine-date-picker-dropdownWrapper, .mantine-DatePicker-cell": {
     textAlign: "center",
   },
   body: {

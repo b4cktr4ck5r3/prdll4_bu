@@ -1,7 +1,6 @@
 import { MisuseOutline32, Save20 } from "@carbon/icons-react";
 import { BoxSC } from "@components/atoms";
 import { FormList } from "@components/molecules/FormList";
-import { InternalWorkTemplateSC } from "@components/templates";
 import { PlanningContext } from "@lib/contexts";
 import { NumberInput, Textarea } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
@@ -11,7 +10,6 @@ import { styled } from "@stitches";
 import { Event, InternalWorkItemForm } from "@utils/calendar";
 import { BooleanString, Preferences } from "@utils/user";
 import axios from "axios";
-import dayjs from "dayjs";
 import { FC, useCallback, useContext, useEffect } from "react";
 
 export const InternalWorkFormSC = styled("form", BoxSC, {
@@ -36,7 +34,7 @@ export const InternalWorkForm: FC<InternalWorkFormProps> = ({onSubmit}) => {
 
   const formNewIW = useForm({
     initialValues: {
-      date: new Date(),
+      date: new Date(new Date().setUTCHours(0, 0, 0, 0)),
       duration: 0,
       description: "",
     },
@@ -56,7 +54,7 @@ export const InternalWorkForm: FC<InternalWorkFormProps> = ({onSubmit}) => {
 
   const changeDate = useCallback(
     (date: Date) => {
-      formNewIW.setFieldValue("date", date);
+      formNewIW.setFieldValue("date", new Date(date.setUTCHours(0, 0, 0, 0)));
       setSynchronizedDate(date);
     },
     [formNewIW, setSynchronizedDate]
@@ -66,14 +64,15 @@ export const InternalWorkForm: FC<InternalWorkFormProps> = ({onSubmit}) => {
 
   const sendInternalWorks = useCallback(() => {
     axios
-      .post("/api/internalWork",
-      internalWorks.map((iw) => {
-        const date = dayjs(iw.date);
-        return {
-          ...iw,
-          date: date.add(date.utcOffset(), "m").toJSON(),
-        };
-      }))
+      .post(
+        "/api/internalWork",
+        internalWorks.map((iw) => {
+          return {
+            ...iw,
+            date: iw.date.toISOString(),
+          };
+        })
+      )
       .then(() => {
         setRefresh(true);
         onSubmit();
