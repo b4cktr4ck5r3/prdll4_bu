@@ -104,10 +104,32 @@ const HistoryComponent: React.ForwardRefRenderFunction<HistoryHandle, HistoryPro
       
     useEffect(refreshData, [refreshData]);
 
+    const deleteEvent = (eventId : string) => {
+        let url = "";
+        if (type === Event.InternalWork) {
+            url = "/api/internalWork";
+        } else if (type === Event.Unavailability) {
+            url = "/api/unavailability"
+        }
+
+        axios
+        .delete(url, {
+            params: {
+                id: eventId,
+            }
+        })
+        .then((res) => {
+            console.log(res);
+            if(res.status === 200) {
+                refreshData();
+            }
+        })
+    }
+
     return(
         <HistorySC>
             <div className="title">Historique</div>
-            {type === Event.InternalWork && (items as InternalWorkEventSimplified[]).map(({ date, duration }, i) => {
+            {type === Event.InternalWork && (items as InternalWorkEventSimplified[]).map(({ id, date, duration }, i) => {
             const dateObject = new Date(date.year, date.month, date.date);
             return (
                 <MiniEvent
@@ -118,11 +140,12 @@ const HistoryComponent: React.ForwardRefRenderFunction<HistoryHandle, HistoryPro
                   )} ${dateObject.getFullYear()}`}
                 description={""}
                 infoLeft={`${duration}h`}
+                onDelete={() => deleteEvent(id)}
                 />
             )
             })}
                 
-            {type === Event.Unavailability && (items as UnavailabilityEventSimplified[]).map(({ startDate, endDate }, i) => {
+            {type === Event.Unavailability && (items as UnavailabilityEventSimplified[]).map(({ id, startDate, endDate }, i) => {
             const leftTime = dayjs(startDate).format("HH:mm");
             const rightTime = dayjs(endDate).format("HH:mm");
             return (
@@ -134,7 +157,8 @@ const HistoryComponent: React.ForwardRefRenderFunction<HistoryHandle, HistoryPro
                     { month: "long" }
                   )} ${startDate.getFullYear()}`}
                 description={""}
-                infoLeft={[leftTime, rightTime]}            
+                infoLeft={[leftTime, rightTime]}  
+                onDelete={() => deleteEvent(id)} 
                 />
             )
             })}

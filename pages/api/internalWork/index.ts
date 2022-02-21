@@ -1,5 +1,6 @@
 import {
   CreateInternalWork,
+  DeleteInternalWork,
   FindInternalWork,
 } from "@lib/services/internalWork";
 import { NextApiHandler } from "next";
@@ -31,6 +32,8 @@ const BodyPostSchema = z.array(
   })
 );
 
+const QueryDeleteSchema = z.string();
+
 const handler: NextApiHandler = async (req, res) => {
   const { method } = req;
   const token = await getToken({
@@ -57,6 +60,16 @@ const handler: NextApiHandler = async (req, res) => {
             CreateInternalWork(userId, date, duration, description)
           )
         ).then((values) => values.every(Boolean));
+        res.json({
+          result: done,
+        });
+        break;
+      }
+    }
+    case "DELETE":{
+      if(userId) {
+        const internalWorkId = QueryDeleteSchema.parse(req.query.id);
+        const done = await DeleteInternalWork(internalWorkId);
         res.json({
           result: done,
         });

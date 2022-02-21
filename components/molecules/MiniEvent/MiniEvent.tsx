@@ -1,5 +1,17 @@
 import { styled, VariantProps } from "@stitches";
 import { FC, useMemo } from "react";
+import { Pen20, TrashCan20 } from "@carbon/icons-react";
+import { ActionIcon } from "@mantine/core";
+import axios from "axios";
+
+export const MiniEventButtonsSC = styled("div", {
+  display: "flex",
+  position: "absolute",
+  top:"50%",
+  right:0,
+  transform:"translateY(-50%)",
+  gap:"4px"
+})
 
 export const MiniEventTimeSC = styled("div", {
   position: "absolute",
@@ -66,6 +78,7 @@ export type MiniEventProps = VariantProps<typeof MiniEventTitleSC> & {
   title: string;
   description: string;
   infoLeft: string | [string, string];
+  onDelete: () => void;
 };
 
 export const MiniEvent: FC<MiniEventProps> = ({
@@ -73,6 +86,7 @@ export const MiniEvent: FC<MiniEventProps> = ({
   title,
   description,
   infoLeft,
+  onDelete
 }) => {
   const startText = useMemo(() => {
     if (Array.isArray(infoLeft)) return infoLeft[0];
@@ -91,10 +105,21 @@ export const MiniEvent: FC<MiniEventProps> = ({
         </span>
         <span className="event-name">{description}</span>
       </MiniEventTitleSC>
+      
       <MiniEventTimeSC>
         <div className="start">{startText}</div>
         <div className="end">{endText}</div>
       </MiniEventTimeSC>
+
+      <MiniEventButtonsSC>
+        <ActionIcon variant="default">
+          <Pen20/>
+        </ActionIcon>
+        <ActionIcon variant="default" onClick={onDelete}>
+          <TrashCan20 color="red"/>
+        </ActionIcon>
+      </MiniEventButtonsSC>
+
     </MiniEventSC>
   );
 };
