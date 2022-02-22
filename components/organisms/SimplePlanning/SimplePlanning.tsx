@@ -1,5 +1,7 @@
 import { BoxSC } from "@components/atoms";
 import { MiniCalendar, MiniEvent, MiniEventSC } from "@components/molecules";
+import { InternalWorkFormType } from "@data/form";
+import { UnavailabilityFormType } from "@data/form/unavailability";
 import { CalendarContext, PlanningContext } from "@lib/contexts";
 import { useLocalStorageValue } from "@mantine/hooks";
 import { styled } from "@stitches";
@@ -62,6 +64,7 @@ export const SimplePlanningSC = styled("div", BoxSC, {
 export type SimplePlanningProps = {
   type?: "ALL" | Event;
   onDeleteEvent: () => void;
+  onEditEvent: () => void;
 };
 
 type SimplePlanningHandle = {
@@ -71,7 +74,7 @@ type SimplePlanningHandle = {
 const SimplePlanningComponent: React.ForwardRefRenderFunction<
   SimplePlanningHandle,
   SimplePlanningProps
-> = ({ type = "ALL", onDeleteEvent }, forwardedRef) => {
+> = ({ type = "ALL", onDeleteEvent, onEditEvent }, forwardedRef) => {
   React.useImperativeHandle(forwardedRef, () => ({
     refresh() {
       if (type === Event.InternalWork) {
@@ -204,6 +207,18 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
     }
   };
 
+  const updateInternalWork = (eventId: string, data: InternalWorkFormType ) => {
+    if (type === Event.InternalWork) {
+      axios
+        .put("/api/internalWork", data, {
+          params: {
+            id: eventId,
+          },
+        })
+        .then(onEditEvent);
+    }
+  };
+
   const deleteUnavailability = (eventId: string) => {
     if (type === Event.Unavailability) {
       axios
@@ -213,6 +228,18 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
           },
         })
         .then(onDeleteEvent);
+    }
+  };
+
+  const updateUnavailability = (eventId: string, data: UnavailabilityFormType ) => {
+    if (type === Event.Unavailability) {
+      axios
+        .put("/api/unavailability", data, {
+          params: {
+            id: eventId,
+          },
+        })
+        .then(onEditEvent);
     }
   };
 
@@ -245,6 +272,8 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
             description={description || "Sans description"}
             infoLeft={`${duration}h`}
             onDelete={() => deleteInternalWork(id)}
+            onEdit={(data) => updateInternalWork(id, data as InternalWorkFormType)}
+            type={Event.InternalWork}
           />
         ))}
         {dayEvents.unavailabilities.map(({ id, startDate, endDate }, i) => {
@@ -261,6 +290,8 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
               )} ${startDate.getFullYear()}`}
               infoLeft={[leftTime, rightTime]}
               onDelete={() => deleteUnavailability(id)}
+              onEdit={(data) => updateUnavailability(id, data as UnavailabilityFormType)}
+              type={Event.Unavailability}
             />
           );
         })}

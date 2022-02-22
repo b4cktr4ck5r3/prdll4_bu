@@ -4,6 +4,7 @@ import { styled } from "@stitches/react";
 import { Event, InternalWorkEventDTO, InternalWorkEventSimplified, UnavailabilityEventDTO, UnavailabilityEventSimplified } from "@utils/calendar";
 import axios from "axios";
 import dayjs from "dayjs";
+import { CommonProviderOptions } from "next-auth/providers";
 import React, { useCallback, useEffect, useState } from "react";
 
 export const HistorySC = styled("div", BoxSC, {
@@ -27,6 +28,7 @@ export const HistorySC = styled("div", BoxSC, {
 type HistoryProps = {
     type: Event;
     onDeleteEvent: () => void;
+    onEditEvent: () => void;
 }
 
 type HistoryHandle = {
@@ -34,7 +36,7 @@ type HistoryHandle = {
 }
 
 const HistoryComponent: React.ForwardRefRenderFunction<HistoryHandle, HistoryProps> = (
-    { type,  onDeleteEvent },
+    { type,  onDeleteEvent, onEditEvent },
     forwardedRef,
     ) => {
 
@@ -122,6 +124,26 @@ const HistoryComponent: React.ForwardRefRenderFunction<HistoryHandle, HistoryPro
         .then(onDeleteEvent)
     }
 
+    const updateEvent = (eventId : string, data) => {
+        if (type === Event.InternalWork) {
+            axios
+            .put('/api/internalWork', data, {
+                params: {
+                    id: eventId,
+                }
+            })
+            .then(onEditEvent)
+        } else if (type === Event.Unavailability) {
+            axios
+            .put('/api/unavailability', data, {
+                params: {
+                    id: eventId,
+                }
+            })
+            .then(onEditEvent)
+        }
+    }
+
     return(
         <HistorySC>
             <div className="title">Historique</div>
@@ -137,6 +159,8 @@ const HistoryComponent: React.ForwardRefRenderFunction<HistoryHandle, HistoryPro
                 description={""}
                 infoLeft={`${duration}h`}
                 onDelete={() => deleteEvent(id)}
+                onEdit={(data) => updateEvent(id, data)}
+                type={type}
                 />
             )
             })}
@@ -154,7 +178,9 @@ const HistoryComponent: React.ForwardRefRenderFunction<HistoryHandle, HistoryPro
                   )} ${startDate.getFullYear()}`}
                 description={""}
                 infoLeft={[leftTime, rightTime]}
-                onDelete={() => deleteEvent(id)} 
+                onDelete={() => deleteEvent(id)}
+                onEdit={(data) => updateEvent(id, data)}
+                type={type}
                 />
             )
             })}
