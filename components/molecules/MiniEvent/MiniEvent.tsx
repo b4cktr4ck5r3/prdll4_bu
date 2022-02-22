@@ -1,8 +1,10 @@
 import { styled, VariantProps } from "@stitches";
 import { FC, useMemo } from "react";
 import { Pen20, TrashCan20 } from "@carbon/icons-react";
-import { ActionIcon } from "@mantine/core";
+import { ActionIcon, Text } from "@mantine/core";
 import axios from "axios";
+import { modalsContext } from "@mantine/modals/lib/context";
+import { useModals } from "@mantine/modals";
 
 export const MiniEventButtonsSC = styled("div", {
   display: "flex",
@@ -97,6 +99,25 @@ export const MiniEvent: FC<MiniEventProps> = ({
     else return null;
   }, [infoLeft]);
 
+  const modals = useModals();
+
+  const openConfirmModal = () => modals.openConfirmModal({
+    title: <Text weight={700}>Êtes-vous sûr de supprimer cet élément ?</Text>,
+    children: (
+      <Text size="sm">
+        ATTENTION ! La suppression est définitive, êtes vous sur de vouloir supprimer l'élément ?
+      </Text>
+    ),
+    labels: {
+      confirm: 'Supprimer', cancel: 'Annuler'
+    },
+    confirmProps: {
+      color: 'red',
+    },
+    onCancel: () => null,
+    onConfirm: onDelete,
+  });
+
   return (
     <MiniEventSC>
       <MiniEventTitleSC color={color}>
@@ -116,7 +137,7 @@ export const MiniEvent: FC<MiniEventProps> = ({
         <ActionIcon variant="default">
           <Pen20/>
         </ActionIcon>
-        <ActionIcon variant="default" onClick={onDelete}>
+        <ActionIcon variant="default" onClick={openConfirmModal}>
           <TrashCan20 color="red"/>
         </ActionIcon>
       </MiniEventButtonsSC>
