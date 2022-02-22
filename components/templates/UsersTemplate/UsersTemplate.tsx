@@ -137,8 +137,9 @@ export const UsersTemplate: FC = () => {
         </UsersBoxSC>
         <UsersBoxSC>
           <h2 className="title">Ajouter un utilisateur</h2>
-          <UserForm />
+          <UserForm onNew={searchUsers} />
         </UsersBoxSC>
+        <div style={{ marginBottom: "24px" }} />
         <Modal
           opened={Boolean(newPasswordInfo)}
           onClose={() => setNewPasswordInfo(null)}
@@ -148,7 +149,7 @@ export const UsersTemplate: FC = () => {
           <div>Utilisateur : {newPasswordInfo?.userName}</div>
           <div>Mot de passe temporaire: {newPasswordInfo?.newPassword}</div>
         </Modal>
-        <Modal
+        {/* <Modal
           opened={Boolean(newPasswordInfo)}
           onClose={() => setNewPasswordInfo(null)}
           title="Nouveau utilisateur"
@@ -156,7 +157,7 @@ export const UsersTemplate: FC = () => {
         >
           <div>Utilisateur : {newPasswordInfo?.userName}</div>
           <div>Mot de passe temporaire: {newPasswordInfo?.newPassword}</div>
-        </Modal>
+        </Modal> */}
       </UsersTemplateSC>
     </DefaultLayout>
   );

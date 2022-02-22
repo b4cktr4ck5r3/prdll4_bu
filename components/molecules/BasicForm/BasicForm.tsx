@@ -1,4 +1,4 @@
-import { NumberInput, Textarea } from "@mantine/core";
+import { NumberInput, Select, Textarea, TextInput } from "@mantine/core";
 import { DatePicker, TimeRangeInput } from "@mantine/dates";
 import { useForm } from "@mantine/hooks";
 import {
@@ -16,8 +16,9 @@ export type BasicFormProps<T = Record<string, unknown>> = {
   labels: { readonly [P in keyof T]?: string };
   typeInputs: {
     readonly [P in keyof T]?:
-      | { type: "TEXT" }
-      | { type: "TEXTAREA" }
+      | { type: "TEXT"; placeholder?: string }
+      | { type: "SELECT"; data: { label: string; value: string }[] }
+      | { type: "TEXTAREA"; placeholder?: string }
       | { type: "DATE"; minDate?: Date; maxDate?: Date }
       | {
           type: "NUMBER";
@@ -83,10 +84,35 @@ export const BasicForm: FC<BasicFormProps> = ({
             onChange={(value) => form.setFieldValue(key, value || 0)}
           />
         );
+      else if (typeInput?.type === "SELECT")
+        inputs.push(
+          <Select
+            key={key}
+            label={labels[key]}
+            data={typeInput.data}
+            error={form.errors[key]}
+            value={form.values[key] as string}
+            onChange={(value) => form.setFieldValue(key, value)}
+          />
+        );
       else if (typeInput?.type === "TEXTAREA")
         inputs.push(
           <Textarea
             key={key}
+            placeholder={typeInput?.placeholder}
+            label={labels[key]}
+            error={form.errors[key]}
+            value={form.values[key] as string}
+            onChange={(event) =>
+              form.setFieldValue(key, event.currentTarget.value)
+            }
+          />
+        );
+      else
+        inputs.push(
+          <TextInput
+            key={key}
+            placeholder={typeInput?.placeholder}
             label={labels[key]}
             error={form.errors[key]}
             value={form.values[key] as string}
