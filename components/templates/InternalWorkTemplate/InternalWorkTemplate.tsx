@@ -1,4 +1,4 @@
-import { TrashCan32 } from "@carbon/icons-react";
+import { TrashCan32, Pen32 } from "@carbon/icons-react";
 import { DefaultLayout } from "@components/layouts";
 import { History, InternalWorkForm, SimplePlanning } from "@components/organisms";
 import { PlanningContext } from "@lib/contexts";
@@ -51,15 +51,27 @@ export const InternalWorkTemplate: FC = () => {
     });
   }
 
+  const onEditEvent = () => {
+    refreshComponents();
+
+    notifications.showNotification({
+      color: "dark",
+      title: `Un élément a été modifié`,
+      message: "Modification d'un élément",
+      icon: <Pen32 />,
+      autoClose: 4000,
+    });
+  }
+
   return (
     <PlanningContext.Provider
       value={{ refresh, synchronizedDate, setRefresh, setSynchronizedDate }}
     >
       <DefaultLayout>
         <InternalWorkTemplateSC>
-          <SimplePlanning ref={simplePlanningRef} type={Event.InternalWork} onDeleteEvent={onDeleteEvent}/>
+          <SimplePlanning ref={simplePlanningRef} type={Event.InternalWork} onDeleteEvent={onDeleteEvent} onEditEvent={onEditEvent}/>
           <InternalWorkForm onSubmit={refreshComponents}/>
-          <History ref={historyRef} type={Event.InternalWork} onDeleteEvent={onDeleteEvent}/>
+          <History ref={historyRef} type={Event.InternalWork} onDeleteEvent={onDeleteEvent} onEditEvent={onEditEvent}/>
         </InternalWorkTemplateSC>
       </DefaultLayout>
     </PlanningContext.Provider>

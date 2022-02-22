@@ -1,10 +1,15 @@
 import { Pen20, TrashCan20 } from "@carbon/icons-react";
-import { ActionIcon, Text } from "@mantine/core";
+import { InternalWorkFormType, internalWorkInputs } from "@data/form";
+import { ActionIcon, Text, Button, Modal } from "@mantine/core";
+import { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 import { useModals } from "@mantine/modals";
 import { modalsContext } from "@mantine/modals/lib/context";
 import { styled, VariantProps } from "@stitches";
 import axios from "axios";
-import { FC, useMemo } from "react";
+import { FC, useMemo, useState } from "react";
+import { BasicForm, BasicFormProps } from "..";
+import { Event } from '@utils/calendar'
+import { UnavailabilityFormType, unavailabilityInputs } from "@data/form/unavailability";
 
 export const MiniEventButtonsSC = styled("div", {
   display: "flex",
@@ -77,10 +82,12 @@ export const MiniEventSC = styled("div", {
 });
 
 export type MiniEventProps = VariantProps<typeof MiniEventTitleSC> & {
+  type: Event;
   title: string;
   description: string;
   infoLeft: string | [string, string];
   onDelete?: () => void;
+  onEdit?: (data: InternalWorkFormType | UnavailabilityFormType) => void;
 };
 
 export const MiniEvent: FC<MiniEventProps> = ({
@@ -89,6 +96,8 @@ export const MiniEvent: FC<MiniEventProps> = ({
   description,
   infoLeft,
   onDelete,
+  onEdit = () => null,
+  type
 }) => {
   const startText = useMemo(() => {
     if (Array.isArray(infoLeft)) return infoLeft[0];
@@ -100,8 +109,21 @@ export const MiniEvent: FC<MiniEventProps> = ({
   }, [infoLeft]);
 
   const modals = useModals();
+  
+  const basicFormProps = useMemo<BasicFormProps>(() => {
+    if (type === Event.InternalWork) {
+      return internalWorkInputs();
+    } else if (type === Event.Unavailability) {
+      return unavailabilityInputs();
+    }
+    else return {
+      initialValues: {},
+      labels: {},
+      typeInputs: {}
+    }
+  }, [type]);
 
-  const openConfirmModal = () =>
+  const openConfirmDeleteModal = () =>
     modals.openConfirmModal({
       title: <Text weight={700}>Êtes-vous sûr de supprimer cet élément ?</Text>,
       children: (
@@ -122,6 +144,17 @@ export const MiniEvent: FC<MiniEventProps> = ({
       onConfirm: onDelete,
     });
 
+  const [formEvent, setFormEvent] = useState<UseForm<InternalWorkFormType | UnavailabilityFormType>>();
+const [openedEdit, setOpenedEdit] =useState(false);
+
+    const FormElement = useMemo(() => {
+      return (<BasicForm
+        {...basicFormProps}
+        setForm={(form: UseForm<InternalWorkFormType | UnavailabilityFormType>) => setFormEvent(form)}
+        />)
+        
+    }, [basicFormProps]);
+
   return (
     <MiniEventSC>
       <MiniEventTitleSC color={color}>
@@ -135,13 +168,29 @@ export const MiniEvent: FC<MiniEventProps> = ({
         <div className="start">{startText}</div>
         <div className="end">{endText}</div>
       </MiniEventTimeSC>
-
+      <Modal
+      opened={openedEdit}
+      onClose={() => setOpenedEdit(false)}
+      title="Modification d'un élément"
+      centered
+    >
+      <form onSubmit={formEvent?.onSubmit((data) => {
+        onEdit(data);
+        setOpenedEdit(false);
+      })}>{FormElement}<Button type="submit" color="orange">Modifier</Button>
+      <Button onClick={() => {
+        setOpenedEdit(false);
+        formEvent?.reset();
+      }}>Annuler</Button>
+  </form>
+  </Modal>
+      
       {onDelete && (
         <MiniEventButtonsSC>
-          <ActionIcon variant="default">
+          <ActionIcon variant="default" onClick={() => setOpenedEdit(true)}>
             <Pen20 />
           </ActionIcon>
-          <ActionIcon variant="default" onClick={openConfirmModal}>
+          <ActionIcon variant="default" onClick={openConfirmDeleteModal}>
             <TrashCan20 color="red" />
           </ActionIcon>
         </MiniEventButtonsSC>
