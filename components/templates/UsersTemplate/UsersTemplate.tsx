@@ -148,6 +148,15 @@ export const UsersTemplate: FC = () => {
           <div>Utilisateur : {newPasswordInfo?.userName}</div>
           <div>Mot de passe temporaire: {newPasswordInfo?.newPassword}</div>
         </Modal>
+        <Modal
+          opened={Boolean(newPasswordInfo)}
+          onClose={() => setNewPasswordInfo(null)}
+          title="Nouveau utilisateur"
+          centered
+        >
+          <div>Utilisateur : {newPasswordInfo?.userName}</div>
+          <div>Mot de passe temporaire: {newPasswordInfo?.newPassword}</div>
+        </Modal>
       </UsersTemplateSC>
     </DefaultLayout>
   );
