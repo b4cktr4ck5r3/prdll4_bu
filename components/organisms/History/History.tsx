@@ -134,13 +134,19 @@ const HistoryComponent: React.ForwardRefRenderFunction<HistoryHandle, HistoryPro
             })
             .then(onEditEvent)
         } else if (type === Event.Unavailability) {
+            //TODO: voir si on peut améliorer ce morceau de code
+            const bodyData = {
+                startDate: data.time[0],
+                endDate: data.time[1]
+            }
+
             axios
-            .put('/api/unavailability', data, {
-                params: {
-                    id: eventId,
-                }
+            .put("/api/unavailability", bodyData, {
+              params: {
+                id: eventId,
+              },
             })
-            .then(onEditEvent)
+            .then(onEditEvent);
         }
     }
 

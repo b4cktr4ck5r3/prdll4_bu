@@ -3,6 +3,8 @@ import {
   DeleteUnavailability,
   FindUnavailability,
 } from "@lib/services/unavailability";
+import UpdateUnavailability from "@lib/services/unavailability/UpdateUnavailability";
+import { ZodUnavailabilityItemForm } from "@utils/unavailability/unavailability";
 import { NextApiHandler } from "next";
 import { getToken } from "next-auth/jwt";
 import { z } from "zod";
@@ -31,7 +33,9 @@ const BodyPostSchema = z.array(
   })
 );
 
-const QueryDeleteSchema = z.object({
+const BodyPutSchema = ZodUnavailabilityItemForm
+
+const QueryIdSchema = z.object({
   id: z.string(),
 });
 
@@ -67,9 +71,21 @@ const handler: NextApiHandler = async (req, res) => {
         break;
       }
     }
+    case "PUT": {
+      if (userId) {
+        const { id } = QueryIdSchema.parse(req.query);
+        const updateData = BodyPutSchema.parse(req.body);
+        const done = await UpdateUnavailability(id, updateData);
+        res.json({
+          result: done,
+        });
+        break;
+      }
+    }
+
     case "DELETE": {
       if (userId) {
-        const { id: unavailabilityId } = QueryDeleteSchema.parse(req.query);
+        const { id: unavailabilityId } = QueryIdSchema.parse(req.query);
         const done = await DeleteUnavailability(unavailabilityId);
         res.json({
           result: done,

@@ -31,7 +31,6 @@ const BodyPostSchema = z.array(
 );
 const BodyPutSchema = ZodInternalWorkItemForm
 
-
 const QueryIdSchema = z.object({
   id: z.string(),
 });
@@ -72,7 +71,6 @@ const handler: NextApiHandler = async (req, res) => {
       if (userId) {
         const { id } = QueryIdSchema.parse(req.query);
         const updateData = BodyPutSchema.parse(req.body);
-        console.log(updateData);
         const done = await UpdateInternalWork(id, updateData);
         res.json({
           result: done,

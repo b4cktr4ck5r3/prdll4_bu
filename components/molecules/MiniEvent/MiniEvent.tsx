@@ -10,6 +10,8 @@ import { FC, useMemo, useState } from "react";
 import { BasicForm, BasicFormProps } from "..";
 import { Event } from '@utils/calendar'
 import { UnavailabilityFormType, unavailabilityInputs } from "@data/form/unavailability";
+import dayjs from "dayjs";
+import { date } from "zod";
 
 export const MiniEventButtonsSC = styled("div", {
   display: "flex",
@@ -112,9 +114,18 @@ export const MiniEvent: FC<MiniEventProps> = ({
   
   const basicFormProps = useMemo<BasicFormProps>(() => {
     if (type === Event.InternalWork) {
-      return internalWorkInputs();
+      return internalWorkInputs(
+        //TODO: récupérer les données de l'event
+        //date = title au format DD MMM YYYY
+        //duration: +(infoLeft as string).replace('h', '')
+        );
     } else if (type === Event.Unavailability) {
-      return unavailabilityInputs();
+      console.log(infoLeft);
+      return unavailabilityInputs(
+        //TODO: récupérer les données de l'event
+        //date = title au format DD MMMM YYYY
+        //time = infoLeft[0] et [1] au format HH
+        );
     }
     else return {
       initialValues: {},
@@ -175,10 +186,33 @@ const [openedEdit, setOpenedEdit] =useState(false);
       centered
     >
       <form onSubmit={formEvent?.onSubmit((data) => {
+        if (type === Event.Unavailability) {
+          const { date, time: [startDate, endDate] } = data as UnavailabilityFormType;
+
+          const start = dayjs(date)
+              .second(0)
+              .minute(startDate.getMinutes())
+              .hour(startDate.getHours());
+    
+          const end = dayjs(date)
+              .second(0)
+              .minute(endDate.getMinutes())
+              .hour(endDate.getHours());
+
+          data = {
+            date: date,
+            time: [
+              start.toDate(),
+              end.toDate()
+            ]
+          }
+        }
+
         onEdit(data);
         setOpenedEdit(false);
-      })}>{FormElement}<Button type="submit" color="orange">Modifier</Button>
-      <Button onClick={() => {
+      })}>{FormElement}
+      <Button mt="sm" type="submit" color="orange">Modifier</Button>
+      <Button mt="sm" onClick={() => {
         setOpenedEdit(false);
         formEvent?.reset();
       }}>Annuler</Button>
