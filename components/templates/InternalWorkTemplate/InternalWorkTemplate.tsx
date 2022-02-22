@@ -1,10 +1,11 @@
+import { TrashCan32 } from "@carbon/icons-react";
 import { DefaultLayout } from "@components/layouts";
 import { History, InternalWorkForm, SimplePlanning } from "@components/organisms";
 import { PlanningContext } from "@lib/contexts";
+import { useNotifications } from "@mantine/notifications";
 import { styled } from "@stitches";
 import { Event } from "@utils/calendar";
-import React from "react";
-import { FC, useState } from "react";
+import React, { FC, useCallback, useState } from "react";
 
 export const InternalWorkTemplateSC = styled("div", {
   display: "flex",
@@ -23,11 +24,31 @@ export const InternalWorkTemplate: FC = () => {
   const [refresh, setRefresh] = useState(false);
 
   type HistoryHandle = React.ElementRef<typeof History>;
-  const ref = React.useRef<HistoryHandle>(null);
+  const historyRef = React.useRef<HistoryHandle>(null);
 
-  const onSubmit = () => {
-    if (ref.current)
-      ref.current.refresh();
+  type SimplePlanningHandle = React.ElementRef<typeof SimplePlanning>;
+  const simplePlanningRef = React.useRef<SimplePlanningHandle>(null);
+
+  const refreshComponents = useCallback(() => {
+    if (historyRef.current)
+    historyRef.current.refresh();
+
+    if (simplePlanningRef.current)
+    simplePlanningRef.current.refresh();
+  }, []);
+
+  const notifications = useNotifications();
+
+  const onDeleteEvent = () => {
+    refreshComponents();
+
+    notifications.showNotification({
+      color: "dark",
+      title: `Un élément a été supprimé`,
+      message: "Suppression d'un élément",
+      icon: <TrashCan32 />,
+      autoClose: 4000,
+    });
   }
 
   return (
@@ -36,9 +57,9 @@ export const InternalWorkTemplate: FC = () => {
     >
       <DefaultLayout>
         <InternalWorkTemplateSC>
-          <SimplePlanning type={Event.InternalWork} />
-          <InternalWorkForm onSubmit={onSubmit}/>
-          <History ref={ref} type={Event.InternalWork} />
+          <SimplePlanning ref={simplePlanningRef} type={Event.InternalWork} onDeleteEvent={onDeleteEvent}/>
+          <InternalWorkForm onSubmit={refreshComponents}/>
+          <History ref={historyRef} type={Event.InternalWork} onDeleteEvent={onDeleteEvent}/>
         </InternalWorkTemplateSC>
       </DefaultLayout>
     </PlanningContext.Provider>

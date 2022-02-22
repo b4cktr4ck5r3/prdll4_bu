@@ -1,5 +1,6 @@
 import {
   CreateUnavailability,
+  DeleteUnavailability,
   FindUnavailability,
 } from "@lib/services/unavailability";
 import { NextApiHandler } from "next";
@@ -30,6 +31,10 @@ const BodyPostSchema = z.array(
   })
 );
 
+const QueryDeleteSchema = z.object({
+  id: z.string(),
+});
+
 const handler: NextApiHandler = async (req, res) => {
   const { method } = req;
   const token = await getToken({
@@ -56,6 +61,16 @@ const handler: NextApiHandler = async (req, res) => {
             CreateUnavailability(userId, startDate, endDate)
           )
         ).then((values) => values.every(Boolean));
+        res.json({
+          result: done,
+        });
+        break;
+      }
+    }
+    case "DELETE": {
+      if (userId) {
+        const { id: unavailabilityId } = QueryDeleteSchema.parse(req.query);
+        const done = await DeleteUnavailability(unavailabilityId);
         res.json({
           result: done,
         });

@@ -1,3 +1,4 @@
+import { ModalsProvider } from "@mantine/modals";
 import { NotificationsProvider } from "@mantine/notifications";
 import { MantineProvider } from "@mantine/styles";
 import { globalStyles, theme } from "@stitches";
@@ -29,9 +30,11 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
             headings: { fontFamily: theme.fonts.main.value },
           }}
         >
-          <NotificationsProvider autoClose={4000}>
-            <Component {...pageProps} />
-          </NotificationsProvider>
+          <ModalsProvider>
+            <NotificationsProvider autoClose={4000}>
+              <Component {...pageProps} />
+            </NotificationsProvider>
+          </ModalsProvider>
         </MantineProvider>
       </SessionProvider>
     </>

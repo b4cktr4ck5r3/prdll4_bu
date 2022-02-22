@@ -1,11 +1,10 @@
 import { BoxSC } from "@components/atoms";
 import { MiniEvent } from "@components/molecules";
 import { styled } from "@stitches/react";
-import { Event, InternalWorkEventDTO, InternalWorkEventSimplified, UnavailabilityEventDTO, UnavailabilityEventSimplified} from "@utils/calendar"
+import { Event, InternalWorkEventDTO, InternalWorkEventSimplified, UnavailabilityEventDTO, UnavailabilityEventSimplified } from "@utils/calendar";
 import axios from "axios";
 import dayjs from "dayjs";
-import React from "react";
-import { FC, useCallback, useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react";
 
 export const HistorySC = styled("div", BoxSC, {
     marginBottom: "$128",
@@ -26,7 +25,8 @@ export const HistorySC = styled("div", BoxSC, {
   });
 
 type HistoryProps = {
-    type: Event,
+    type: Event;
+    onDeleteEvent: () => void;
 }
 
 type HistoryHandle = {
@@ -34,14 +34,15 @@ type HistoryHandle = {
 }
 
 const HistoryComponent: React.ForwardRefRenderFunction<HistoryHandle, HistoryProps> = (
-    {type},
+    { type,  onDeleteEvent },
     forwardedRef,
     ) => {
-    React.useImperativeHandle(forwardedRef, ()=>({
+
+    React.useImperativeHandle(forwardedRef, () => ({
         refresh() {
             refreshData();
         }
-    }));
+    }))
 
     const [items, setItems] = useState<
     InternalWorkEventSimplified[] |  UnavailabilityEventSimplified[]
@@ -104,10 +105,27 @@ const HistoryComponent: React.ForwardRefRenderFunction<HistoryHandle, HistoryPro
       
     useEffect(refreshData, [refreshData]);
 
+    const deleteEvent = (eventId : string) => {
+        let url = "";
+        if (type === Event.InternalWork) {
+            url = "/api/internalWork";
+        } else if (type === Event.Unavailability) {
+            url = "/api/unavailability"
+        }
+
+        axios
+        .delete(url, {
+            params: {
+                id: eventId,
+            }
+        })
+        .then(onDeleteEvent)
+    }
+
     return(
         <HistorySC>
             <div className="title">Historique</div>
-            {type === Event.InternalWork && (items as InternalWorkEventSimplified[]).map(({ date, duration }, i) => {
+            {type === Event.InternalWork && (items as InternalWorkEventSimplified[]).map(({ id, date, duration }, i) => {
             const dateObject = new Date(date.year, date.month, date.date);
             return (
                 <MiniEvent
@@ -118,11 +136,12 @@ const HistoryComponent: React.ForwardRefRenderFunction<HistoryHandle, HistoryPro
                   )} ${dateObject.getFullYear()}`}
                 description={""}
                 infoLeft={`${duration}h`}
+                onDelete={() => deleteEvent(id)}
                 />
             )
             })}
                 
-            {type === Event.Unavailability && (items as UnavailabilityEventSimplified[]).map(({ startDate, endDate }, i) => {
+            {type === Event.Unavailability && (items as UnavailabilityEventSimplified[]).map(({ id, startDate, endDate }, i) => {
             const leftTime = dayjs(startDate).format("HH:mm");
             const rightTime = dayjs(endDate).format("HH:mm");
             return (
@@ -134,7 +153,8 @@ const HistoryComponent: React.ForwardRefRenderFunction<HistoryHandle, HistoryPro
                     { month: "long" }
                   )} ${startDate.getFullYear()}`}
                 description={""}
-                infoLeft={[leftTime, rightTime]}            
+                infoLeft={[leftTime, rightTime]}
+                onDelete={() => deleteEvent(id)} 
                 />
             )
             })}

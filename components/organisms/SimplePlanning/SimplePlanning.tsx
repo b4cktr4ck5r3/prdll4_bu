@@ -12,18 +12,17 @@ import {
   InternalWorkEventDTO,
   InternalWorkEventSimplified,
   UnavailabilityEventDTO,
-  UnavailabilityEventSimplified,
+  UnavailabilityEventSimplified
 } from "@utils/calendar";
 import { BooleanString, Preferences } from "@utils/user";
 import axios from "axios";
 import dayjs from "dayjs";
-import {
-  FC,
+import React, {
   useCallback,
   useContext,
   useEffect,
   useMemo,
-  useState,
+  useState
 } from "react";
 
 export const SimplePlanningNoEventSC = styled("div", {
@@ -62,10 +61,27 @@ export const SimplePlanningSC = styled("div", BoxSC, {
 
 export type SimplePlanningProps = {
   type?: "ALL" | Event;
+  onDeleteEvent: () => void;
 };
 
-export const SimplePlanning: FC<SimplePlanningProps> = ({ type = "ALL" }) => {
-  const { refresh, setRefresh, synchronizedDate } = useContext(PlanningContext);
+type SimplePlanningHandle = {
+  refresh: () => void;
+};
+
+const SimplePlanningComponent: React.ForwardRefRenderFunction<
+  SimplePlanningHandle,
+  SimplePlanningProps
+> = ({ type = "ALL", onDeleteEvent }, forwardedRef) => {
+  React.useImperativeHandle(forwardedRef, () => ({
+    refresh() {
+      if (type === Event.InternalWork) {
+        findInternalWorks();
+      } else if (type === Event.Unavailability) {
+        findUnavailabilities();
+      }
+    },
+  }));
+  const { synchronizedDate } = useContext(PlanningContext);
   const [syncCalendarForm] = useLocalStorageValue<BooleanString>({
     key: Preferences.SyncCalendarForm,
     defaultValue: "false",
@@ -176,22 +192,34 @@ export const SimplePlanning: FC<SimplePlanningProps> = ({ type = "ALL" }) => {
         );
   }, [startDate, endDate, type]);
 
-  const refreshData = useCallback(() => {
-    if (refresh) {
-      setRefresh(false);
-      findInternalWorks();
-      findUnavailabilities();
+  const deleteInternalWork = (eventId: string) => {
+    if (type === Event.InternalWork) {
+      axios
+        .delete("/api/internalWork", {
+          params: {
+            id: eventId,
+          },
+        })
+        .then(onDeleteEvent);
     }
-  }, [refresh, setRefresh, findInternalWorks, findUnavailabilities]);
+  };
+
+  const deleteUnavailability = (eventId: string) => {
+    if (type === Event.Unavailability) {
+      axios
+        .delete("/api/unavailability", {
+          params: {
+            id: eventId,
+          },
+        })
+        .then(onDeleteEvent);
+    }
+  };
 
   useEffect(() => {
     findInternalWorks();
     findUnavailabilities();
   }, [findInternalWorks, findUnavailabilities]);
-
-  useEffect(() => {
-    refreshData();
-  }, [refreshData]);
 
   useEffect(() => {
     if (syncCalendarForm === "true" && synchronizedDate)
@@ -205,21 +233,21 @@ export const SimplePlanning: FC<SimplePlanningProps> = ({ type = "ALL" }) => {
         daysInMonth,
         dateSelected,
         setDateSelected,
-        refreshData,
       }}
     >
       <SimplePlanningSC>
         <MiniCalendar />
         <div className="title">Agenda du jour</div>
-        {dayEvents.internalWorks.map(({ duration, description }, i) => (
+        {dayEvents.internalWorks.map(({ id, duration, description }, i) => (
           <MiniEvent
             key={i}
             title={"Travail Interne"}
             description={description || "Sans description"}
             infoLeft={`${duration}h`}
+            onDelete={() => deleteInternalWork(id)}
           />
         ))}
-        {dayEvents.unavailabilities.map(({ startDate, endDate }, i) => {
+        {dayEvents.unavailabilities.map(({ id, startDate, endDate }, i) => {
           const leftTime = dayjs(startDate).format("HH:mm");
           const rightTime = dayjs(endDate).format("HH:mm");
           return (
@@ -232,6 +260,7 @@ export const SimplePlanning: FC<SimplePlanningProps> = ({ type = "ALL" }) => {
                 { month: "long" }
               )} ${startDate.getFullYear()}`}
               infoLeft={[leftTime, rightTime]}
+              onDelete={() => deleteUnavailability(id)}
             />
           );
         })}
@@ -244,3 +273,5 @@ export const SimplePlanning: FC<SimplePlanningProps> = ({ type = "ALL" }) => {
     </CalendarContext.Provider>
   );
 };
+
+export const SimplePlanning = React.forwardRef(SimplePlanningComponent);

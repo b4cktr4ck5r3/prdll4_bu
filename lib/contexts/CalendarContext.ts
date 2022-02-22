@@ -6,7 +6,6 @@ export type CalendarContextProps = {
   dateSelected: Date;
   setDateSelected: Dispatch<SetStateAction<Date>>;
   daysInMonth: DateSimplified[][];
-  refreshData: () => void;
 };
 
 export const CalendarContext = createContext<CalendarContextProps>({
@@ -18,5 +17,4 @@ export const CalendarContext = createContext<CalendarContextProps>({
   daysInMonth: [],
   dateSelected: new Date(),
   setDateSelected: () => null,
-  refreshData: () => null,
 });

@@ -1,10 +1,11 @@
+import { TrashCan32 } from "@carbon/icons-react";
 import { DefaultLayout } from "@components/layouts";
-import { SimplePlanning, UnavailabilityForm, History } from "@components/organisms";
+import { History, SimplePlanning, UnavailabilityForm } from "@components/organisms";
 import { PlanningContext } from "@lib/contexts";
+import { useNotifications } from "@mantine/notifications";
 import { styled } from "@stitches";
 import { Event } from "@utils/calendar";
-import React from "react";
-import { FC, useState } from "react";
+import React, { FC, useCallback, useState } from "react";
 
 export const UnavailabilityTemplateSC = styled("div", {
   display: "flex",
@@ -23,12 +24,33 @@ export const UnavailabilityTemplate: FC = () => {
   const [refresh, setRefresh] = useState(false);
 
   type HistoryHandle = React.ElementRef<typeof History>;
-  const ref = React.useRef<HistoryHandle>(null);
+  const historyRef = React.useRef<HistoryHandle>(null);
 
-  const onSubmit = () => {
-    if (ref.current)
-      ref.current.refresh();
+  type SimplePlanningHandle = React.ElementRef<typeof SimplePlanning>;
+  const simplePlanningRef = React.useRef<SimplePlanningHandle>(null);
+
+  const refreshComponents = useCallback(() => {
+    if (historyRef.current)
+    historyRef.current.refresh();
+
+    if (simplePlanningRef.current)
+    simplePlanningRef.current.refresh();
+  }, []);
+
+  const notifications = useNotifications();
+
+  const onDeleteEvent = () => {
+    refreshComponents();
+
+    notifications.showNotification({
+      color: "dark",
+      title: `Un élément a été supprimé`,
+      message: "Suppression d'un élément",
+      icon: <TrashCan32 />,
+      autoClose: 4000,
+    });
   }
+
 
   return (
     <PlanningContext.Provider
@@ -36,9 +58,9 @@ export const UnavailabilityTemplate: FC = () => {
     >
       <DefaultLayout>
         <UnavailabilityTemplateSC>
-          <SimplePlanning type={Event.Unavailability} />
-          <UnavailabilityForm onSubmit={onSubmit} />
-          <History ref={ref} type={Event.Unavailability} />
+          <SimplePlanning ref={simplePlanningRef} type={Event.Unavailability} onDeleteEvent={onDeleteEvent}/>
+          <UnavailabilityForm onSubmit={refreshComponents} />
+          <History ref={historyRef} type={Event.Unavailability} onDeleteEvent={onDeleteEvent}/>
         </UnavailabilityTemplateSC>
       </DefaultLayout>
     </PlanningContext.Provider>
