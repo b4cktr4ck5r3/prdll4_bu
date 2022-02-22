@@ -6,7 +6,6 @@ const UpdateInternalWork = z
   .function()
   .args(z.string(), ZodInternalWorkItemForm)
   .implement(async (id, data) => {
-    console.log(data);
     return prisma.internalWork
       .update({
           data: data,

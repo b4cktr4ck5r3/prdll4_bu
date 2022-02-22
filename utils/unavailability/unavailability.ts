@@ -6,6 +6,6 @@ export type UnavailabilityItemForm = {
 };
 
   export const ZodUnavailabilityItemForm = z.object({
-    startDate: z.date(),
-    endDate: z.date()
-  })
+    startDate: z.date().or(z.string().transform((value) => new Date(value))),
+    endDate: z.date().or(z.string().transform((value) => new Date(value)))
+})
