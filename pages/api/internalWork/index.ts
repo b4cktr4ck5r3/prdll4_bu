@@ -32,7 +32,9 @@ const BodyPostSchema = z.array(
   })
 );
 
-const QueryDeleteSchema = z.string();
+const QueryDeleteSchema = z.object({
+  id: z.string(),
+});
 
 const handler: NextApiHandler = async (req, res) => {
   const { method } = req;
@@ -66,9 +68,9 @@ const handler: NextApiHandler = async (req, res) => {
         break;
       }
     }
-    case "DELETE":{
-      if(userId) {
-        const internalWorkId = QueryDeleteSchema.parse(req.query.id);
+    case "DELETE": {
+      if (userId) {
+        const { id: internalWorkId } = QueryDeleteSchema.parse(req.query);
         const done = await DeleteInternalWork(internalWorkId);
         res.json({
           result: done,

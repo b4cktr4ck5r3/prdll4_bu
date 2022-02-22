@@ -31,7 +31,9 @@ const BodyPostSchema = z.array(
   })
 );
 
-const QueryDeleteSchema = z.string();
+const QueryDeleteSchema = z.object({
+  id: z.string(),
+});
 
 const handler: NextApiHandler = async (req, res) => {
   const { method } = req;
@@ -65,10 +67,9 @@ const handler: NextApiHandler = async (req, res) => {
         break;
       }
     }
-
-    case "DELETE":{
-      if(userId) {
-        const unavailabilityId = QueryDeleteSchema.parse(req.query.id);
+    case "DELETE": {
+      if (userId) {
+        const { id: unavailabilityId } = QueryDeleteSchema.parse(req.query);
         const done = await DeleteUnavailability(unavailabilityId);
         res.json({
           result: done,
@@ -76,7 +77,6 @@ const handler: NextApiHandler = async (req, res) => {
         break;
       }
     }
-
     default: {
       res.json({
         result: new Date().toISOString(),

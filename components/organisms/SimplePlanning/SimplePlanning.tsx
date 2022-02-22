@@ -12,18 +12,17 @@ import {
   InternalWorkEventDTO,
   InternalWorkEventSimplified,
   UnavailabilityEventDTO,
-  UnavailabilityEventSimplified,
+  UnavailabilityEventSimplified
 } from "@utils/calendar";
 import { BooleanString, Preferences } from "@utils/user";
 import axios from "axios";
 import dayjs from "dayjs";
-import React from "react";
-import {
+import React, {
   useCallback,
   useContext,
   useEffect,
   useMemo,
-  useState,
+  useState
 } from "react";
 
 export const SimplePlanningNoEventSC = styled("div", {
@@ -66,14 +65,13 @@ export type SimplePlanningProps = {
 };
 
 type SimplePlanningHandle = {
-  refresh: () => void,
-}
+  refresh: () => void;
+};
 
-const SimplePlanningComponent : React.ForwardRefRenderFunction<SimplePlanningHandle, SimplePlanningProps> = (
-  { type = "ALL", onDeleteEvent },
-  forwardedRef,
-  ) => {
-
+const SimplePlanningComponent: React.ForwardRefRenderFunction<
+  SimplePlanningHandle,
+  SimplePlanningProps
+> = ({ type = "ALL", onDeleteEvent }, forwardedRef) => {
   React.useImperativeHandle(forwardedRef, () => ({
     refresh() {
       if (type === Event.InternalWork) {
@@ -81,9 +79,9 @@ const SimplePlanningComponent : React.ForwardRefRenderFunction<SimplePlanningHan
       } else if (type === Event.Unavailability) {
         findUnavailabilities();
       }
-    }
-  }))
-  const { refresh, setRefresh, synchronizedDate } = useContext(PlanningContext);
+    },
+  }));
+  const { synchronizedDate } = useContext(PlanningContext);
   const [syncCalendarForm] = useLocalStorageValue<BooleanString>({
     key: Preferences.SyncCalendarForm,
     defaultValue: "false",
@@ -194,55 +192,34 @@ const SimplePlanningComponent : React.ForwardRefRenderFunction<SimplePlanningHan
         );
   }, [startDate, endDate, type]);
 
-  const deleteInternalWork = (eventId : string) => {
+  const deleteInternalWork = (eventId: string) => {
     if (type === Event.InternalWork) {
       axios
-      .delete("/api/internalWork", {
+        .delete("/api/internalWork", {
           params: {
-              id: eventId,
-          }
-      })
-      .then((res) => {
-          if(res.status === 200) {
-            findInternalWorks();
-            onDeleteEvent();
-          }
-      })
+            id: eventId,
+          },
+        })
+        .then(onDeleteEvent);
     }
-  }
+  };
 
-  const deleteUnavailability = (eventId : string) => {
+  const deleteUnavailability = (eventId: string) => {
     if (type === Event.Unavailability) {
       axios
-      .delete("/api/unavailability", {
+        .delete("/api/unavailability", {
           params: {
-              id: eventId,
-          }
-      })
-      .then((res) => {
-          if(res.status === 200) {
-            onDeleteEvent();
-          }
-      })
+            id: eventId,
+          },
+        })
+        .then(onDeleteEvent);
     }
-  }
-
-  const refreshData = useCallback(() => {
-    if (refresh) {
-      setRefresh(false);
-      findInternalWorks();
-      findUnavailabilities();
-    }
-  }, [refresh, setRefresh, findInternalWorks, findUnavailabilities]);
+  };
 
   useEffect(() => {
     findInternalWorks();
     findUnavailabilities();
   }, [findInternalWorks, findUnavailabilities]);
-
-  useEffect(() => {
-    refreshData();
-  }, [refreshData]);
 
   useEffect(() => {
     if (syncCalendarForm === "true" && synchronizedDate)
@@ -256,7 +233,6 @@ const SimplePlanningComponent : React.ForwardRefRenderFunction<SimplePlanningHan
         daysInMonth,
         dateSelected,
         setDateSelected,
-        refreshData,
       }}
     >
       <SimplePlanningSC>

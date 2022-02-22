@@ -1,19 +1,19 @@
-import { styled, VariantProps } from "@stitches";
-import { FC, useMemo } from "react";
 import { Pen20, TrashCan20 } from "@carbon/icons-react";
 import { ActionIcon, Text } from "@mantine/core";
-import axios from "axios";
-import { modalsContext } from "@mantine/modals/lib/context";
 import { useModals } from "@mantine/modals";
+import { modalsContext } from "@mantine/modals/lib/context";
+import { styled, VariantProps } from "@stitches";
+import axios from "axios";
+import { FC, useMemo } from "react";
 
 export const MiniEventButtonsSC = styled("div", {
   display: "flex",
   position: "absolute",
-  top:"50%",
-  right:0,
-  transform:"translateY(-50%)",
-  gap:"4px"
-})
+  top: "50%",
+  right: 0,
+  transform: "translateY(-50%)",
+  gap: "4px",
+});
 
 export const MiniEventTimeSC = styled("div", {
   position: "absolute",
@@ -88,7 +88,7 @@ export const MiniEvent: FC<MiniEventProps> = ({
   title,
   description,
   infoLeft,
-  onDelete
+  onDelete,
 }) => {
   const startText = useMemo(() => {
     if (Array.isArray(infoLeft)) return infoLeft[0];
@@ -101,22 +101,26 @@ export const MiniEvent: FC<MiniEventProps> = ({
 
   const modals = useModals();
 
-  const openConfirmModal = () => modals.openConfirmModal({
-    title: <Text weight={700}>Êtes-vous sûr de supprimer cet élément ?</Text>,
-    children: (
-      <Text size="sm">
-        ATTENTION ! La suppression est définitive, êtes vous sur de vouloir supprimer l'élément ?
-      </Text>
-    ),
-    labels: {
-      confirm: 'Supprimer', cancel: 'Annuler'
-    },
-    confirmProps: {
-      color: 'red',
-    },
-    onCancel: () => null,
-    onConfirm: onDelete,
-  });
+  const openConfirmModal = () =>
+    modals.openConfirmModal({
+      title: <Text weight={700}>Êtes-vous sûr de supprimer cet élément ?</Text>,
+      children: (
+        <Text size="sm">
+          {
+            "ATTENTION ! La suppression est définitive, êtes vous sur de vouloir supprimer l'élément ?"
+          }
+        </Text>
+      ),
+      labels: {
+        confirm: "Supprimer",
+        cancel: "Annuler",
+      },
+      confirmProps: {
+        color: "red",
+      },
+      onCancel: () => null,
+      onConfirm: onDelete,
+    });
 
   return (
     <MiniEventSC>
@@ -126,22 +130,22 @@ export const MiniEvent: FC<MiniEventProps> = ({
         </span>
         <span className="event-name">{description}</span>
       </MiniEventTitleSC>
-      
+
       <MiniEventTimeSC>
         <div className="start">{startText}</div>
         <div className="end">{endText}</div>
       </MiniEventTimeSC>
 
-      {onDelete &&
+      {onDelete && (
         <MiniEventButtonsSC>
-        <ActionIcon variant="default">
-          <Pen20/>
-        </ActionIcon>
-        <ActionIcon variant="default" onClick={openConfirmModal}>
-          <TrashCan20 color="red"/>
-        </ActionIcon>
-      </MiniEventButtonsSC>
-      }
+          <ActionIcon variant="default">
+            <Pen20 />
+          </ActionIcon>
+          <ActionIcon variant="default" onClick={openConfirmModal}>
+            <TrashCan20 color="red" />
+          </ActionIcon>
+        </MiniEventButtonsSC>
+      )}
     </MiniEventSC>
   );
 };

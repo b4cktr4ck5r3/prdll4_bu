@@ -1,11 +1,10 @@
 import { BoxSC } from "@components/atoms";
 import { MiniEvent } from "@components/molecules";
 import { styled } from "@stitches/react";
-import { Event, InternalWorkEventDTO, InternalWorkEventSimplified, UnavailabilityEventDTO, UnavailabilityEventSimplified} from "@utils/calendar"
+import { Event, InternalWorkEventDTO, InternalWorkEventSimplified, UnavailabilityEventDTO, UnavailabilityEventSimplified } from "@utils/calendar";
 import axios from "axios";
 import dayjs from "dayjs";
-import React from "react";
-import { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react";
 
 export const HistorySC = styled("div", BoxSC, {
     marginBottom: "$128",
@@ -120,11 +119,7 @@ const HistoryComponent: React.ForwardRefRenderFunction<HistoryHandle, HistoryPro
                 id: eventId,
             }
         })
-        .then((res) => {
-            if(res.status === 200) {
-                onDeleteEvent();
-            }
-        })
+        .then(onDeleteEvent)
     }
 
     return(

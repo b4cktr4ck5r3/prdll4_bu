@@ -1,12 +1,11 @@
 import { TrashCan32 } from "@carbon/icons-react";
 import { DefaultLayout } from "@components/layouts";
-import { SimplePlanning, UnavailabilityForm, History } from "@components/organisms";
+import { History, SimplePlanning, UnavailabilityForm } from "@components/organisms";
 import { PlanningContext } from "@lib/contexts";
 import { useNotifications } from "@mantine/notifications";
 import { styled } from "@stitches";
 import { Event } from "@utils/calendar";
-import React from "react";
-import { FC, useState } from "react";
+import React, { FC, useCallback, useState } from "react";
 
 export const UnavailabilityTemplateSC = styled("div", {
   display: "flex",
@@ -30,19 +29,18 @@ export const UnavailabilityTemplate: FC = () => {
   type SimplePlanningHandle = React.ElementRef<typeof SimplePlanning>;
   const simplePlanningRef = React.useRef<SimplePlanningHandle>(null);
 
-  const onSubmit = () => {
-    if (historyRef.current)
-    historyRef.current.refresh();
-  }
-
-  const notifications = useNotifications();
-
-  const onDeleteEvent = () => {
+  const refreshComponents = useCallback(() => {
     if (historyRef.current)
     historyRef.current.refresh();
 
     if (simplePlanningRef.current)
     simplePlanningRef.current.refresh();
+  }, []);
+
+  const notifications = useNotifications();
+
+  const onDeleteEvent = () => {
+    refreshComponents();
 
     notifications.showNotification({
       color: "dark",
@@ -61,7 +59,7 @@ export const UnavailabilityTemplate: FC = () => {
       <DefaultLayout>
         <UnavailabilityTemplateSC>
           <SimplePlanning ref={simplePlanningRef} type={Event.Unavailability} onDeleteEvent={onDeleteEvent}/>
-          <UnavailabilityForm onSubmit={onSubmit} />
+          <UnavailabilityForm onSubmit={refreshComponents} />
           <History ref={historyRef} type={Event.Unavailability} onDeleteEvent={onDeleteEvent}/>
         </UnavailabilityTemplateSC>
       </DefaultLayout>

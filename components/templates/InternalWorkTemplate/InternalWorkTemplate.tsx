@@ -5,8 +5,7 @@ import { PlanningContext } from "@lib/contexts";
 import { useNotifications } from "@mantine/notifications";
 import { styled } from "@stitches";
 import { Event } from "@utils/calendar";
-import React from "react";
-import { FC, useState } from "react";
+import React, { FC, useCallback, useState } from "react";
 
 export const InternalWorkTemplateSC = styled("div", {
   display: "flex",
@@ -30,19 +29,18 @@ export const InternalWorkTemplate: FC = () => {
   type SimplePlanningHandle = React.ElementRef<typeof SimplePlanning>;
   const simplePlanningRef = React.useRef<SimplePlanningHandle>(null);
 
-  const onSubmit = () => {
-    if (historyRef.current)
-    historyRef.current.refresh();
-  }
-  
-  const notifications = useNotifications();
-
-  const onDeleteEvent = () => {
+  const refreshComponents = useCallback(() => {
     if (historyRef.current)
     historyRef.current.refresh();
 
     if (simplePlanningRef.current)
     simplePlanningRef.current.refresh();
+  }, []);
+
+  const notifications = useNotifications();
+
+  const onDeleteEvent = () => {
+    refreshComponents();
 
     notifications.showNotification({
       color: "dark",
@@ -60,7 +58,7 @@ export const InternalWorkTemplate: FC = () => {
       <DefaultLayout>
         <InternalWorkTemplateSC>
           <SimplePlanning ref={simplePlanningRef} type={Event.InternalWork} onDeleteEvent={onDeleteEvent}/>
-          <InternalWorkForm onSubmit={onSubmit}/>
+          <InternalWorkForm onSubmit={refreshComponents}/>
           <History ref={historyRef} type={Event.InternalWork} onDeleteEvent={onDeleteEvent}/>
         </InternalWorkTemplateSC>
       </DefaultLayout>
