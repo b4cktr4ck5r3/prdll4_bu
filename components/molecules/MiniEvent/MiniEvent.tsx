@@ -8,7 +8,7 @@ import { styled, VariantProps } from "@stitches";
 import axios from "axios";
 import { FC, useMemo, useState } from "react";
 import { BasicForm, BasicFormProps } from "..";
-import { Event } from '@utils/calendar'
+import { Event, InternalWorkEventSimplified, UnavailabilityEventSimplified } from '@utils/calendar'
 import { UnavailabilityFormType, unavailabilityInputs } from "@data/form/unavailability";
 import dayjs from "dayjs";
 import { date } from "zod";
@@ -85,6 +85,7 @@ export const MiniEventSC = styled("div", {
 
 export type MiniEventProps = VariantProps<typeof MiniEventTitleSC> & {
   type: Event;
+  event: InternalWorkEventSimplified | UnavailabilityEventSimplified;
   title: string;
   description: string;
   infoLeft: string | [string, string];
@@ -93,6 +94,7 @@ export type MiniEventProps = VariantProps<typeof MiniEventTitleSC> & {
 };
 
 export const MiniEvent: FC<MiniEventProps> = ({
+  event,
   color,
   title,
   description,
@@ -114,18 +116,19 @@ export const MiniEvent: FC<MiniEventProps> = ({
   
   const basicFormProps = useMemo<BasicFormProps>(() => {
     if (type === Event.InternalWork) {
-      return internalWorkInputs(
-        //TODO: récupérer les données de l'event
-        //date = title au format DD MMM YYYY
-        //duration: +(infoLeft as string).replace('h', '')
-        );
+      return internalWorkInputs({
+        date: new Date(event.date.year, event.date.month, event.date.date),
+        description: (event as InternalWorkEventSimplified).description,
+        duration: (event as InternalWorkEventSimplified).duration
+      });
     } else if (type === Event.Unavailability) {
-      console.log(infoLeft);
-      return unavailabilityInputs(
-        //TODO: récupérer les données de l'event
-        //date = title au format DD MMMM YYYY
-        //time = infoLeft[0] et [1] au format HH
-        );
+      return unavailabilityInputs({
+        date: new Date(event.date.year, event.date.month, event.date.date),
+        time: [
+          (event as UnavailabilityEventSimplified).startDate,
+          (event as UnavailabilityEventSimplified).endDate
+        ]
+      });
     }
     else return {
       initialValues: {},
@@ -187,6 +190,7 @@ const [openedEdit, setOpenedEdit] =useState(false);
     >
       <form onSubmit={formEvent?.onSubmit((data) => {
         if (type === Event.Unavailability) {
+          //TODO: voir si on peut améliorer ce morceau de code
           const { date, time: [startDate, endDate] } = data as UnavailabilityFormType;
 
           const start = dayjs(date)
