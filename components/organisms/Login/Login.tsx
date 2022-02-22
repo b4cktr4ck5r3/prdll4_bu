@@ -3,12 +3,8 @@ import { BoxSC } from "@components/atoms";
 import { Button, PasswordInput, TextInput, Title } from "@mantine/core";
 import { useForm } from "@mantine/hooks";
 import { styled } from "@stitches";
-import {
-  RedirectableProvider,
-  signIn,
-  SignInResponse,
-  useSession,
-} from "next-auth/react";
+import { RedirectableProviderType } from "next-auth/providers";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { FC, useEffect } from "react";
 
@@ -37,7 +33,7 @@ export const Login: FC = () => {
     <LoginSC
       css={{ maxWidth: "$384", width: "100%" }}
       onSubmit={form.onSubmit((values) => {
-        signIn<RedirectableProvider & SignInResponse>("credentials", {
+        signIn<RedirectableProviderType>("credentials", {
           redirect: false,
           ...values,
         }).then((res) => {

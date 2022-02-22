@@ -16,7 +16,7 @@ type FormListProps = {
   data: (InternalWorkItemForm | UnavailabilityItemForm)[];
   disabled?: boolean;
   onSubmitAll: () => void;
-  onSubmitItem: () => void;
+  onSubmitItem?: () => void;
 };
 
 export const FormList: FC<FormListProps> = ({

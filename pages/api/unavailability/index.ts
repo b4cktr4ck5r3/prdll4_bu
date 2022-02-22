@@ -34,9 +34,6 @@ const handler: NextApiHandler = async (req, res) => {
   const { method } = req;
   const token = await getToken({
     req,
-    encryption: true,
-    signingKey: process.env.JWT_SIGNING_KEY,
-    encryptionKey: process.env.JWT_ENCRYPTION_KEY,
     secret: process.env.JWT_SECRET,
   });
 
