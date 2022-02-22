@@ -153,11 +153,13 @@ const HistoryComponent: React.ForwardRefRenderFunction<HistoryHandle, HistoryPro
     return(
         <HistorySC>
             <div className="title">Historique</div>
-            {type === Event.InternalWork && (items as InternalWorkEventSimplified[]).map(({ id, date, duration }, i) => {
+            {type === Event.InternalWork && (items as InternalWorkEventSimplified[]).map((event, i) => {
+            const { id, date, duration } = event;
             const dateObject = new Date(date.year, date.month, date.date);
             return (
                 <MiniEvent
                 key={i}
+                event={event}
                 title={`${dateObject.getDate()} ${dateObject.toLocaleString(
                     "default",
                     { month: "long" }
@@ -171,12 +173,14 @@ const HistoryComponent: React.ForwardRefRenderFunction<HistoryHandle, HistoryPro
             )
             })}
                 
-            {type === Event.Unavailability && (items as UnavailabilityEventSimplified[]).map(({ id, startDate, endDate }, i) => {
+            {type === Event.Unavailability && (items as UnavailabilityEventSimplified[]).map((event, i) => {
+            const { id, startDate, endDate } = event;
             const leftTime = dayjs(startDate).format("HH:mm");
             const rightTime = dayjs(endDate).format("HH:mm");
             return (
                 <MiniEvent
                 key={i}
+                event={event}
                 color="red"
                 title={`${startDate.getDate()} ${startDate.toLocaleString(
                     "default",

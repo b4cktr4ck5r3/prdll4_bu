@@ -265,9 +265,12 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
       <SimplePlanningSC>
         <MiniCalendar />
         <div className="title">Agenda du jour</div>
-        {dayEvents.internalWorks.map(({ id, duration, description }, i) => (
-          <MiniEvent
+        {dayEvents.internalWorks.map((event, i) => {
+          const { id, duration, description } = event;
+          return (
+            <MiniEvent
             key={i}
+            event={event}
             title={"Travail Interne"}
             description={description || "Sans description"}
             infoLeft={`${duration}h`}
@@ -275,13 +278,16 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
             onEdit={(data) => updateInternalWork(id, data as InternalWorkFormType)}
             type={Event.InternalWork}
           />
-        ))}
-        {dayEvents.unavailabilities.map(({ id, startDate, endDate }, i) => {
+          )
+        })}
+        {dayEvents.unavailabilities.map((event, i) => {
+          const { id, startDate, endDate } = event;
           const leftTime = dayjs(startDate).format("HH:mm");
           const rightTime = dayjs(endDate).format("HH:mm");
           return (
             <MiniEvent
               key={i}
+              event={event}
               color="red"
               title={"Indisponibilité"}
               description={`${startDate.getDate()} ${startDate.toLocaleString(
