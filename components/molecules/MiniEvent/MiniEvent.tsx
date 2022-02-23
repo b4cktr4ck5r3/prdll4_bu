@@ -5,13 +5,11 @@ import { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 import { useModals } from "@mantine/modals";
 import { modalsContext } from "@mantine/modals/lib/context";
 import { styled, VariantProps } from "@stitches";
-import axios from "axios";
 import { FC, useMemo, useState } from "react";
 import { BasicForm, BasicFormProps } from "..";
 import { Event, InternalWorkEventSimplified, UnavailabilityEventSimplified } from '@utils/calendar'
 import { UnavailabilityFormType, unavailabilityInputs } from "@data/form/unavailability";
 import dayjs from "dayjs";
-import { date } from "zod";
 
 export const MiniEventButtonsSC = styled("div", {
   display: "flex",
@@ -85,7 +83,7 @@ export const MiniEventSC = styled("div", {
 
 export type MiniEventProps = VariantProps<typeof MiniEventTitleSC> & {
   type: Event;
-  event: InternalWorkEventSimplified | UnavailabilityEventSimplified;
+  event?: InternalWorkEventSimplified | UnavailabilityEventSimplified;
   title: string;
   description: string;
   infoLeft: string | [string, string];
@@ -94,13 +92,13 @@ export type MiniEventProps = VariantProps<typeof MiniEventTitleSC> & {
 };
 
 export const MiniEvent: FC<MiniEventProps> = ({
-  event,
   color,
   title,
   description,
   infoLeft,
   onDelete,
-  onEdit = () => null,
+  onEdit,
+  event,
   type
 }) => {
   const startText = useMemo(() => {
@@ -115,13 +113,13 @@ export const MiniEvent: FC<MiniEventProps> = ({
   const modals = useModals();
   
   const basicFormProps = useMemo<BasicFormProps>(() => {
-    if (type === Event.InternalWork) {
+    if (type === Event.InternalWork && event) {
       return internalWorkInputs({
         date: new Date(event.date.year, event.date.month, event.date.date),
         description: (event as InternalWorkEventSimplified).description,
         duration: (event as InternalWorkEventSimplified).duration
       });
-    } else if (type === Event.Unavailability) {
+    } else if (type === Event.Unavailability && event) {
       return unavailabilityInputs({
         date: new Date(event.date.year, event.date.month, event.date.date),
         time: [
@@ -159,7 +157,7 @@ export const MiniEvent: FC<MiniEventProps> = ({
     });
 
   const [formEvent, setFormEvent] = useState<UseForm<InternalWorkFormType | UnavailabilityFormType>>();
-const [openedEdit, setOpenedEdit] =useState(false);
+  const [openedEdit, setOpenedEdit] =useState(false);
 
     const FormElement = useMemo(() => {
       return (<BasicForm
@@ -212,9 +210,10 @@ const [openedEdit, setOpenedEdit] =useState(false);
           }
         }
 
-        onEdit(data);
+        if(onEdit) onEdit(data);
         setOpenedEdit(false);
-      })}>{FormElement}
+      })}>
+      {FormElement}
       <Button mt="sm" type="submit" color="orange">Modifier</Button>
       <Button mt="sm" onClick={() => {
         setOpenedEdit(false);
@@ -223,16 +222,19 @@ const [openedEdit, setOpenedEdit] =useState(false);
   </form>
   </Modal>
       
-      {onDelete && (
         <MiniEventButtonsSC>
-          <ActionIcon variant="default" onClick={() => setOpenedEdit(true)}>
-            <Pen20 />
-          </ActionIcon>
-          <ActionIcon variant="default" onClick={openConfirmDeleteModal}>
-            <TrashCan20 color="red" />
-          </ActionIcon>
+          {onEdit && (
+            <ActionIcon variant="default" onClick={() => setOpenedEdit(true)}>
+              <Pen20 />
+            </ActionIcon>
+          )}
+
+          {onDelete && (
+            <ActionIcon variant="default" onClick={openConfirmDeleteModal}>
+              <TrashCan20 color="red" />
+            </ActionIcon>
+          )}
         </MiniEventButtonsSC>
-      )}
     </MiniEventSC>
   );
 };
