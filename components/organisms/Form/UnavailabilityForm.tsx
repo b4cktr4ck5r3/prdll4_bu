@@ -102,11 +102,16 @@ export const UnavailabilityForm: FC<UnavailabilityFormProps> = ({
     []
   );
 
+  const deleteItem = (index : number) => {
+    unavailabilitiesHandlers.remove(index);
+  }
+
   return (
     <FormList
       data={unavailabilities}
       type={Event.Unavailability}
       disabled={unavailabilities.length === 0}
+      onDeleteItem={deleteItem}
       onSubmitAll={sendUnavailabilities}
       onSubmitItem={formNewDate?.onSubmit(
         ({ date, time: [startDate, endDate] }) => {

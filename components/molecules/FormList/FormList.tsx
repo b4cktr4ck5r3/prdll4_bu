@@ -17,6 +17,7 @@ type FormListProps = {
   disabled?: boolean;
   onSubmitAll: () => void;
   onSubmitItem?: () => void;
+  onDeleteItem: (index) => void;
 };
 
 export const FormList: FC<FormListProps> = ({
@@ -26,6 +27,7 @@ export const FormList: FC<FormListProps> = ({
   disabled,
   onSubmitItem,
   onSubmitAll,
+  onDeleteItem
 }) => {
   const items = useMemo(() => {
     if (type === Event.Unavailability)
@@ -36,6 +38,7 @@ export const FormList: FC<FormListProps> = ({
           return (
             <MiniEvent
               key={i}
+              type={Event.Unavailability}
               color="red"
               title={`${startDate.getDate()} ${startDate.toLocaleString(
                 "default",
@@ -45,26 +48,32 @@ export const FormList: FC<FormListProps> = ({
               )} ${startDate.getFullYear()}`}
               description=""
               infoLeft={[leftTime, rightTime]}
-            />
+              onDelete={() => onDeleteItem(i)}
+              />
           );
         }
       );
     else if (type === Event.InternalWork)
       return (data as InternalWorkItemForm[]).map(
-        ({ date, duration, description }, i) => (
-          <MiniEvent
-            key={i}
-            title={`${date.getDate()} ${date.toLocaleString("default", {
-              month: "long",
-            })} ${date.getFullYear()}`}
-            description={description || "Sans description"}
-            infoLeft={`${duration}h`}
-          />
-        )
+        (event, i) => {
+          const { date, duration, description } = event;
+          return (
+            <MiniEvent
+              key={i}
+              type={Event.InternalWork}
+              title={`${date.getDate()} ${date.toLocaleString("default", {
+                month: "long",
+              })} ${date.getFullYear()}`}
+              description={description || "Sans description"}
+              infoLeft={`${duration}h`}
+              onDelete={() => onDeleteItem(i)}
+              />
+          )
+        }
       );
   }, [data, type]);
 
-  return (
+   return (
     <FormListSC>
       <FormListInputsSC onSubmit={onSubmitItem}>
         {children}
