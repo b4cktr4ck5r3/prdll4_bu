@@ -6,13 +6,14 @@ import {
   unavailabilityInputs,
 } from "@data/form/unavailability";
 import { PlanningContext } from "@lib/contexts";
-import { useListState } from "@mantine/hooks";
+import { useListState, useLocalStorageValue } from "@mantine/hooks";
 import { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 import { useNotifications } from "@mantine/notifications";
 import { Event, UnavailabilityItemForm } from "@utils/calendar";
+import { BooleanString, Preferences } from "@utils/user";
 import axios from "axios";
 import dayjs from "dayjs";
-import { FC, useCallback, useContext, useMemo, useState } from "react";
+import { FC, useCallback, useContext, useEffect, useRef } from "react";
 
 type UnavailabilityFormProps = {
   onSubmit: () => void;
@@ -23,23 +24,14 @@ export const UnavailabilityForm: FC<UnavailabilityFormProps> = ({
 }) => {
   const { setRefresh, synchronizedDate, setSynchronizedDate } =
     useContext(PlanningContext);
-  // const [syncCalendarForm] = useLocalStorageValue<BooleanString>({
-  //   key: Preferences.SyncCalendarForm,
-  //   defaultValue: "false",
-  // });
+  const [syncCalendarForm] = useLocalStorageValue<BooleanString>({
+    key: Preferences.SyncCalendarForm,
+    defaultValue: "false",
+  });
   const [unavailabilities, unavailabilitiesHandlers] =
     useListState<UnavailabilityItemForm>([]);
 
-  const [formNewDate, setFormNewDate] =
-    useState<UseForm<UnavailabilityFormType>>();
-
-  // const changeDate = useCallback((prevDate: Date, nextDate: Date) => {
-  //   const newDate = new Date(prevDate);
-  //   newDate.setDate(nextDate.getDate());
-  //   newDate.setMonth(nextDate.getMonth());
-  //   newDate.setFullYear(nextDate.getFullYear());
-  //   return newDate;
-  // }, []);
+  const formNewDate = useRef<UseForm<UnavailabilityFormType>>();
 
   const notifications = useNotifications();
 
@@ -75,32 +67,18 @@ export const UnavailabilityForm: FC<UnavailabilityFormProps> = ({
     notifications,
   ]);
 
-  // useEffect(() => {
-  //   const { startDate, endDate } = formNewDate.values;
-  //   if (
-  //     syncCalendarForm === "true" &&
-  //     synchronizedDate &&
-  //     (synchronizedDate.getFullYear() !== startDate.getFullYear() ||
-  //       synchronizedDate.getMonth() !== startDate.getMonth() ||
-  //       synchronizedDate.getDate() !== startDate.getDate())
-  //   )
-  //     formNewDate.setValues({
-  //       startDate: changeDate(startDate, synchronizedDate),
-  //       endDate: changeDate(endDate, synchronizedDate),
-  //     });
-  // }, [changeDate, formNewDate, syncCalendarForm, synchronizedDate]);
-
-  const FormElement = useMemo(
-    () => (
-      <BasicForm
-        {...unavailabilityInputs()}
-        setForm={(form: UseForm<UnavailabilityFormType>) =>
-          setFormNewDate(form)
-        }
-      />
-    ),
-    []
-  );
+  useEffect(() => {
+    if (
+      formNewDate.current &&
+      syncCalendarForm === "true" &&
+      synchronizedDate &&
+      synchronizedDate.getTime() !== formNewDate.current.values.date.getTime()
+    )
+      formNewDate.current.setFieldValue(
+        "date",
+        new Date(synchronizedDate.setUTCHours(0, 0, 0, 0))
+      );
+  }, [syncCalendarForm, synchronizedDate]);
 
   const deleteItem = useCallback(
     (index: number) => {
@@ -116,38 +94,38 @@ export const UnavailabilityForm: FC<UnavailabilityFormProps> = ({
       disabled={unavailabilities.length === 0}
       onDeleteItem={deleteItem}
       onSubmitAll={sendUnavailabilities}
-      onSubmitItem={formNewDate?.onSubmit(
-        ({ date, time: [startDate, endDate] }) => {
-          const start = dayjs(date)
-            .second(0)
-            .minute(startDate.getMinutes())
-            .hour(startDate.getHours());
-          // const startMinute = startDate.getMinutes();
+      onSubmitItem={(event) =>
+        formNewDate.current?.onSubmit(
+          ({ date, time: [startDate, endDate] }) => {
+            const start = dayjs(date)
+              .second(0)
+              .minute(startDate.getMinutes())
+              .hour(startDate.getHours());
 
-          // if (startMinute < 15) start = start.minute(0);
-          // else if (startMinute < 30) start = start.minute(15);
-          // else if (startMinute < 45) start = start.minute(30);
-          // else start = start.minute(45);
+            const end = dayjs(date)
+              .second(0)
+              .minute(endDate.getMinutes())
+              .hour(endDate.getHours());
 
-          const end = dayjs(date)
-            .second(0)
-            .minute(endDate.getMinutes())
-            .hour(endDate.getHours());
-          // const endMinute = endDate.getMinutes();
-
-          // if (endMinute < 15) end = end.minute(0);
-          // else if (startMinute < 30) end = end.minute(30);
-          // else if (startMinute < 45) end = end.minute(45);
-          // else end = end.minute(15);
-
-          unavailabilitiesHandlers.append({
-            startDate: start.toDate(),
-            endDate: end.toDate(),
-          });
-        }
-      )}
+            unavailabilitiesHandlers.append({
+              startDate: start.toDate(),
+              endDate: end.toDate(),
+            });
+          }
+        )(event)
+      }
     >
-      {FormElement}
+      <BasicForm
+        {...unavailabilityInputs(
+          {},
+          {
+            date: setSynchronizedDate,
+          }
+        )}
+        setForm={(form: UseForm<UnavailabilityFormType>) =>
+          (formNewDate.current = form)
+        }
+      />
     </FormList>
   );
 };

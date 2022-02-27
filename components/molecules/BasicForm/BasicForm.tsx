@@ -13,9 +13,9 @@ export type BasicFormProps<T = Record<string, unknown>> = {
   validationRules?: ValidationRule<T>;
   errorMessages?: UseFormErrors<T>;
   initialValues: T;
-  labels: { readonly [P in keyof T]?: string };
+  labels: { readonly [P in keyof T]: string };
   typeInputs: {
-    readonly [P in keyof T]?:
+    readonly [P in keyof T]:
       | { type: "TEXT"; placeholder?: string }
       | { type: "SELECT"; data: { label: string; value: string }[] }
       | { type: "TEXTAREA"; placeholder?: string }
@@ -29,6 +29,7 @@ export type BasicFormProps<T = Record<string, unknown>> = {
         }
       | { type: "TIMERANGE" };
   };
+  onChange?: { readonly [P in keyof T]?: (value: unknown) => void };
 };
 
 export const BasicForm: FC<BasicFormProps> = ({
@@ -36,6 +37,7 @@ export const BasicForm: FC<BasicFormProps> = ({
   initialValues,
   validationRules,
   labels,
+  onChange = {},
   typeInputs,
   errorMessages,
 }) => {
@@ -44,6 +46,7 @@ export const BasicForm: FC<BasicFormProps> = ({
   const inputs = useMemo(() => {
     return Object.keys(initialValues).reduce<JSX.Element[]>((inputs, key) => {
       const typeInput = typeInputs[key];
+      const callback = onChange[key] || (() => null);
       if (typeInput?.type === "TIMERANGE")
         inputs.push(
           <TimeRangeInput
@@ -51,7 +54,10 @@ export const BasicForm: FC<BasicFormProps> = ({
             label={labels[key]}
             error={form.errors[key]}
             value={form.values[key] as [Date, Date]}
-            onChange={(values) => form.setFieldValue(key, values)}
+            onChange={(values) => {
+              form.setFieldValue(key, values);
+              callback(values);
+            }}
           />
         );
       else if (typeInput?.type === "DATE")
@@ -64,10 +70,11 @@ export const BasicForm: FC<BasicFormProps> = ({
             value={form.values[key] as Date}
             minDate={typeInput.minDate}
             maxDate={typeInput.maxDate}
-            onChange={(date) =>
-              date &&
-              form.setFieldValue(key, new Date(date.setUTCHours(0, 0, 0, 0)))
-            }
+            onChange={(date) => {
+              if (date)
+                form.setFieldValue(key, new Date(date.setUTCHours(0, 0, 0, 0)));
+              callback(date);
+            }}
           />
         );
       else if (typeInput?.type === "NUMBER")
@@ -81,7 +88,10 @@ export const BasicForm: FC<BasicFormProps> = ({
             max={typeInput.max}
             error={form.errors[key]}
             value={form.values[key] as number}
-            onChange={(value) => form.setFieldValue(key, value || 0)}
+            onChange={(value) => {
+              form.setFieldValue(key, value || 0);
+              callback(value);
+            }}
           />
         );
       else if (typeInput?.type === "SELECT")
@@ -92,7 +102,10 @@ export const BasicForm: FC<BasicFormProps> = ({
             data={typeInput.data}
             error={form.errors[key]}
             value={form.values[key] as string}
-            onChange={(value) => form.setFieldValue(key, value)}
+            onChange={(value) => {
+              form.setFieldValue(key, value);
+              callback(value);
+            }}
           />
         );
       else if (typeInput?.type === "TEXTAREA")
@@ -103,9 +116,11 @@ export const BasicForm: FC<BasicFormProps> = ({
             label={labels[key]}
             error={form.errors[key]}
             value={form.values[key] as string}
-            onChange={(event) =>
-              form.setFieldValue(key, event.currentTarget.value)
-            }
+            onChange={(event) => {
+              const value = event.currentTarget.value;
+              form.setFieldValue(key, event.currentTarget.value);
+              callback(value);
+            }}
           />
         );
       else
@@ -116,14 +131,16 @@ export const BasicForm: FC<BasicFormProps> = ({
             label={labels[key]}
             error={form.errors[key]}
             value={form.values[key] as string}
-            onChange={(event) =>
-              form.setFieldValue(key, event.currentTarget.value)
-            }
+            onChange={(event) => {
+              const value = event.currentTarget.value;
+              form.setFieldValue(key, value);
+              callback(value);
+            }}
           />
         );
       return inputs;
     }, []);
-  }, [form, initialValues, labels, typeInputs]);
+  }, [form, initialValues, labels, onChange, typeInputs]);
 
   useEffect(() => {
     if (setForm) setForm(form);

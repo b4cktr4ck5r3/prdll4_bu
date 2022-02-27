@@ -9,7 +9,8 @@ const defaultInitialValues = {
 export type InternalWorkFormType = typeof defaultInitialValues;
 
 export const internalWorkInputs = (
-  initialValues = defaultInitialValues
+  initialValues?: Partial<InternalWorkFormType>,
+  onChange?: BasicFormProps<InternalWorkFormType>["onChange"]
 ): BasicFormProps<InternalWorkFormType> => ({
   validationRules: {
     date: (value: Date) => {
@@ -23,7 +24,7 @@ export const internalWorkInputs = (
     },
     duration: (value: number) => value > 0,
   },
-  initialValues: initialValues,
+  initialValues: { ...defaultInitialValues, ...initialValues },
   labels: {
     date: "Date de travail interne",
     duration: "Durée (en heure)",
@@ -34,4 +35,5 @@ export const internalWorkInputs = (
     duration: { type: "NUMBER", step: 0.5, precision: 1, min: 0, max: 24 },
     description: { type: "TEXTAREA" },
   },
+  onChange,
 });
