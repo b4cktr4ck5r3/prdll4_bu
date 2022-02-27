@@ -102,9 +102,12 @@ export const InternalWorkForm: FC<InternalWorkFormProps> = ({ onSubmit }) => {
     []
   );
 
-  const deleteItem = (index : number) => {
-    internalWorksHandlers.remove(index);
-  }
+  const deleteItem = useCallback(
+    (index: number) => {
+      internalWorksHandlers.remove(index);
+    },
+    [internalWorksHandlers]
+  );
 
   return (
     <FormList

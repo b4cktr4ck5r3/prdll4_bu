@@ -102,9 +102,12 @@ export const UnavailabilityForm: FC<UnavailabilityFormProps> = ({
     []
   );
 
-  const deleteItem = (index : number) => {
-    unavailabilitiesHandlers.remove(index);
-  }
+  const deleteItem = useCallback(
+    (index: number) => {
+      unavailabilitiesHandlers.remove(index);
+    },
+    [unavailabilitiesHandlers]
+  );
 
   return (
     <FormList

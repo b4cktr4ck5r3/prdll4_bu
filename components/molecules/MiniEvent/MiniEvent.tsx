@@ -1,15 +1,21 @@
 import { Pen20, TrashCan20 } from "@carbon/icons-react";
+import { BasicForm, BasicFormProps } from "@components/molecules/BasicForm";
 import { InternalWorkFormType, internalWorkInputs } from "@data/form";
-import { ActionIcon, Text, Button, Modal } from "@mantine/core";
+import {
+  UnavailabilityFormType,
+  unavailabilityInputs,
+} from "@data/form/unavailability";
+import { ActionIcon, Button, Modal, Text } from "@mantine/core";
 import { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 import { useModals } from "@mantine/modals";
-import { modalsContext } from "@mantine/modals/lib/context";
 import { styled, VariantProps } from "@stitches";
-import { FC, useMemo, useState } from "react";
-import { BasicForm, BasicFormProps } from "..";
-import { Event, InternalWorkEventSimplified, UnavailabilityEventSimplified } from '@utils/calendar'
-import { UnavailabilityFormType, unavailabilityInputs } from "@data/form/unavailability";
+import {
+  Event,
+  InternalWorkEventSimplified,
+  UnavailabilityEventSimplified,
+} from "@utils/calendar";
 import dayjs from "dayjs";
+import { FC, useCallback, useMemo, useState } from "react";
 
 export const MiniEventButtonsSC = styled("div", {
   display: "flex",
@@ -99,8 +105,12 @@ export const MiniEvent: FC<MiniEventProps> = ({
   onDelete,
   onEdit,
   event,
-  type
+  type,
 }) => {
+  const [formEvent, setFormEvent] =
+    useState<UseForm<InternalWorkFormType | UnavailabilityFormType>>();
+  const [openedEdit, setOpenedEdit] = useState(false);
+
   const startText = useMemo(() => {
     if (Array.isArray(infoLeft)) return infoLeft[0];
     else return infoLeft;
@@ -111,61 +121,66 @@ export const MiniEvent: FC<MiniEventProps> = ({
   }, [infoLeft]);
 
   const modals = useModals();
-  
+
   const basicFormProps = useMemo<BasicFormProps>(() => {
     if (type === Event.InternalWork && event) {
       return internalWorkInputs({
         date: new Date(event.date.year, event.date.month, event.date.date),
         description: (event as InternalWorkEventSimplified).description,
-        duration: (event as InternalWorkEventSimplified).duration
+        duration: (event as InternalWorkEventSimplified).duration,
       });
     } else if (type === Event.Unavailability && event) {
       return unavailabilityInputs({
         date: new Date(event.date.year, event.date.month, event.date.date),
         time: [
           (event as UnavailabilityEventSimplified).startDate,
-          (event as UnavailabilityEventSimplified).endDate
-        ]
+          (event as UnavailabilityEventSimplified).endDate,
+        ],
       });
-    }
-    else return {
-      initialValues: {},
-      labels: {},
-      typeInputs: {}
-    }
-  }, [type]);
+    } else
+      return {
+        initialValues: {},
+        labels: {},
+        typeInputs: {},
+      };
+  }, [event, type]);
 
-  const openConfirmDeleteModal = () =>
-    modals.openConfirmModal({
-      title: <Text weight={700}>Êtes-vous sûr de supprimer cet élément ?</Text>,
-      children: (
-        <Text size="sm">
-          {
-            "ATTENTION ! La suppression est définitive, êtes vous sur de vouloir supprimer l'élément ?"
-          }
-        </Text>
-      ),
-      labels: {
-        confirm: "Supprimer",
-        cancel: "Annuler",
-      },
-      confirmProps: {
-        color: "red",
-      },
-      onCancel: () => null,
-      onConfirm: onDelete,
-    });
+  const openConfirmDeleteModal = useCallback(
+    () =>
+      modals.openConfirmModal({
+        title: (
+          <Text weight={700}>Êtes-vous sûr de supprimer cet élément ?</Text>
+        ),
+        children: (
+          <Text size="sm">
+            {
+              "ATTENTION ! La suppression est définitive, êtes vous sur de vouloir supprimer l'élément ?"
+            }
+          </Text>
+        ),
+        labels: {
+          confirm: "Supprimer",
+          cancel: "Annuler",
+        },
+        confirmProps: {
+          color: "red",
+        },
+        onCancel: () => null,
+        onConfirm: onDelete,
+      }),
+    [modals, onDelete]
+  );
 
-  const [formEvent, setFormEvent] = useState<UseForm<InternalWorkFormType | UnavailabilityFormType>>();
-  const [openedEdit, setOpenedEdit] =useState(false);
-
-    const FormElement = useMemo(() => {
-      return (<BasicForm
+  const FormElement = useMemo(() => {
+    return (
+      <BasicForm
         {...basicFormProps}
-        setForm={(form: UseForm<InternalWorkFormType | UnavailabilityFormType>) => setFormEvent(form)}
-        />)
-        
-    }, [basicFormProps]);
+        setForm={(
+          form: UseForm<InternalWorkFormType | UnavailabilityFormType>
+        ) => setFormEvent(form)}
+      />
+    );
+  }, [basicFormProps]);
 
   return (
     <MiniEventSC>
@@ -181,60 +196,69 @@ export const MiniEvent: FC<MiniEventProps> = ({
         <div className="end">{endText}</div>
       </MiniEventTimeSC>
       <Modal
-      opened={openedEdit}
-      onClose={() => setOpenedEdit(false)}
-      title="Modification d'un élément"
-      centered
-    >
-      <form onSubmit={formEvent?.onSubmit((data) => {
-        if (type === Event.Unavailability) {
-          //TODO: voir si on peut améliorer ce morceau de code
-          const { date, time: [startDate, endDate] } = data as UnavailabilityFormType;
+        opened={openedEdit}
+        onClose={() => setOpenedEdit(false)}
+        title="Modification d'un élément"
+        centered
+      >
+        <form
+          onSubmit={formEvent?.onSubmit((data) => {
+            if (type === Event.Unavailability) {
+              //TODO: voir si on peut améliorer ce morceau de code
+              const {
+                date,
+                time: [startDate, endDate],
+              } = data as UnavailabilityFormType;
 
-          const start = dayjs(date)
-              .second(0)
-              .minute(startDate.getMinutes())
-              .hour(startDate.getHours());
-    
-          const end = dayjs(date)
-              .second(0)
-              .minute(endDate.getMinutes())
-              .hour(endDate.getHours());
+              const start = dayjs(date)
+                .second(0)
+                .minute(startDate.getMinutes())
+                .hour(startDate.getHours());
 
-          data = {
-            date: date,
-            time: [
-              start.toDate(),
-              end.toDate()
-            ]
-          }
-        }
+              const end = dayjs(date)
+                .second(0)
+                .minute(endDate.getMinutes())
+                .hour(endDate.getHours());
 
-        if(onEdit) onEdit(data);
-        setOpenedEdit(false);
-      })}>
-      {FormElement}
-      <Button mt="sm" type="submit" color="orange">Modifier</Button>
-      <Button mt="sm" onClick={() => {
-        setOpenedEdit(false);
-        formEvent?.reset();
-      }}>Annuler</Button>
-  </form>
-  </Modal>
-      
-        <MiniEventButtonsSC>
-          {onEdit && (
-            <ActionIcon variant="default" onClick={() => setOpenedEdit(true)}>
-              <Pen20 />
-            </ActionIcon>
-          )}
+              data = {
+                date: date,
+                time: [start.toDate(), end.toDate()],
+              };
+            }
 
-          {onDelete && (
-            <ActionIcon variant="default" onClick={openConfirmDeleteModal}>
-              <TrashCan20 color="red" />
-            </ActionIcon>
-          )}
-        </MiniEventButtonsSC>
+            if (onEdit) onEdit(data);
+            setOpenedEdit(false);
+          })}
+        >
+          {FormElement}
+          <Button mt="sm" type="submit" color="orange">
+            Modifier
+          </Button>
+          <Button
+            mt="sm"
+            onClick={() => {
+              setOpenedEdit(false);
+              formEvent?.reset();
+            }}
+          >
+            Annuler
+          </Button>
+        </form>
+      </Modal>
+
+      <MiniEventButtonsSC>
+        {onEdit && (
+          <ActionIcon variant="default" onClick={() => setOpenedEdit(true)}>
+            <Pen20 />
+          </ActionIcon>
+        )}
+
+        {onDelete && (
+          <ActionIcon variant="default" onClick={openConfirmDeleteModal}>
+            <TrashCan20 color="red" />
+          </ActionIcon>
+        )}
+      </MiniEventButtonsSC>
     </MiniEventSC>
   );
 };

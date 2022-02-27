@@ -19,7 +19,6 @@ export const BigCalendarDaysItemLabelSC = styled("span", {
 });
 export const BigCalendarDaysItemSC = styled("div", {
   position: "relative",
-  cursor: "pointer",
   borderColor: "$neutral9",
   borderStyle: "$solid",
   borderTopWidth: "2px",

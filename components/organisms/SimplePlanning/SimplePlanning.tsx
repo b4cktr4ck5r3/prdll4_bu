@@ -14,7 +14,7 @@ import {
   InternalWorkEventDTO,
   InternalWorkEventSimplified,
   UnavailabilityEventDTO,
-  UnavailabilityEventSimplified
+  UnavailabilityEventSimplified,
 } from "@utils/calendar";
 import { BooleanString, Preferences } from "@utils/user";
 import axios from "axios";
@@ -24,7 +24,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useState
+  useState,
 } from "react";
 
 export const SimplePlanningNoEventSC = styled("div", {
@@ -195,53 +195,65 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
         );
   }, [startDate, endDate, type]);
 
-  const deleteInternalWork = (eventId: string) => {
-    if (type === Event.InternalWork) {
-      axios
-        .delete("/api/internalWork", {
-          params: {
-            id: eventId,
-          },
-        })
-        .then(onDeleteEvent);
-    }
-  };
+  const deleteInternalWork = useCallback(
+    (eventId: string) => {
+      if (type === Event.InternalWork) {
+        axios
+          .delete("/api/internalWork", {
+            params: {
+              id: eventId,
+            },
+          })
+          .then(onDeleteEvent);
+      }
+    },
+    [onDeleteEvent, type]
+  );
 
-  const updateInternalWork = (eventId: string, data: InternalWorkFormType ) => {
-    if (type === Event.InternalWork) {
-      axios
-        .put("/api/internalWork", data, {
-          params: {
-            id: eventId,
-          },
-        })
-        .then(onEditEvent);
-    }
-  };
+  const updateInternalWork = useCallback(
+    (eventId: string, data: InternalWorkFormType) => {
+      if (type === Event.InternalWork) {
+        axios
+          .put("/api/internalWork", data, {
+            params: {
+              id: eventId,
+            },
+          })
+          .then(onEditEvent);
+      }
+    },
+    [onEditEvent, type]
+  );
 
-  const deleteUnavailability = (eventId: string) => {
-    if (type === Event.Unavailability) {
-      axios
-        .delete("/api/unavailability", {
-          params: {
-            id: eventId,
-          },
-        })
-        .then(onDeleteEvent);
-    }
-  };
+  const deleteUnavailability = useCallback(
+    (eventId: string) => {
+      if (type === Event.Unavailability) {
+        axios
+          .delete("/api/unavailability", {
+            params: {
+              id: eventId,
+            },
+          })
+          .then(onDeleteEvent);
+      }
+    },
+    [onDeleteEvent, type]
+  );
 
-  const updateUnavailability = (eventId: string, data: UnavailabilityFormType ) => {
-    if (type === Event.Unavailability) {
-      axios
-        .put("/api/unavailability", data, {
-          params: {
-            id: eventId,
-          },
-        })
-        .then(onEditEvent);
-    }
-  };
+  const updateUnavailability = useCallback(
+    (eventId: string, data: UnavailabilityFormType) => {
+      if (type === Event.Unavailability) {
+        axios
+          .put("/api/unavailability", data, {
+            params: {
+              id: eventId,
+            },
+          })
+          .then(onEditEvent);
+      }
+    },
+    [onEditEvent, type]
+  );
 
   useEffect(() => {
     findInternalWorks();
@@ -269,16 +281,18 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
           const { id, duration, description } = event;
           return (
             <MiniEvent
-            key={i}
-            event={event}
-            title={"Travail Interne"}
-            description={description || "Sans description"}
-            infoLeft={`${duration}h`}
-            onDelete={() => deleteInternalWork(id)}
-            onEdit={(data) => updateInternalWork(id, data as InternalWorkFormType)}
-            type={Event.InternalWork}
-          />
-          )
+              key={i}
+              event={event}
+              title={"Travail Interne"}
+              description={description || "Sans description"}
+              infoLeft={`${duration}h`}
+              onDelete={() => deleteInternalWork(id)}
+              onEdit={(data) =>
+                updateInternalWork(id, data as InternalWorkFormType)
+              }
+              type={Event.InternalWork}
+            />
+          );
         })}
         {dayEvents.unavailabilities.map((event, i) => {
           const { id, startDate, endDate } = event;
@@ -296,7 +310,9 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
               )} ${startDate.getFullYear()}`}
               infoLeft={[leftTime, rightTime]}
               onDelete={() => deleteUnavailability(id)}
-              onEdit={(data) => updateUnavailability(id, data as UnavailabilityFormType)}
+              onEdit={(data) =>
+                updateUnavailability(id, data as UnavailabilityFormType)
+              }
               type={Event.Unavailability}
             />
           );
