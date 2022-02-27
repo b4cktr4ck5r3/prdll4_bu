@@ -2,7 +2,9 @@ import {
   CreateInternalWork,
   DeleteInternalWork,
   FindInternalWork,
+  UpdateInternalWork,
 } from "@lib/services/internalWork";
+import { ZodInternalWorkItemForm } from "@utils/internalWork";
 import { NextApiHandler } from "next";
 import { getToken } from "next-auth/jwt";
 import { z } from "zod";
@@ -25,14 +27,11 @@ const QueryGetSchema = z.object({
 });
 
 const BodyPostSchema = z.array(
-  z.object({
-    date: z.string().transform((value) => new Date(value)),
-    duration: z.number(),
-    description: z.string(),
-  })
+  ZodInternalWorkItemForm
 );
+const BodyPutSchema = ZodInternalWorkItemForm
 
-const QueryDeleteSchema = z.object({
+const QueryIdSchema = z.object({
   id: z.string(),
 });
 
@@ -68,9 +67,21 @@ const handler: NextApiHandler = async (req, res) => {
         break;
       }
     }
+    case "PUT": {
+      if (userId) {
+        const { id } = QueryIdSchema.parse(req.query);
+        const updateData = BodyPutSchema.parse(req.body);
+        const done = await UpdateInternalWork(id, updateData);
+        res.json({
+          result: done,
+        });
+        break;
+      }
+    }
+
     case "DELETE": {
       if (userId) {
-        const { id: internalWorkId } = QueryDeleteSchema.parse(req.query);
+        const { id: internalWorkId } = QueryIdSchema.parse(req.query);
         const done = await DeleteInternalWork(internalWorkId);
         res.json({
           result: done,

@@ -1,7 +1,7 @@
 import { Close32 } from "@carbon/icons-react";
 import { CPlannerHorizontal } from "@components/icons";
 import userOptions from "@data/navbar/userOptions";
-import FetchUserRole from "@lib/swr/fetchers/FetchUserRole";
+import useAccountInfo from "@hooks/useAccountInfo";
 import { Text } from "@mantine/core";
 import { styled } from "@stitches";
 import { signOut } from "next-auth/react";
@@ -9,7 +9,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC } from "react";
 import { Scrollbars } from "react-custom-scrollbars";
-import useSWR from "swr";
 
 export const MobileCloseIcon = styled("button", {
   color: "$white",
@@ -150,7 +149,7 @@ export type NavBarProps = {
 };
 
 export const NavBar: FC<NavBarProps> = ({ closeMenu, onItemClick }) => {
-  const { data: isAdmin } = useSWR("user_role", FetchUserRole);
+  const { isAdmin } = useAccountInfo();
   const router = useRouter();
 
   return (

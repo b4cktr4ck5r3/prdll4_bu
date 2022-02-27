@@ -102,12 +102,20 @@ export const InternalWorkForm: FC<InternalWorkFormProps> = ({ onSubmit }) => {
     []
   );
 
+  const deleteItem = useCallback(
+    (index: number) => {
+      internalWorksHandlers.remove(index);
+    },
+    [internalWorksHandlers]
+  );
+
   return (
     <FormList
       data={internalWorks}
       type={Event.InternalWork}
       disabled={internalWorks.length === 0}
       onSubmitAll={sendInternalWorks}
+      onDeleteItem={deleteItem}
       onSubmitItem={formNewIW?.onSubmit(
         (newInternalWork: InternalWorkFormType) => {
           internalWorksHandlers.append({

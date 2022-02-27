@@ -24,14 +24,11 @@ const ResetUserPassword = z
           password: await hash(newPassword, 12),
         },
       })
-      .then(
-        (user) =>
-          ({
-            userId: user.id,
-            userName: user.username,
-            newPassword,
-          } as ResetPasswordInfo)
-      )
+      .then<ResetPasswordInfo>((user) => ({
+        userId: user.id,
+        userName: user.username,
+        newPassword,
+      }))
       .catch(() => null);
   });
 
