@@ -63,8 +63,8 @@ export const SimplePlanningSC = styled("div", BoxSC, {
 
 export type SimplePlanningProps = {
   type?: "ALL" | Event;
-  onDeleteEvent: () => void;
-  onEditEvent: () => void;
+  onDeleteEvent?: () => void;
+  onEditEvent?: () => void;
 };
 
 type SimplePlanningHandle = {

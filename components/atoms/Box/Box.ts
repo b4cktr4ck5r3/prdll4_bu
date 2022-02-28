@@ -26,3 +26,4 @@ export const SettingBoxSC = styled("div", BoxSC, {
 });
 
 export const UsersBoxSC = styled("div", SettingBoxSC);
+export const ScheduleBoxSC = styled("div", SettingBoxSC);
