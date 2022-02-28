@@ -1,4 +1,11 @@
-import { NumberInput, Select, Textarea, TextInput } from "@mantine/core";
+import {
+  Autocomplete,
+  MultiSelect,
+  NumberInput,
+  Select,
+  Textarea,
+  TextInput,
+} from "@mantine/core";
 import { DatePicker, TimeRangeInput } from "@mantine/dates";
 import { useForm } from "@mantine/hooks";
 import {
@@ -27,9 +34,14 @@ export type BasicFormProps<T = Record<string, unknown>> = {
           min?: number;
           max?: number;
         }
-      | { type: "TIMERANGE" };
+      | { type: "TIMERANGE" }
+      | { type: "MULTISELECT" }
+      | { type: "AUTOCOMPLETE"; placeholder?: string; limit?: number };
   };
   onChange?: { readonly [P in keyof T]?: (value: unknown) => void };
+  listData?: {
+    readonly [P in keyof T]?: { label: string; value: string }[] | string[];
+  };
 };
 
 export const BasicForm: FC<BasicFormProps> = ({
@@ -40,12 +52,14 @@ export const BasicForm: FC<BasicFormProps> = ({
   onChange = {},
   typeInputs,
   errorMessages,
+  listData = {},
 }) => {
   const form = useForm({ initialValues, errorMessages, validationRules });
 
   const inputs = useMemo(() => {
     return Object.keys(initialValues).reduce<JSX.Element[]>((inputs, key) => {
       const typeInput = typeInputs[key];
+      const data = listData[key];
       const callback = onChange[key] || (() => null);
       if (typeInput?.type === "TIMERANGE")
         inputs.push(
@@ -99,7 +113,7 @@ export const BasicForm: FC<BasicFormProps> = ({
           <Select
             key={key}
             label={labels[key]}
-            data={typeInput.data}
+            data={data || []}
             error={form.errors[key]}
             value={form.values[key] as string}
             onChange={(value) => {
@@ -123,6 +137,36 @@ export const BasicForm: FC<BasicFormProps> = ({
             }}
           />
         );
+      else if (typeInput?.type === "MULTISELECT")
+        inputs.push(
+          <MultiSelect
+            key={key}
+            label={labels[key]}
+            data={data || []}
+            error={form.errors[key]}
+            value={form.values[key] as string[]}
+            onChange={(value) => {
+              form.setFieldValue(key, value);
+              callback(value);
+            }}
+          />
+        );
+      else if (typeInput?.type === "AUTOCOMPLETE")
+        inputs.push(
+          <Autocomplete
+            key={key}
+            limit={typeInput.limit}
+            placeholder={typeInput.placeholder}
+            label={labels[key]}
+            data={data || []}
+            error={form.errors[key]}
+            value={form.values[key] as string}
+            onChange={(value) => {
+              form.setFieldValue(key, value);
+              callback(value);
+            }}
+          />
+        );
       else
         inputs.push(
           <TextInput
@@ -140,7 +184,7 @@ export const BasicForm: FC<BasicFormProps> = ({
         );
       return inputs;
     }, []);
-  }, [form, initialValues, labels, onChange, typeInputs]);
+  }, [form, initialValues, labels, listData, onChange, typeInputs]);
 
   useEffect(() => {
     if (setForm) setForm(form);

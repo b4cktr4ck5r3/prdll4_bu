@@ -37,16 +37,19 @@ model InternalWork {
 }
 
 model WorkSchedule {
-  id        String   @id @default(uuid())
-  name      String
-  startDate DateTime
-  endDate   DateTime
+  id               String             @id @default(uuid())
+  name             String
+  startDate        DateTime
+  endDate          DateTime
+  WorkScheduleTask WorkScheduleTask[]
 }
 
 model WorkScheduleTask {
-  id        String   @id @default(uuid())
-  name      String
-  startDate DateTime
-  endDate   DateTime
-  user      User[]
+  id             String       @id @default(uuid())
+  name           String
+  startDate      DateTime
+  endDate        DateTime
+  users          User[]
+  schedule       WorkSchedule @relation(fields: [workScheduleId], references: [id])
+  workScheduleId String
 }

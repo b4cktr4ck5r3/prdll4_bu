@@ -1,22 +1,28 @@
 import { ScheduleBoxSC } from "@components/atoms";
 import { styled } from "@stitches";
-import type { FC } from "react";
-import { SelectPlanning } from "./widgets";
+import { FC, useState } from "react";
+import {
+  CreateWorkScheduleTask,
+  ListWorkScheduleTasks,
+  SelectPlanning,
+} from "./widgets";
 
 export const ManagePlanningSC = styled("div", ScheduleBoxSC, {
   //
 });
 
 export const ManagePlanning: FC = () => {
+  const [selectedPlanning, setSelectedPlanning] = useState("");
+
   return (
     <ManagePlanningSC>
-      <SelectPlanning />
-      <section>
-        <h2 className="title">Toutes les séances</h2>
-      </section>
-      <section>
-        <h2 className="title">Ajouter une séance</h2>
-      </section>
+      <SelectPlanning value={selectedPlanning} onChange={setSelectedPlanning} />
+      {selectedPlanning && (
+        <>
+          <ListWorkScheduleTasks workScheduleId={selectedPlanning} />
+          <CreateWorkScheduleTask workScheduleId={selectedPlanning} />
+        </>
+      )}
     </ManagePlanningSC>
   );
 };

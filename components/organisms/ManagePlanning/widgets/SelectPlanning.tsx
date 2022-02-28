@@ -1,6 +1,6 @@
 import usePlannings from "@hooks/usePlannings";
 import { Group, Select, Text } from "@mantine/core";
-import { FC, forwardRef, useEffect } from "react";
+import { FC, forwardRef } from "react";
 
 type SelectPlanningItemProps = {
   label: string;
@@ -23,27 +23,37 @@ const SelectPlanningItem = forwardRef<HTMLDivElement, SelectPlanningItemProps>(
 );
 SelectPlanningItem.displayName = "SelectPlanningItem";
 
-export const SelectPlanning: FC = () => {
-  const { plannings } = usePlannings();
+export type SelectPlanningProps = {
+  value: string;
+  onChange: (value: string) => void;
+};
 
-  useEffect(() => {
-    //
-  }, []);
+export const SelectPlanning: FC<SelectPlanningProps> = ({
+  value,
+  onChange,
+}) => {
+  const { plannings } = usePlannings();
 
   return (
     <section>
-      <h2 className="title">Choix du planning</h2>
+      <h2 className="title">Modifier un planning</h2>
       <Select
-        label="Choisir un planning"
+        label="Choix un planning"
         itemComponent={SelectPlanningItem}
         data={plannings.map((planning) => ({
           label: planning.name,
-          description: planning.name,
+          description: `Du ${new Date(
+            planning.startDate
+          ).toLocaleDateString()} au ${new Date(
+            planning.endDate
+          ).toLocaleDateString()}`,
           value: planning.id,
         }))}
+        value={value}
         searchable
+        clearable
         maxDropdownHeight={400}
-        onChange={(value) => alert(value)}
+        onChange={onChange}
       />
     </section>
   );
