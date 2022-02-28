@@ -4,13 +4,14 @@ import { BasicForm } from "@components/molecules";
 import { FormList } from "@components/molecules/FormList";
 import { InternalWorkFormType, internalWorkInputs } from "@data/form";
 import { PlanningContext } from "@lib/contexts";
-import { useListState } from "@mantine/hooks";
+import { useListState, useLocalStorageValue } from "@mantine/hooks";
 import { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 import { useNotifications } from "@mantine/notifications";
 import { styled } from "@stitches";
 import { Event, InternalWorkItemForm } from "@utils/calendar";
+import { BooleanString, Preferences } from "@utils/user";
 import axios from "axios";
-import { FC, useCallback, useContext, useMemo, useState } from "react";
+import { FC, useCallback, useContext, useEffect, useRef } from "react";
 
 export const InternalWorkFormSC = styled("form", BoxSC, {
   width: "100%",
@@ -25,21 +26,13 @@ type InternalWorkFormProps = {
 export const InternalWorkForm: FC<InternalWorkFormProps> = ({ onSubmit }) => {
   const { setRefresh, synchronizedDate, setSynchronizedDate } =
     useContext(PlanningContext);
-  const [formNewIW, setFormNewIW] = useState<UseForm<InternalWorkFormType>>();
-  // const [syncCalendarForm] = useLocalStorageValue<BooleanString>({
-  //   key: Preferences.SyncCalendarForm,
-  //   defaultValue: "false",
-  // });
+  const formNewIW = useRef<UseForm<InternalWorkFormType>>();
+  const [syncCalendarForm] = useLocalStorageValue<BooleanString>({
+    key: Preferences.SyncCalendarForm,
+    defaultValue: "false",
+  });
   const [internalWorks, internalWorksHandlers] =
     useListState<InternalWorkItemForm>([]);
-
-  // const changeDate = useCallback(
-  //   (date: Date) => {
-  //     formNewIW.setFieldValue("date", new Date(date.setUTCHours(0, 0, 0, 0)));
-  //     setSynchronizedDate(date);
-  //   },
-  //   [formNewIW, setSynchronizedDate]
-  // );
 
   const notifications = useNotifications();
 
@@ -83,24 +76,10 @@ export const InternalWorkForm: FC<InternalWorkFormProps> = ({ onSubmit }) => {
     notifications,
   ]);
 
-  // useEffect(() => {
-  //   if (
-  //     syncCalendarForm === "true" &&
-  //     synchronizedDate &&
-  //     synchronizedDate.getTime() !== formNewIW.values.date.getTime()
-  //   )
-  //     formNewIW.setFieldValue("date", synchronizedDate);
-  // }, [formNewIW, syncCalendarForm, synchronizedDate]);
-
-  const FormElement = useMemo(
-    () => (
-      <BasicForm
-        {...internalWorkInputs()}
-        setForm={(form: UseForm<InternalWorkFormType>) => setFormNewIW(form)}
-      />
-    ),
-    []
-  );
+  useEffect(() => {
+    if (formNewIW.current && syncCalendarForm === "true" && synchronizedDate)
+      formNewIW.current.setFieldValue("date", synchronizedDate);
+  }, [syncCalendarForm, synchronizedDate]);
 
   const deleteItem = useCallback(
     (index: number) => {
@@ -116,17 +95,27 @@ export const InternalWorkForm: FC<InternalWorkFormProps> = ({ onSubmit }) => {
       disabled={internalWorks.length === 0}
       onSubmitAll={sendInternalWorks}
       onDeleteItem={deleteItem}
-      onSubmitItem={formNewIW?.onSubmit(
-        (newInternalWork: InternalWorkFormType) => {
+      onSubmitItem={(event) => {
+        formNewIW.current?.onSubmit((newInternalWork) => {
           internalWorksHandlers.append({
             date: new Date(newInternalWork.date),
             description: newInternalWork.description,
             duration: newInternalWork.duration,
           });
-        }
-      )}
+        })(event);
+      }}
     >
-      {FormElement}
+      <BasicForm
+        {...internalWorkInputs(
+          {},
+          {
+            date: setSynchronizedDate,
+          }
+        )}
+        setForm={(form: UseForm<InternalWorkFormType>) =>
+          (formNewIW.current = form)
+        }
+      />
     </FormList>
   );
 };

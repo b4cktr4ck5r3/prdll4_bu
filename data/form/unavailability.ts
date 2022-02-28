@@ -8,9 +8,21 @@ const defaultInitialValues = {
 export type UnavailabilityFormType = typeof defaultInitialValues;
 
 export const unavailabilityInputs = (
-  initialValues = defaultInitialValues
+  initialValues?: Partial<UnavailabilityFormType>,
+  onChange?: BasicFormProps<UnavailabilityFormType>["onChange"]
 ): BasicFormProps<UnavailabilityFormType> => ({
-  initialValues: initialValues,
+  validationRules: {
+    date: (value: Date) => {
+      const today = new Date();
+      return (
+        value.getTime() > today.getTime() ||
+        (value.getFullYear() === today.getFullYear() &&
+          value.getMonth() === today.getMonth() &&
+          value.getDate() === today.getDate())
+      );
+    },
+  },
+  initialValues: { ...defaultInitialValues, ...initialValues },
   labels: {
     date: "Date de l'indisponibilité",
     time: "Horaire de l'indisponibilité",
@@ -19,4 +31,5 @@ export const unavailabilityInputs = (
     date: { type: "DATE", minDate: new Date() },
     time: { type: "TIMERANGE" },
   },
+  onChange,
 });

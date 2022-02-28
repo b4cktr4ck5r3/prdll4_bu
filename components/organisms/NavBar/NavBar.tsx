@@ -8,7 +8,6 @@ import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC } from "react";
-import { Scrollbars } from "react-custom-scrollbars";
 
 export const MobileCloseIcon = styled("button", {
   color: "$white",
@@ -158,7 +157,7 @@ export const NavBar: FC<NavBarProps> = ({ closeMenu, onItemClick }) => {
         <Close32 />
       </MobileCloseIcon>
       <CPlannerHorizontal />
-      <Scrollbars className="shrink">
+      <div className="shrink" style={{ width: "100%", overflow: "auto" }}>
         <NavListSC>
           {userOptions
             .filter(({ forAdmin }) => isAdmin || !forAdmin)
@@ -183,7 +182,7 @@ export const NavBar: FC<NavBarProps> = ({ closeMenu, onItemClick }) => {
               </li>
             ))}
         </NavListSC>
-      </Scrollbars>
+      </div>
     </NavBarSC>
   );
 };

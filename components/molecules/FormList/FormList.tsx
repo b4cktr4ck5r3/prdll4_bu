@@ -9,14 +9,14 @@ import {
   UnavailabilityItemForm,
 } from "@utils/calendar";
 import dayjs from "dayjs";
-import { FC, useMemo } from "react";
+import { FC, FormEventHandler, useMemo } from "react";
 
 type FormListProps = {
   type: Event;
   data: (InternalWorkItemForm | UnavailabilityItemForm)[];
   disabled?: boolean;
   onSubmitAll: () => void;
-  onSubmitItem?: () => void;
+  onSubmitItem?: FormEventHandler<HTMLFormElement>;
   onDeleteItem: (index: number) => void;
 };
 

@@ -8,13 +8,14 @@ generator client {
 }
 
 model User {
-  id             String           @id @default(cuid())
-  username       String           @unique
-  password       String
-  full_name      String
-  role           String           @default("USER")
-  Unavailability Unavailability[]
-  InternalWork   InternalWork[]
+  id               String             @id @default(cuid())
+  username         String             @unique
+  password         String
+  full_name        String
+  role             String             @default("USER")
+  Unavailability   Unavailability[]
+  InternalWork     InternalWork[]
+  WorkScheduleTask WorkScheduleTask[]
 }
 
 model Unavailability {
@@ -33,4 +34,19 @@ model InternalWork {
   description String
   user        User     @relation(fields: [userId], references: [id])
   userId      String
+}
+
+model WorkSchedule {
+  id        String   @id @default(uuid())
+  name      String
+  startDate DateTime
+  endDate   DateTime
+}
+
+model WorkScheduleTask {
+  id        String   @id @default(uuid())
+  name      String
+  startDate DateTime
+  endDate   DateTime
+  user      User[]
 }

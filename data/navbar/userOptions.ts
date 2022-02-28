@@ -10,6 +10,12 @@ import {
 const userOptions = [
   { icon: Calendar16, label: "Planning", path: "/planning" },
   {
+    icon: User16,
+    label: "Gestion Planning",
+    path: "/manage-planning",
+    forAdmin: true,
+  },
+  {
     icon: CheckmarkOutline16,
     label: "Travaux Internes",
     path: "/internalWork",
