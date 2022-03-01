@@ -38,7 +38,7 @@ export const SelectPlanning: FC<SelectPlanningProps> = ({
     <section>
       <h2 className="title">Modifier un planning</h2>
       <Select
-        label="Choix un planning"
+        label="Choix du planning"
         itemComponent={SelectPlanningItem}
         data={plannings.map((planning) => ({
           label: planning.name,

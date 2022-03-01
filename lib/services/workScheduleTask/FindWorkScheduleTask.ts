@@ -14,6 +14,10 @@ const FindScheduleTask = z
             lte: endDate,
           },
         },
+        include: {
+          schedule: true,
+          users: true,
+        },
       })
       .catch(() => []);
   });

@@ -63,6 +63,10 @@ export const MiniEventTitleSC = styled("div", {
     fontWeight: "$bold",
     margin: "auto 0",
   },
+  ".event-name": {
+    whiteSpace: "break-spaces",
+    paddingRight: "64px",
+  },
   variants: {
     color: {
       default: {

@@ -85,8 +85,7 @@ export const BasicForm: FC<BasicFormProps> = ({
             minDate={typeInput.minDate}
             maxDate={typeInput.maxDate}
             onChange={(date) => {
-              if (date)
-                form.setFieldValue(key, new Date(date.setUTCHours(0, 0, 0, 0)));
+              if (date) form.setFieldValue(key, date);
               callback(date);
             }}
           />

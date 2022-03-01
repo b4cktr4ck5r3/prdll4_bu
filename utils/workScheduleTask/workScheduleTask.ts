@@ -1,3 +1,4 @@
+import { User, WorkSchedule, WorkScheduleTask } from "@prisma/client";
 import { z } from "zod";
 
 export type WorkScheduleTaskItemForm = {
@@ -15,3 +16,8 @@ export const ZodWorkScheduleTaskItemForm = z.object({
   startDate: z.date().or(z.string().transform((value) => new Date(value))),
   endDate: z.date().or(z.string().transform((value) => new Date(value))),
 });
+
+export type WorkScheduleTaskFull = WorkScheduleTask & {
+  schedule: WorkSchedule;
+  users: User[];
+};

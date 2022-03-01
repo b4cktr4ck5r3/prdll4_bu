@@ -16,7 +16,7 @@ export const CreateWorkScheduleTask: FC<CreateWorkScheduleTaskProps> = ({
   workScheduleId,
 }) => {
   const { workScheduleTasks, mutate: mutateWorkScheduleTasks } =
-    useWorkScheduleTasks(workScheduleId);
+    useWorkScheduleTasks({ workScheduleId });
   const { users } = useUsersInfo();
   const formNewWST = useRef<UseForm<WorkScheduleTaskFormType>>();
 
