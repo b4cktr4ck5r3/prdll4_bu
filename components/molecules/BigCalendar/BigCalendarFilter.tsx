@@ -12,6 +12,12 @@ export const BigCalendarFilterSC = styled("div", {
     maxWidth: "$384",
     flex: 1,
   },
+  ul: {
+    marginTop: "$4",
+  },
+  "li + li": {
+    marginTop: "$2",
+  },
 });
 
 export const BigCalendarFilter: FC = () => {

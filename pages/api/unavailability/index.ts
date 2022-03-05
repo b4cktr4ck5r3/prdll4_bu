@@ -1,8 +1,8 @@
 import {
   CreateUnavailability,
   DeleteUnavailability,
-  FindUnavailability,
 } from "@lib/services/unavailability";
+import GetUnavailabilities from "@lib/services/unavailability/GetUnavailabilities";
 import UpdateUnavailability from "@lib/services/unavailability/UpdateUnavailability";
 import { ZodUnavailabilityItemForm } from "@utils/unavailability/unavailability";
 import { NextApiHandler } from "next";
@@ -24,6 +24,7 @@ const QueryGetSchema = z.object({
       if (value && value !== "") return new Date(value);
       else return undefined;
     }),
+  complete: z.enum(["true"]).optional(),
 });
 
 const BodyPostSchema = z.array(
@@ -33,7 +34,7 @@ const BodyPostSchema = z.array(
   })
 );
 
-const BodyPutSchema = ZodUnavailabilityItemForm
+const BodyPutSchema = ZodUnavailabilityItemForm;
 
 const QueryIdSchema = z.object({
   id: z.string(),
@@ -51,8 +52,11 @@ const handler: NextApiHandler = async (req, res) => {
   switch (method) {
     case "GET": {
       if (userId) {
-        const { startDate, endDate } = QueryGetSchema.parse(req.query);
-        const data = await FindUnavailability(userId, startDate, endDate);
+        const { startDate, endDate, complete } = QueryGetSchema.parse(
+          req.query
+        );
+        const full = complete === "true";
+        const data = await GetUnavailabilities(full, startDate, endDate);
         res.json(data);
         break;
       }

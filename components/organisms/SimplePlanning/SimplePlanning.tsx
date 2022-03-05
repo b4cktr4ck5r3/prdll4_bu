@@ -19,6 +19,7 @@ import {
 import { BooleanString, Preferences } from "@utils/user";
 import axios from "axios";
 import dayjs from "dayjs";
+import { useSession } from "next-auth/react";
 import React, {
   useCallback,
   useContext,
@@ -75,6 +76,7 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
   SimplePlanningHandle,
   SimplePlanningProps
 > = ({ type = "ALL", onDeleteEvent, onEditEvent }, forwardedRef) => {
+  const { data: sessionData } = useSession();
   React.useImperativeHandle(forwardedRef, () => ({
     refresh() {
       if (type === Event.InternalWork) {
@@ -169,12 +171,15 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
   const findUnavailabilities = useCallback(() => {
     if (type === "ALL" || type === Event.Unavailability)
       axios
-        .get<UnavailabilityEventDTO[]>("/api/unavailability", {
-          params: {
-            startDate,
-            endDate,
-          },
-        })
+        .get<UnavailabilityEventDTO[]>(
+          `/api/user/${sessionData?.user?.sub}/unavailability`,
+          {
+            params: {
+              startDate,
+              endDate,
+            },
+          }
+        )
         .then(({ data }) =>
           setUnavailabilities(
             data.map<UnavailabilityEventSimplified>((props) => {
@@ -193,7 +198,7 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
             })
           )
         );
-  }, [startDate, endDate, type]);
+  }, [type, sessionData?.user?.sub, startDate, endDate]);
 
   const deleteInternalWork = useCallback(
     (eventId: string) => {

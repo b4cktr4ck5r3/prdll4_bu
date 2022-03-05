@@ -20,6 +20,7 @@ export const ListWorkScheduleTasks: FC<ListWorkScheduleTasksProps> = ({
   workScheduleId,
 }) => {
   const { workScheduleTasks } = useWorkScheduleTasks({ workScheduleId });
+  if (workScheduleTasks.length === 0) return null;
   return (
     <section>
       <h2 className="title">Toutes les séances</h2>

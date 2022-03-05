@@ -12,6 +12,7 @@ import {
 } from "@utils/calendar";
 import axios from "axios";
 import dayjs from "dayjs";
+import { useSession } from "next-auth/react";
 import React, { useCallback, useEffect, useState } from "react";
 
 export const HistorySC = styled("div", BoxSC, {
@@ -46,6 +47,8 @@ const HistoryComponent: React.ForwardRefRenderFunction<
   HistoryHandle,
   HistoryProps
 > = ({ type, onDeleteEvent, onEditEvent }, forwardedRef) => {
+  const { data: sessionData } = useSession();
+
   React.useImperativeHandle(forwardedRef, () => ({
     refresh() {
       refreshData();
@@ -81,7 +84,9 @@ const HistoryComponent: React.ForwardRefRenderFunction<
   const findUnavailabilities = useCallback(() => {
     if (type === Event.Unavailability)
       axios
-        .get<UnavailabilityEventDTO[]>("/api/unavailability", {})
+        .get<UnavailabilityEventDTO[]>(
+          `/api/user/${sessionData?.user?.sub}/unavailability`
+        )
         .then(({ data }) => {
           setItems(
             data.map<UnavailabilityEventSimplified>((props) => {
@@ -100,7 +105,7 @@ const HistoryComponent: React.ForwardRefRenderFunction<
             })
           );
         });
-  }, [type]);
+  }, [sessionData?.user?.sub, type]);
 
   const refreshData = useCallback(() => {
     if (type === Event.InternalWork) {

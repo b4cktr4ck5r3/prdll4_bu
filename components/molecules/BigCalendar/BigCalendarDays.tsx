@@ -1,3 +1,4 @@
+import useUnavailabilities from "@hooks/useUnavailabilities";
 import useWorkScheduleTasks from "@hooks/useWorkScheduleTasks";
 import { BigCalendarContext } from "@lib/contexts";
 import { Text } from "@mantine/core";
@@ -92,6 +93,7 @@ export const BigCalendarDays: FC<BigCalendarDaysProps> = ({
   }, [allWeeksOfMonth]);
 
   const { workScheduleTasks } = useWorkScheduleTasks({ startDate, endDate });
+  const { unavailabilities } = useUnavailabilities({ startDate, endDate });
 
   return (
     <BigCalendarDaysSC>
@@ -108,7 +110,17 @@ export const BigCalendarDays: FC<BigCalendarDaysProps> = ({
         )
         .map((daysOfWeek) =>
           daysOfWeek.map((date) => {
-            const tasks = workScheduleTasks
+            const dayTasks = workScheduleTasks
+              .filter(({ startDate }) =>
+                CompareDateToDateSimplified(new Date(startDate), date)
+              )
+              .sort(
+                (a, b) =>
+                  new Date(a.startDate).getTime() -
+                    new Date(b.startDate).getTime() ||
+                  new Date(a.endDate).getTime() - new Date(b.endDate).getTime()
+              );
+            const dayUnavailabilities = unavailabilities
               .filter(({ startDate }) =>
                 CompareDateToDateSimplified(new Date(startDate), date)
               )
@@ -127,7 +139,7 @@ export const BigCalendarDays: FC<BigCalendarDaysProps> = ({
                   {date.date.toString().padStart(2, "0")}
                 </BigCalendarDaysItemLabelSC>
                 <ul>
-                  {tasks
+                  {dayTasks
                     .filter(
                       (task) =>
                         !excludedPlannings.includes(task.schedule.id) &&
@@ -162,6 +174,13 @@ export const BigCalendarDays: FC<BigCalendarDaysProps> = ({
                         ))}
                       </li>
                     ))}
+                  {dayUnavailabilities.length > 0 && (
+                    <li>
+                      <Text size="xs" weight="bold" color="black">
+                        {dayUnavailabilities.length} indisponibilité(s)
+                      </Text>
+                    </li>
+                  )}
                 </ul>
               </BigCalendarDaysItemSC>
             );
