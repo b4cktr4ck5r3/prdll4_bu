@@ -1,3 +1,4 @@
+import { CardEventWorkScheduleTask } from "@components/molecules/CardEvent/CardEventWorkScheduleTask";
 import useWorkScheduleTasks from "@hooks/useWorkScheduleTasks";
 import { styled } from "@stitches";
 import dayjs from "dayjs";
@@ -7,8 +8,8 @@ export type ListWorkScheduleTasksProps = {
   workScheduleId: string;
 };
 
-const WorkScheduleTasksItemSC = styled("li", {
-  "& + &": {
+const WorkScheduleTasksSC = styled("ul", {
+  "& > * + *": {
     marginTop: "$12",
   },
   ".name": {
@@ -24,19 +25,11 @@ export const ListWorkScheduleTasks: FC<ListWorkScheduleTasksProps> = ({
   return (
     <section>
       <h2 className="title">Toutes les séances</h2>
-      <ul>
+      <WorkScheduleTasksSC>
         {workScheduleTasks.map((task) => (
-          <WorkScheduleTasksItemSC key={task.id}>
-            <div className="name">{task.name}</div>
-            <div>
-              {`${dayjs(task.startDate).format("HH:mm")} - ${dayjs(
-                task.endDate
-              ).format("HH:mm")}`}
-            </div>
-            <div>Par {task.users.map((user) => user.full_name).join(", ")}</div>
-          </WorkScheduleTasksItemSC>
+          <CardEventWorkScheduleTask key={task.id} workScheduleTask={task} />
         ))}
-      </ul>
+      </WorkScheduleTasksSC>
     </section>
   );
 };
