@@ -110,26 +110,13 @@ export const BigCalendarDays: FC<BigCalendarDaysProps> = ({
         )
         .map((daysOfWeek) =>
           daysOfWeek.map((date) => {
-            const dayTasks = workScheduleTasks
-              .filter(({ startDate }) =>
+            const dayTasks = workScheduleTasks.filter(({ startDate }) =>
+              CompareDateToDateSimplified(new Date(startDate), date)
+            );
+            const dayUnavailabilities = unavailabilities.filter(
+              ({ startDate }) =>
                 CompareDateToDateSimplified(new Date(startDate), date)
-              )
-              .sort(
-                (a, b) =>
-                  new Date(a.startDate).getTime() -
-                    new Date(b.startDate).getTime() ||
-                  new Date(a.endDate).getTime() - new Date(b.endDate).getTime()
-              );
-            const dayUnavailabilities = unavailabilities
-              .filter(({ startDate }) =>
-                CompareDateToDateSimplified(new Date(startDate), date)
-              )
-              .sort(
-                (a, b) =>
-                  new Date(a.startDate).getTime() -
-                    new Date(b.startDate).getTime() ||
-                  new Date(a.endDate).getTime() - new Date(b.endDate).getTime()
-              );
+            );
             return (
               <BigCalendarDaysItemSC
                 active={CompareDateToDateSimplified(currentDate, date)}
@@ -169,7 +156,7 @@ export const BigCalendarDays: FC<BigCalendarDaysProps> = ({
                             color="gray"
                             size="xs"
                           >
-                            {`${user.full_name}`}
+                            {`@${user.full_name}`}
                           </Text>
                         ))}
                       </li>

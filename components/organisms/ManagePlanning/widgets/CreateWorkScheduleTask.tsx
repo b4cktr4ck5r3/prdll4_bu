@@ -28,11 +28,13 @@ export const CreateWorkScheduleTask: FC<CreateWorkScheduleTaskProps> = ({
           formNewWST.current?.onSubmit(
             ({ date, name, time: [startDate, endDate], users }) => {
               const start = dayjs(date)
+                .millisecond(0)
                 .second(0)
                 .minute(startDate.getMinutes())
                 .hour(startDate.getHours());
 
               const end = dayjs(date)
+                .millisecond(0)
                 .second(0)
                 .minute(endDate.getMinutes())
                 .hour(endDate.getHours());

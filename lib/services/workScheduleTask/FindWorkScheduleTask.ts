@@ -18,9 +18,14 @@ const FindScheduleTask = z
           schedule: true,
           users: true,
         },
-        orderBy: {
-          startDate: "asc",
-        },
+        orderBy: [
+          {
+            startDate: "asc",
+          },
+          {
+            endDate: "asc",
+          },
+        ],
       })
       .catch(() => []);
   });
