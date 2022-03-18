@@ -1,5 +1,6 @@
 import {
   Calendar16,
+  CalendarTools16,
   CheckmarkOutline16,
   Error16,
   Exit16,
@@ -10,7 +11,7 @@ import {
 const userOptions = [
   { icon: Calendar16, label: "Planning", path: "/planning" },
   {
-    icon: User16,
+    icon: CalendarTools16,
     label: "Gestion Planning",
     path: "/manage-planning",
     forAdmin: true,
