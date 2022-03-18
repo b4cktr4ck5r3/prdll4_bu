@@ -83,17 +83,21 @@ Pour lancer le projet, il faut disposer de [Node.js](https://nodejs.dev/) et [np
 
 ### Installation
 
-1. Clone the repo
+1. Cloner le répertoire git
    ```sh
    git clone https://github.com/b4cktr4ck5r3/prdll4_bu.git
    ```
-2. Install NPM packages
+2. Installer les dépendances
    ```sh
    npm install
    ```
-3. Lancer le projet
-   ```js
-   npm run start
+3. Build le projet
+   ```sh
+   npm run build
+   ```
+4. Lancer le projet sur le port 8080
+   ```sh
+   npm run start -p 8080
    ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -105,23 +109,12 @@ Pour lancer le projet, il faut disposer de [Node.js](https://nodejs.dev/) et [np
 
 L'utilisation de CPlanner permet aux responsables de formation situées à la biblithèque universaite d'Evry de gérer les plannings des différents acteurs.
 
-_Pour plus de détail, merci de consulter la documentation utilisateur [Documentation](https://example.com)_
-
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- LICENSE -->
 ## Licence
 
 Distrubuée sous la licence [CC BY-NC-SA 4.0 License](http://creativecommons.org/licenses/by/4.0/). Voir `LICENSE.txt`pour plus d'informations.
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- CONTACT -->
-## Contact
-
-Lien du projet : [https://github.com/b4cktr4ck5r3/prdll4_bu](https://github.com/b4cktr4ck5r3/prdll4_bu)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
