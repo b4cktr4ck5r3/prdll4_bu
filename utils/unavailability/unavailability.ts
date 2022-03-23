@@ -12,5 +12,5 @@ export const ZodUnavailabilityItemForm = z.object({
 });
 
 export type UnavailabilityFull = Unavailability & {
-  user: User[];
+  user: User;
 };

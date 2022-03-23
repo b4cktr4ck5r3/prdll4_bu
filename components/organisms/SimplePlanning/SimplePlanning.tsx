@@ -17,6 +17,7 @@ import {
   UnavailabilityEventDTO,
   UnavailabilityEventSimplified,
 } from "@utils/calendar";
+import { UnavailabilityItemForm } from "@utils/unavailability";
 import { BooleanString, Preferences } from "@utils/user";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -248,7 +249,7 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
   );
 
   const updateUnavailability = useCallback(
-    (eventId: string, data: UnavailabilityFormType) => {
+    (eventId: string, data: UnavailabilityItemForm) => {
       if (type === Event.Unavailability) {
         axios
           .put("/api/unavailability", data, {
@@ -326,9 +327,25 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
               }`}
               infoLeft={[leftTime, rightTime]}
               onDelete={() => deleteUnavailability(id)}
-              onEdit={(data) =>
-                updateUnavailability(id, data as UnavailabilityFormType)
-              }
+              onEdit={({
+                date,
+                time: [startDate, endDate],
+              }: UnavailabilityFormType) => {
+                const start = dayjs(date)
+                  .second(0)
+                  .minute(startDate.getMinutes())
+                  .hour(startDate.getHours());
+
+                const end = dayjs(date)
+                  .second(0)
+                  .minute(endDate.getMinutes())
+                  .hour(endDate.getHours());
+
+                updateUnavailability(id, {
+                  startDate: start.toDate(),
+                  endDate: end.toDate(),
+                });
+              }}
               type={Event.Unavailability}
             />
           );

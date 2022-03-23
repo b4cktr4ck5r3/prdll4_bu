@@ -24,7 +24,6 @@ const QueryGetSchema = z.object({
       if (value && value !== "") return new Date(value);
       else return undefined;
     }),
-  complete: z.enum(["true"]).optional(),
 });
 
 const BodyPostSchema = z.array(
@@ -52,11 +51,8 @@ const handler: NextApiHandler = async (req, res) => {
   switch (method) {
     case "GET": {
       if (userId) {
-        const { startDate, endDate, complete } = QueryGetSchema.parse(
-          req.query
-        );
-        const full = complete === "true";
-        const data = await GetUnavailabilities(full, startDate, endDate);
+        const { startDate, endDate } = QueryGetSchema.parse(req.query);
+        const data = await GetUnavailabilities(startDate, endDate);
         res.json(data);
         break;
       }

@@ -1,3 +1,4 @@
+import { BigCalendarModal } from "@components/molecules/BigCalendar/BigCalendarModal";
 import useUnavailabilities from "@hooks/useUnavailabilities";
 import useWorkScheduleTasks from "@hooks/useWorkScheduleTasks";
 import { BigCalendarContext } from "@lib/contexts";
@@ -5,13 +6,14 @@ import { Text } from "@mantine/core";
 import { styled } from "@stitches";
 import {
   CompareDateToDateSimplified,
+  DateSimplified,
   GetActiveWeekIndex,
   GetAllDayNames,
   GetDaysInMonth,
 } from "@utils/calendar";
 import { CalendarView } from "@utils/calendar/Calendar";
 import dayjs from "dayjs";
-import { FC, useContext, useMemo } from "react";
+import { FC, useContext, useMemo, useState } from "react";
 
 const AllDayNames = GetAllDayNames();
 
@@ -25,6 +27,7 @@ export const BigCalendarDaysItemLabelSC = styled("span", {
 });
 export const BigCalendarDaysItemSC = styled("div", {
   position: "relative",
+  cursor: "pointer",
   borderColor: "$neutral9",
   borderStyle: "$solid",
   borderTopWidth: "2px",
@@ -77,6 +80,7 @@ export const BigCalendarDays: FC<BigCalendarDaysProps> = ({
   dateSelected,
   view,
 }) => {
+  const [modalDate, setModalDate] = useState<DateSimplified>();
   const { excludedPlannings, excludedUsers } = useContext(BigCalendarContext);
   const allWeeksOfMonth = useMemo(
     () => GetDaysInMonth(dateSelected),
@@ -94,6 +98,20 @@ export const BigCalendarDays: FC<BigCalendarDaysProps> = ({
 
   const { workScheduleTasks } = useWorkScheduleTasks({ startDate, endDate });
   const { unavailabilities } = useUnavailabilities({ startDate, endDate });
+
+  const modalWorkScheduleTasks = useMemo(() => {
+    if (modalDate)
+      return workScheduleTasks.filter(({ startDate }) =>
+        CompareDateToDateSimplified(new Date(startDate), modalDate)
+      );
+  }, [modalDate, workScheduleTasks]);
+
+  const modalUnavailabilities = useMemo(() => {
+    if (modalDate)
+      return unavailabilities.filter(({ startDate }) =>
+        CompareDateToDateSimplified(new Date(startDate), modalDate)
+      );
+  }, [modalDate, unavailabilities]);
 
   return (
     <BigCalendarDaysSC>
@@ -121,6 +139,7 @@ export const BigCalendarDays: FC<BigCalendarDaysProps> = ({
               <BigCalendarDaysItemSC
                 active={CompareDateToDateSimplified(currentDate, date)}
                 key={JSON.stringify(date)}
+                onClick={() => setModalDate(date)}
               >
                 <BigCalendarDaysItemLabelSC className="label">
                   {date.date.toString().padStart(2, "0")}
@@ -173,6 +192,12 @@ export const BigCalendarDays: FC<BigCalendarDaysProps> = ({
             );
           })
         )}
+      <BigCalendarModal
+        date={modalDate}
+        onClose={() => setModalDate(undefined)}
+        workScheduleTasks={modalWorkScheduleTasks}
+        unavailabilities={modalUnavailabilities}
+      />
     </BigCalendarDaysSC>
   );
 };
