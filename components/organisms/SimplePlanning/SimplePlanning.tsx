@@ -4,6 +4,7 @@ import { InternalWorkFormType } from "@data/form";
 import { UnavailabilityFormType } from "@data/form/unavailability";
 import useUsersInfo from "@hooks/useUsersInfo";
 import { CalendarContext, PlanningContext } from "@lib/contexts";
+import { Text } from "@mantine/core";
 import { useLocalStorageValue } from "@mantine/hooks";
 import { styled } from "@stitches";
 import {
@@ -293,11 +294,22 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
               event={event}
               title={"Travail Interne"}
               description={
-                (description || "Sans description") +
-                `\n${
-                  "@" + users.find((e) => e.id === event.userId)?.full_name ||
-                  "_Inconnu_"
-                }`
+                <>
+                  <Text>
+                    {(description || "Sans description") +
+                      `\n${
+                        "@" +
+                          users.find((e) => e.id === event.userId)?.full_name ||
+                        "_Inconnu_"
+                      }`}
+                  </Text>
+                  <Text
+                    color={event.validated ? "green" : "orange"}
+                    weight={"bold"}
+                  >
+                    {event.validated ? "Validé" : "Non validé"}
+                  </Text>
+                </>
               }
               infoLeft={`${duration}h`}
               onDelete={() => deleteInternalWork(id)}

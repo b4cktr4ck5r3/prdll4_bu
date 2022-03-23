@@ -15,7 +15,7 @@ import {
   UnavailabilityEventSimplified,
 } from "@utils/calendar";
 import dayjs from "dayjs";
-import { FC, useCallback, useMemo, useState } from "react";
+import { FC, ReactNode, useCallback, useMemo, useState } from "react";
 
 export const MiniEventButtonsSC = styled("div", {
   display: "flex",
@@ -95,7 +95,7 @@ export type MiniEventProps = VariantProps<typeof MiniEventTitleSC> & {
   type: Event;
   event?: InternalWorkEventSimplified | UnavailabilityEventSimplified;
   title: string;
-  description: string;
+  description: ReactNode;
   infoLeft: string | [string, string];
   onDelete?: () => void;
   onEdit?: (data: InternalWorkFormType | UnavailabilityFormType) => void;

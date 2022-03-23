@@ -2,6 +2,7 @@ import { BoxSC } from "@components/atoms";
 import { MiniEvent } from "@components/molecules";
 import { InternalWorkFormType } from "@data/form";
 import { UnavailabilityFormType } from "@data/form/unavailability";
+import { Text } from "@mantine/core";
 import { styled } from "@stitches/react";
 import {
   Event,
@@ -183,7 +184,14 @@ const HistoryComponent: React.ForwardRefRenderFunction<
                 "default",
                 { month: "long" }
               )} ${dateObject.getFullYear()}`}
-              description={""}
+              description={
+                <Text
+                  color={event.validated ? "green" : "orange"}
+                  weight={"bold"}
+                >
+                  {event.validated ? "Validé" : "Non validé"}
+                </Text>
+              }
               infoLeft={`${duration}h`}
               onDelete={() => deleteEvent(id)}
               onEdit={(data) => updateEvent(id, data)}
