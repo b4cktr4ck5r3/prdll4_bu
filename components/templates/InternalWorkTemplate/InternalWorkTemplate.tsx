@@ -3,13 +3,17 @@ import { DefaultLayout } from "@components/layouts";
 import {
   History,
   InternalWorkForm,
+  ManageInternalWorkModal,
   SimplePlanning,
 } from "@components/organisms";
+import useAccountInfo from "@hooks/useAccountInfo";
+import useInternalWorks from "@hooks/useInternalWorks";
 import { PlanningContext } from "@lib/contexts";
+import { Button } from "@mantine/core";
 import { useNotifications } from "@mantine/notifications";
 import { styled } from "@stitches";
 import { Event } from "@utils/calendar";
-import React, { FC, useCallback, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 
 export const InternalWorkTemplateSC = styled("div", {
   display: "flex",
@@ -23,7 +27,18 @@ export const InternalWorkTemplateSC = styled("div", {
   },
 });
 
+export const InternalWorkToValidateSC = styled("div", {
+  width: "$full",
+});
+
 export const InternalWorkTemplate: FC = () => {
+  const { isAdmin } = useAccountInfo();
+  const [openedModalIW, setOpenedModalIW] = useState(true);
+  const { internalWorks: internalWorksNotValidated, mutate } = useInternalWorks(
+    {
+      validated: false,
+    }
+  );
   const [synchronizedDate, setSynchronizedDate] = useState(new Date());
   const [refresh, setRefresh] = useState(false);
 
@@ -35,9 +50,9 @@ export const InternalWorkTemplate: FC = () => {
 
   const refreshComponents = useCallback(() => {
     if (historyRef.current) historyRef.current.refresh();
-
     if (simplePlanningRef.current) simplePlanningRef.current.refresh();
-  }, []);
+    mutate();
+  }, [mutate]);
 
   const notifications = useNotifications();
 
@@ -65,12 +80,28 @@ export const InternalWorkTemplate: FC = () => {
     });
   }, [notifications, refreshComponents]);
 
+  useEffect(() => {
+    if (internalWorksNotValidated.length === 0) setOpenedModalIW(false);
+  }, [internalWorksNotValidated.length]);
+
   return (
     <PlanningContext.Provider
       value={{ refresh, synchronizedDate, setRefresh, setSynchronizedDate }}
     >
       <DefaultLayout>
         <InternalWorkTemplateSC>
+          {isAdmin && (
+            <InternalWorkToValidateSC>
+              <Button
+                disabled={internalWorksNotValidated.length === 0}
+                color="orange"
+                size="sm"
+                onClick={() => setOpenedModalIW(true)}
+              >
+                {internalWorksNotValidated.length} travaux internes à valider
+              </Button>
+            </InternalWorkToValidateSC>
+          )}
           <SimplePlanning
             ref={simplePlanningRef}
             type={Event.InternalWork}
@@ -86,6 +117,13 @@ export const InternalWorkTemplate: FC = () => {
           />
         </InternalWorkTemplateSC>
       </DefaultLayout>
+      <ManageInternalWorkModal
+        listInternalWorks={internalWorksNotValidated}
+        opened={openedModalIW}
+        onClose={() => setOpenedModalIW(false)}
+        title={"Travaux internes non validés"}
+        onChange={refreshComponents}
+      />
     </PlanningContext.Provider>
   );
 };

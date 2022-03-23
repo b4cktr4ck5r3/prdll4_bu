@@ -4,14 +4,14 @@ import { z } from "zod";
 
 const UpdateInternalWork = z
   .function()
-  .args(z.string(), ZodInternalWorkItemForm)
+  .args(z.string(), ZodInternalWorkItemForm.partial())
   .implement(async (id, data) => {
     return prisma.internalWork
       .update({
-          data: data,
-          where: {
-              id: id
-          }
+        data: data,
+        where: {
+          id: id,
+        },
       })
       .then(() => true)
       .catch(() => false);

@@ -24,12 +24,18 @@ const QueryGetSchema = z.object({
       if (value && value !== "") return new Date(value);
       else return undefined;
     }),
+  validated: z
+    .string()
+    .optional()
+    .transform((value) => {
+      if (value === "true") return true;
+      else if (value === "false") return false;
+      else return undefined;
+    }),
 });
 
-const BodyPostSchema = z.array(
-  ZodInternalWorkItemForm
-);
-const BodyPutSchema = ZodInternalWorkItemForm
+const BodyPostSchema = z.array(ZodInternalWorkItemForm);
+const BodyPutSchema = ZodInternalWorkItemForm.partial();
 
 const QueryIdSchema = z.object({
   id: z.string(),
@@ -47,8 +53,15 @@ const handler: NextApiHandler = async (req, res) => {
   switch (method) {
     case "GET": {
       if (userId) {
-        const { startDate, endDate } = QueryGetSchema.parse(req.query);
-        const data = await FindInternalWork(userId, startDate, endDate);
+        const { startDate, endDate, validated } = QueryGetSchema.parse(
+          req.query
+        );
+        const data = await FindInternalWork(
+          userId,
+          startDate,
+          endDate,
+          validated
+        );
         res.json(data);
         break;
       }

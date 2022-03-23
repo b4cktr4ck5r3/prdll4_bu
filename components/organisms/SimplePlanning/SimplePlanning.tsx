@@ -2,6 +2,7 @@ import { BoxSC } from "@components/atoms";
 import { MiniCalendar, MiniEvent, MiniEventSC } from "@components/molecules";
 import { InternalWorkFormType } from "@data/form";
 import { UnavailabilityFormType } from "@data/form/unavailability";
+import useUsersInfo from "@hooks/useUsersInfo";
 import { CalendarContext, PlanningContext } from "@lib/contexts";
 import { useLocalStorageValue } from "@mantine/hooks";
 import { styled } from "@stitches";
@@ -98,6 +99,7 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
   const [unavailabilities, setUnavailabilities] = useState<
     UnavailabilityEventSimplified[]
   >([]);
+  const { users } = useUsersInfo();
 
   const daysInMonth = useMemo(
     () => GetDaysInMonth(dateSelected),
@@ -289,7 +291,13 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
               key={i}
               event={event}
               title={"Travail Interne"}
-              description={description || "Sans description"}
+              description={
+                (description || "Sans description") +
+                `\n${
+                  "@" + users.find((e) => e.id === event.userId)?.full_name ||
+                  "_Inconnu_"
+                }`
+              }
               infoLeft={`${duration}h`}
               onDelete={() => deleteInternalWork(id)}
               onEdit={(data) =>
@@ -312,7 +320,10 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
               description={`${startDate.getDate()} ${startDate.toLocaleString(
                 "default",
                 { month: "long" }
-              )} ${startDate.getFullYear()}`}
+              )} ${startDate.getFullYear()}\n${
+                "@" + users.find((e) => e.id === event.userId)?.full_name ||
+                "_Inconnu_"
+              }`}
               infoLeft={[leftTime, rightTime]}
               onDelete={() => deleteUnavailability(id)}
               onEdit={(data) =>

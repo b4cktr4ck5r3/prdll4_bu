@@ -170,7 +170,7 @@ const HistoryComponent: React.ForwardRefRenderFunction<
 
   return (
     <HistorySC>
-      <div className="title">Historique</div>
+      <div className="title">Mon historique</div>
       {type === Event.InternalWork &&
         (items as InternalWorkEventSimplified[]).map((event, i) => {
           const { id, date, duration } = event;

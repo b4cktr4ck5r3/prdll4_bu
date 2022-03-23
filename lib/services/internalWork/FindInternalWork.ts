@@ -3,8 +3,13 @@ import { z } from "zod";
 
 const FindInternalWork = z
   .function()
-  .args(z.string(), z.date().optional(), z.date().optional())
-  .implement(async (userId, startDate, endDate) => {
+  .args(
+    z.string(),
+    z.date().optional(),
+    z.date().optional(),
+    z.boolean().optional()
+  )
+  .implement(async (userId, startDate, endDate, validated) => {
     return prisma.internalWork
       .findMany({
         where: {
@@ -12,6 +17,18 @@ const FindInternalWork = z
           date: {
             gte: startDate,
             lte: endDate,
+          },
+          validated,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              password: false,
+              full_name: true,
+              role: true,
+            },
           },
         },
       })
