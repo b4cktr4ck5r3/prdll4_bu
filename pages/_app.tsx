@@ -1,6 +1,7 @@
 import { ModalsProvider } from "@mantine/modals";
 import { NotificationsProvider } from "@mantine/notifications";
 import { MantineProvider } from "@mantine/styles";
+import { Font } from "@react-pdf/renderer";
 import { globalStyles, theme } from "@stitches";
 import "destyle.css/destyle.min.css";
 import { SessionProvider } from "next-auth/react";
@@ -11,6 +12,35 @@ import { FC, useEffect } from "react";
 const App: FC<AppProps> = ({ Component, pageProps }) => {
   useEffect(() => {
     globalStyles();
+  }, []);
+
+  useEffect(() => {
+    Font.register({
+      family: "Century Gothic",
+
+      fonts: [
+        {
+          src: "/fonts/CenturyGothicRegular.ttf",
+          fontStyle: "normal",
+          fontWeight: "normal",
+        },
+        {
+          src: "/fonts/CenturyGothicRegularItalic.ttf",
+          fontStyle: "italic",
+          fontWeight: "normal",
+        },
+        {
+          src: "/fonts/CenturyGothicBold.ttf",
+          fontStyle: "normal",
+          fontWeight: "bold",
+        },
+        {
+          src: "/fonts/CenturyGothicBoldItalic.ttf",
+          fontStyle: "italic",
+          fontWeight: "bold",
+        },
+      ],
+    });
   }, []);
 
   return (
