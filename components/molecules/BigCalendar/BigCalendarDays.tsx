@@ -69,17 +69,8 @@ export const BigCalendarDaysSC = styled("div", {
   color: "$neutral7",
 });
 
-export type BigCalendarDaysProps = {
-  currentDate: Date;
-  dateSelected: Date;
-  view: CalendarView;
-};
-
-export const BigCalendarDays: FC<BigCalendarDaysProps> = ({
-  currentDate,
-  dateSelected,
-  view,
-}) => {
+export const BigCalendarDays: FC = () => {
+  const { currentDate, dateSelected, view } = useContext(BigCalendarContext);
   const [modalDate, setModalDate] = useState<DateSimplified>();
   const { excludedPlannings, excludedUsers } = useContext(BigCalendarContext);
   const allWeeksOfMonth = useMemo(

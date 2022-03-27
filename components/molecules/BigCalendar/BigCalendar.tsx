@@ -4,6 +4,7 @@ import {
   Filter16,
   View16,
 } from "@carbon/icons-react";
+import { BigCalendarExportButton } from "@components/molecules/BigCalendar/BigCalendarExportButton";
 import { BigCalendarFilter } from "@components/molecules/BigCalendar/BigCalendarFilter";
 import { BigCalendarContext } from "@lib/contexts";
 import { ActionIcon, Button, Group } from "@mantine/core";
@@ -48,6 +49,9 @@ export const BigCalendar: FC = () => {
   return (
     <BigCalendarContext.Provider
       value={{
+        view,
+        currentDate,
+        dateSelected,
         excludedPlannings,
         excludedUsers,
         excludedPlanningsHandlers,
@@ -123,18 +127,11 @@ export const BigCalendar: FC = () => {
             >
               Filtre
             </Button>
+            <BigCalendarExportButton />
           </Group>
         </div>
 
-        {showFilter ? (
-          <BigCalendarFilter />
-        ) : (
-          <BigCalendarDays
-            currentDate={currentDate}
-            dateSelected={dateSelected}
-            view={view}
-          />
-        )}
+        {showFilter ? <BigCalendarFilter /> : <BigCalendarDays />}
       </BigCalendarSC>
     </BigCalendarContext.Provider>
   );
