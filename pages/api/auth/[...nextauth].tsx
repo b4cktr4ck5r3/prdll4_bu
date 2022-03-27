@@ -24,7 +24,7 @@ export default NextAuth({
           },
         });
 
-        if (!user) return null;
+        if (!user || !user.active) return null;
 
         const allow = await compare(password, user.password);
 

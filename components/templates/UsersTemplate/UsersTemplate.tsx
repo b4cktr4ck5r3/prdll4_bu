@@ -1,7 +1,7 @@
 import { UsersBoxSC } from "@components/atoms";
 import { DefaultLayout } from "@components/layouts";
 import { UserForm } from "@components/organisms";
-import { Button, Modal } from "@mantine/core";
+import { Button, Modal, SegmentedControl } from "@mantine/core";
 import { styled } from "@stitches";
 import { Role, UserSimplified } from "@utils/user";
 import { ResetPasswordInfo } from "@utils/user/Password";
@@ -37,6 +37,9 @@ export const UsersTemplateSC = styled("div", {
 
 export const UsersTemplate: FC = () => {
   const { data } = useSession();
+  const [filterStatusUser, setFilterStatusUser] = useState<
+    "true" | "false" | "null"
+  >("true");
   const [currentUsers, setCurrentUsers] = useState<UserSimplified[]>([]);
   const [newPasswordInfo, setNewPasswordInfo] =
     useState<ResetPasswordInfo | null>(null);
@@ -54,12 +57,14 @@ export const UsersTemplate: FC = () => {
       .catch(() => alert("Error reset password"));
   }, []);
 
-  const deleteUser = useCallback(
-    (userId: string) => {
+  const changeStatusUser = useCallback(
+    (userId: string, value: boolean) => {
       axios
-        .delete(`/api/user/${userId}`)
+        .put(`/api/user/${userId}`, {
+          active: value,
+        })
         .then(searchUsers)
-        .catch(() => alert("Error delete user"));
+        .catch(() => alert("Error disable user"));
     },
     [searchUsers]
   );
@@ -83,56 +88,81 @@ export const UsersTemplate: FC = () => {
       <UsersTemplateSC>
         <UsersBoxSC>
           <h2 className="title">Liste des utilisateurs</h2>
+          <SegmentedControl
+            data={[
+              { label: "Tous", value: "null" },
+              { label: "Actif", value: "true" },
+              { label: "Inactif", value: "false" },
+            ]}
+            value={filterStatusUser}
+            onChange={(value: "true" | "false" | "null") =>
+              setFilterStatusUser(value)
+            }
+            style={{ marginTop: 0 }}
+          />
           <ul>
-            {currentUsers.map((user) => {
-              return (
-                <UserRowSC key={user.id}>
-                  <h3>{user.full_name}</h3>
-                  <div className="infos">
-                    <div>ID : {user.id}</div>
-                    <div>
-                      {"Nom d'utilisateur"} : {user.username}
+            {currentUsers
+              .filter(
+                ({ active }) =>
+                  filterStatusUser === "null" ||
+                  (filterStatusUser === "true" && active) ||
+                  (filterStatusUser === "false" && !active)
+              )
+              .map((user) => {
+                return (
+                  <UserRowSC key={user.id}>
+                    <h3>{user.full_name}</h3>
+                    <div className="infos">
+                      <div>ID : {user.id}</div>
+                      <div>
+                        {"Nom d'utilisateur"} : {user.username}
+                      </div>
+                      <div>Role : {user.role}</div>
                     </div>
-                    <div>Role : {user.role}</div>
-                  </div>
-                  <ul className="actions">
-                    {data?.user?.sub !== user.id && (
-                      <li>
-                        <Button
-                          size="xs"
-                          color="indigo"
-                          onClick={() => resetUserPassword(user.id)}
-                        >
-                          Changer le mot de passe
-                        </Button>
-                      </li>
-                    )}
-                    {user.role !== Role.ADMIN && (
-                      <>
+                    <ul className="actions">
+                      {data?.user?.sub !== user.id && (
                         <li>
                           <Button
                             size="xs"
-                            color="orange"
-                            onClick={() => upgradeUserRole(user.id)}
+                            color="indigo"
+                            onClick={() => resetUserPassword(user.id)}
                           >
-                            Transformer en administrateur
+                            Changer le mot de passe
                           </Button>
                         </li>
-                        <li>
-                          <Button
-                            size="xs"
-                            color="red"
-                            onClick={() => deleteUser(user.id)}
-                          >
-                            Supprimer le compte
-                          </Button>
-                        </li>
-                      </>
-                    )}
-                  </ul>
-                </UserRowSC>
-              );
-            })}
+                      )}
+                      {user.role !== Role.ADMIN && (
+                        <>
+                          <li>
+                            <Button
+                              size="xs"
+                              color="orange"
+                              onClick={() => upgradeUserRole(user.id)}
+                            >
+                              Transformer en administrateur
+                            </Button>
+                          </li>
+                          <li>
+                            {
+                              <Button
+                                size="xs"
+                                color={user.active ? "red" : "teal"}
+                                onClick={() =>
+                                  changeStatusUser(user.id, !user.active)
+                                }
+                              >
+                                {user.active
+                                  ? "Désactiver le compte"
+                                  : "Réactiver le compte"}
+                              </Button>
+                            }
+                          </li>
+                        </>
+                      )}
+                    </ul>
+                  </UserRowSC>
+                );
+              })}
           </ul>
         </UsersBoxSC>
         <UsersBoxSC>
@@ -149,15 +179,6 @@ export const UsersTemplate: FC = () => {
           <div>Utilisateur : {newPasswordInfo?.userName}</div>
           <div>Mot de passe temporaire: {newPasswordInfo?.newPassword}</div>
         </Modal>
-        {/* <Modal
-          opened={Boolean(newPasswordInfo)}
-          onClose={() => setNewPasswordInfo(null)}
-          title="Nouveau utilisateur"
-          centered
-        >
-          <div>Utilisateur : {newPasswordInfo?.userName}</div>
-          <div>Mot de passe temporaire: {newPasswordInfo?.newPassword}</div>
-        </Modal> */}
       </UsersTemplateSC>
     </DefaultLayout>
   );

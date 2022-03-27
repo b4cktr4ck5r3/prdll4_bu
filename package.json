@@ -5,6 +5,7 @@
     "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
+    "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "lint": "next lint",
     "db:studio": "prisma studio",

@@ -5,6 +5,7 @@ import { getToken } from "next-auth/jwt";
 import { z } from "zod";
 
 const QueryGetSchema = z.object({
+  active: z.enum(["true", "false"]).optional(),
   complete: z.enum(["true"]).optional(),
   role: z.string().optional(),
 });
@@ -25,9 +26,11 @@ const handler: NextApiHandler = async (req, res) => {
   switch (method) {
     case "GET": {
       if (token && token.sub && token.role === Role.ADMIN) {
-        const { role, complete } = QueryGetSchema.parse(req.query);
+        const { active, role, complete } = QueryGetSchema.parse(req.query);
         const full = complete === "true";
-        const data = await GetUsers(full, role);
+        const status =
+          typeof active === "undefined" ? undefined : active === "true";
+        const data = await GetUsers(full, role, status);
         res.json(data);
       } else res.status(403).end("Forbidden");
       break;

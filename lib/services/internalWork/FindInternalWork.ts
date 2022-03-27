@@ -28,6 +28,7 @@ const FindInternalWork = z
               password: false,
               full_name: true,
               role: true,
+              active: true,
             },
           },
         },
