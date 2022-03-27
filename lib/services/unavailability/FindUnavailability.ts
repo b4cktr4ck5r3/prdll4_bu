@@ -14,6 +14,14 @@ const FindUnavailability = z
             lte: endDate,
           },
         },
+        orderBy: [
+          {
+            endDate: "desc",
+          },
+          {
+            startDate: "desc",
+          },
+        ],
       })
       .catch(() => []);
   });

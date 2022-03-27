@@ -31,6 +31,11 @@ const FindInternalWork = z
             },
           },
         },
+        orderBy: [
+          {
+            date: "desc",
+          },
+        ],
       })
       .catch(() => []);
   });
