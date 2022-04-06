@@ -13,6 +13,12 @@ export const SettingBoxSC = styled("div", BoxSC, {
     marginBottom: "$12",
     fontSize: "$xl",
     fontWeight: "$bold",
+    "&.center": {
+      textAlign: "center",
+    },
+    "&.mb-xs": {
+      marginBottom: "$4",
+    },
   },
   ".sub-title": {
     color: "$neutral9",

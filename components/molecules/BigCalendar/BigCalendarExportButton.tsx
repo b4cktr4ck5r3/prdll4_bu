@@ -58,25 +58,32 @@ export const BigCalendarExportButton: FC = () => {
   const { dateSelected, excludedPlannings, excludedUsers, view } =
     useContext(BigCalendarContext);
 
-  const allWeeksOfMonth = useMemo(
-    () => GetDaysInMonth(dateSelected),
-    [dateSelected]
-  );
+  const isWeekView = useMemo(() => view === CalendarView.WEEK, [view]);
+
+  const allWeeksOfDocument = useMemo(() => {
+    const allWeeksOfMonth = GetDaysInMonth(dateSelected);
+    const activeWeekIndex = GetActiveWeekIndex(dateSelected, allWeeksOfMonth);
+
+    return allWeeksOfMonth.filter(
+      (_, i) => !isWeekView || i === activeWeekIndex
+    );
+  }, [dateSelected, isWeekView]);
+
   const { startDate, endDate } = useMemo(() => {
-    const firstDate = allWeeksOfMonth[0][0];
-    const lastDate = allWeeksOfMonth[allWeeksOfMonth.length - 1][6];
+    const firstDate = allWeeksOfDocument[0][0];
+    const lastDate = allWeeksOfDocument[allWeeksOfDocument.length - 1][6];
 
     return {
       startDate: new Date(firstDate.year, firstDate.month, firstDate.date),
       endDate: new Date(lastDate.year, lastDate.month, lastDate.date),
     };
-  }, [allWeeksOfMonth]);
+  }, [allWeeksOfDocument]);
 
   const { workScheduleTasks } = useWorkScheduleTasks({ startDate, endDate });
 
   const formatDate = useCallback((date: DateSimplified) => {
     const jsDate = new Date(date.year, date.month, date.date);
-    const monthLabel = jsDate.toLocaleString("default", { month: "long" });
+    const monthLabel = jsDate.toLocaleString("fr", { month: "long" });
     return `${date.date} ${monthLabel} ${date.year}`;
   }, []);
 
@@ -84,74 +91,59 @@ export const BigCalendarExportButton: FC = () => {
     return (
       <Document>
         <Page size="A4" style={styles.page}>
-          {allWeeksOfMonth
-            .filter((_, i) =>
-              view === CalendarView.MONTH
-                ? true
-                : i === GetActiveWeekIndex(dateSelected, allWeeksOfMonth)
-            )
-            .map((week, index) => {
-              const weekContent = week.map((date, index) => {
-                const dayTasks = workScheduleTasks
-                  .filter(({ startDate }) =>
-                    CompareDateToDateSimplified(new Date(startDate), date)
-                  )
-                  .filter(
-                    FilterWorkScheduleTask(excludedPlannings, excludedUsers)
-                  );
+          {allWeeksOfDocument.map((week, index) => {
+            const weekContent = week.map((date, index) => {
+              const dayTasks = workScheduleTasks
+                .filter(({ startDate }) =>
+                  CompareDateToDateSimplified(new Date(startDate), date)
+                )
+                .filter(
+                  FilterWorkScheduleTask(excludedPlannings, excludedUsers)
+                );
 
-                if (dayTasks.length === 0) return null;
-                else
-                  return (
-                    <Fragment key={index}>
-                      <Text style={styles["day-title"]}>
-                        {formatDate(date)}
-                      </Text>
-                      {dayTasks.map(
-                        ({ name, startDate, endDate, id, users }) => (
-                          <Fragment key={id}>
-                            <Text style={styles["task-title"]}>
-                              {`${dayjs(startDate).format("HH:mm")} - ${dayjs(
-                                endDate
-                              ).format("HH:mm")}`}{" "}
-                              :{" "}
-                              <span style={{ fontWeight: "normal" }}>
-                                {name}
-                              </span>
-                            </Text>
-                            <Text style={styles["task-description"]}>
-                              {users
-                                .map(({ full_name }) => "@" + full_name)
-                                .join("\n")}
-                            </Text>
-                          </Fragment>
-                        )
-                      )}
-                    </Fragment>
-                  );
-              });
-
-              if (weekContent.every((day) => day === null)) return null;
+              if (dayTasks.length === 0) return null;
               else
                 return (
-                  <View key={index} style={styles.section}>
-                    <Text style={styles["week-title"]}>
-                      Semaine du {formatDate(week[0])}
-                    </Text>
-                    {weekContent}
-                  </View>
+                  <Fragment key={index}>
+                    <Text style={styles["day-title"]}>{formatDate(date)}</Text>
+                    {dayTasks.map(({ name, startDate, endDate, id, users }) => (
+                      <Fragment key={id}>
+                        <Text style={styles["task-title"]}>
+                          {`${dayjs(startDate).format("HH:mm")} - ${dayjs(
+                            endDate
+                          ).format("HH:mm")}`}{" "}
+                          : <span style={{ fontWeight: "normal" }}>{name}</span>
+                        </Text>
+                        <Text style={styles["task-description"]}>
+                          {users
+                            .map(({ full_name }) => "@" + full_name)
+                            .join("\n")}
+                        </Text>
+                      </Fragment>
+                    ))}
+                  </Fragment>
                 );
-            })}
+            });
+
+            if (weekContent.every((day) => day === null)) return null;
+            else
+              return (
+                <View key={index} style={styles.section}>
+                  <Text style={styles["week-title"]}>
+                    Semaine du {formatDate(week[0])}
+                  </Text>
+                  {weekContent}
+                </View>
+              );
+          })}
         </Page>
       </Document>
     );
   }, [
-    allWeeksOfMonth,
-    dateSelected,
+    allWeeksOfDocument,
     excludedPlannings,
     excludedUsers,
     formatDate,
-    view,
     workScheduleTasks,
   ]);
 
@@ -161,7 +153,6 @@ export const BigCalendarExportButton: FC = () => {
       fileName={`Export-${startDate.toISOString().substring(0, 10)}-${endDate
         .toISOString()
         .substring(0, 10)}.pdf`}
-      // TODO: fix naming
     >
       {({ loading }) => (
         <Button

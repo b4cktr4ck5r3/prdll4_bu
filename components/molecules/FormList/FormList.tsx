@@ -40,12 +40,9 @@ export const FormList: FC<FormListProps> = ({
               key={i}
               type={Event.Unavailability}
               color="red"
-              title={`${startDate.getDate()} ${startDate.toLocaleString(
-                "default",
-                {
-                  month: "long",
-                }
-              )} ${startDate.getFullYear()}`}
+              title={`${startDate.getDate()} ${startDate.toLocaleString("fr", {
+                month: "long",
+              })} ${startDate.getFullYear()}`}
               description=""
               infoLeft={[leftTime, rightTime]}
               onDelete={() => onDeleteItem(i)}

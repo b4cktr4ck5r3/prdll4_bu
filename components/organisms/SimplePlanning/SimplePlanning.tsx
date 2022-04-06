@@ -331,7 +331,7 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
               color="red"
               title={"Indisponibilité"}
               description={`${startDate.getDate()} ${startDate.toLocaleString(
-                "default",
+                "fr",
                 { month: "long" }
               )} ${startDate.getFullYear()}\n${
                 "@" + users.find((e) => e.id === event.userId)?.full_name ||

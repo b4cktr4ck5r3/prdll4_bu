@@ -181,7 +181,7 @@ const HistoryComponent: React.ForwardRefRenderFunction<
               key={i}
               event={event}
               title={`${dateObject.getDate()} ${dateObject.toLocaleString(
-                "default",
+                "fr",
                 { month: "long" }
               )} ${dateObject.getFullYear()}`}
               description={
@@ -210,10 +210,9 @@ const HistoryComponent: React.ForwardRefRenderFunction<
               key={i}
               event={event}
               color="red"
-              title={`${startDate.getDate()} ${startDate.toLocaleString(
-                "default",
-                { month: "long" }
-              )} ${startDate.getFullYear()}`}
+              title={`${startDate.getDate()} ${startDate.toLocaleString("fr", {
+                month: "long",
+              })} ${startDate.getFullYear()}`}
               description={""}
               infoLeft={[leftTime, rightTime]}
               onDelete={() => deleteEvent(id)}

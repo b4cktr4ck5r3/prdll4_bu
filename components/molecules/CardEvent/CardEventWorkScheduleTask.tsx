@@ -1,4 +1,5 @@
-import { Button } from "@mantine/core";
+import { TrashCan20 } from "@carbon/icons-react";
+import { ActionIcon } from "@mantine/core";
 import { WorkScheduleTaskFull } from "@utils/workScheduleTask";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -22,12 +23,11 @@ export const CardEventWorkScheduleTask: FC<CardEventWorkScheduleTaskProps> = ({
   );
 
   const dateString = useMemo(() => {
-    return `${new Date(startDate).toLocaleDateString(undefined, {
+    return `${new Date(startDate).toLocaleDateString("fr", {
       weekday: "long",
-      year: "numeric",
       month: "long",
       day: "numeric",
-    })}\n${dayjs(startDate).format("HH:mm")} à ${dayjs(endDate).format(
+    })}\n${dayjs(startDate).format("HH:mm")} - ${dayjs(endDate).format(
       "HH:mm"
     )}`;
   }, [startDate, endDate]);
@@ -44,19 +44,20 @@ export const CardEventWorkScheduleTask: FC<CardEventWorkScheduleTaskProps> = ({
 
   return (
     <CardEventBase>
-      <div className="card-event-title">{name}</div>
       <div className="card-event-date">{dateString}</div>
+      <div className="card-event-title">{name}</div>
       <div className="card-event-text">{usersString}</div>
-      {deletable && (
-        <Button
-          compact
-          color="red"
-          variant="outline"
-          onClick={deleteWorkScheduleTask}
-        >
-          Supprimer
-        </Button>
-      )}
+      <div className="right-button">
+        {deletable && (
+          <ActionIcon
+            color="red"
+            variant="default"
+            onClick={deleteWorkScheduleTask}
+          >
+            <TrashCan20 color="red" />
+          </ActionIcon>
+        )}
+      </div>
     </CardEventBase>
   );
 };

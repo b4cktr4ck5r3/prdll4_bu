@@ -271,6 +271,12 @@ export const globalStyles = globalCss({
   'input[type="checkbox"]': {
     appearance: "none",
   },
+  ".capitalize": {
+    textTransform: "capitalize",
+  },
+  ".hidden": {
+    display: "none",
+  },
 });
 
 export const paddingVariants = Object.keys(theme.space).reduce(

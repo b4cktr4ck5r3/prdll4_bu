@@ -5,14 +5,17 @@ import useWorkScheduleTasks from "@hooks/useWorkScheduleTasks";
 import { Button, Group } from "@mantine/core";
 import { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 import axios from "axios";
+import clsx from "clsx";
 import dayjs from "dayjs";
 import { FC, useRef } from "react";
 
 export type CreateWorkScheduleTaskProps = {
+  hidden?: boolean;
   workScheduleId: string;
 };
 
 export const CreateWorkScheduleTask: FC<CreateWorkScheduleTaskProps> = ({
+  hidden = false,
   workScheduleId,
 }) => {
   const { workScheduleTasks, mutate: mutateWorkScheduleTasks } =
@@ -21,8 +24,8 @@ export const CreateWorkScheduleTask: FC<CreateWorkScheduleTaskProps> = ({
   const formNewWST = useRef<UseForm<WorkScheduleTaskFormType>>();
 
   return (
-    <section>
-      <h2 className="title">Ajouter une séance</h2>
+    <section className={clsx({ hidden: hidden })}>
+      <h2 className="title mb-xs center">Ajouter une séance</h2>
       <form
         onSubmit={(event) => {
           formNewWST.current?.onSubmit(
@@ -47,7 +50,8 @@ export const CreateWorkScheduleTask: FC<CreateWorkScheduleTaskProps> = ({
                   users,
                   workScheduleId,
                 })
-                .then(() => mutateWorkScheduleTasks());
+                .then(() => mutateWorkScheduleTasks())
+                .then(() => alert("Séance ajoutée"));
             }
           )(event);
         }}

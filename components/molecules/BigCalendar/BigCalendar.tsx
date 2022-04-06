@@ -42,7 +42,7 @@ export const BigCalendar: FC = () => {
   const currentDate = useMemo(() => new Date(), []);
   const [dateSelected, setDateSelected] = useState(new Date());
   const monthLabel = useMemo(
-    () => dateSelected.toLocaleString("default", { month: "long" }),
+    () => dateSelected.toLocaleString("fr", { month: "long" }),
     [dateSelected]
   );
 

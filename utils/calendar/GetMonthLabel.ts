@@ -1,3 +1,3 @@
-export function GetMonthLabel(date: Date) {
-  return date.toLocaleString("default", { month: "long" });
+export function GetMonthLabel(date: Date | string) {
+  return new Date(date).toLocaleString("fr", { month: "long" });
 }

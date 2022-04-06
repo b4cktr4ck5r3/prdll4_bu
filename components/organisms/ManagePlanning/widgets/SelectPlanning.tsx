@@ -36,7 +36,7 @@ export const SelectPlanning: FC<SelectPlanningProps> = ({
 
   return (
     <section>
-      <h2 className="title">Modifier un planning</h2>
+      <h2 className="title mb-xs">Modifier un planning</h2>
       <Select
         label="Choix du planning"
         itemComponent={SelectPlanningItem}
