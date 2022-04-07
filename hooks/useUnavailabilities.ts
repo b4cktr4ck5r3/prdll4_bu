@@ -5,21 +5,24 @@ import useSWR from "swr";
 type Props = {
   startDate?: Date;
   endDate?: Date;
+  acceptEqualDate?: boolean;
 };
 
 export default function useUnavailabilities({
   endDate,
   startDate,
+  acceptEqualDate,
 }: Props = {}) {
   const requestName = useMemo(() => {
     let name = "unavailabilities";
     if (startDate) name += "-" + startDate.toISOString();
     if (endDate) name += "-" + endDate.toISOString();
+    if (acceptEqualDate) name += "-" + acceptEqualDate;
     return name;
-  }, [endDate, startDate]);
+  }, [acceptEqualDate, endDate, startDate]);
 
   const { data: unavailabilities, mutate } = useSWR(requestName, () =>
-    FetchUnavailabilities(startDate, endDate)
+    FetchUnavailabilities(startDate, endDate, acceptEqualDate)
   );
 
   return {

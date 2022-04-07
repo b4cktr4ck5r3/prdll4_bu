@@ -3,15 +3,42 @@ import { z } from "zod";
 
 const GetUnavailabilities = z
   .function()
-  .args(z.date().optional(), z.date().optional())
-  .implement(async (startDate, endDate) => {
+  .args(z.date().optional(), z.date().optional(), z.boolean().optional())
+  .implement(async (startDate, endDate, acceptEqualDate = true) => {
+    const lesserOperator = acceptEqualDate ? "lte" : "lt";
+    const greaterOperator = acceptEqualDate ? "gte" : "gt";
+
     return prisma.unavailability
       .findMany({
         where: {
-          startDate: {
-            gte: startDate,
-            lte: endDate,
-          },
+          OR: [
+            {
+              startDate: {
+                [greaterOperator]: startDate,
+                [lesserOperator]: endDate,
+              },
+            },
+            {
+              endDate: {
+                [greaterOperator]: startDate,
+                [lesserOperator]: endDate,
+              },
+            },
+            {
+              AND: [
+                {
+                  startDate: {
+                    [lesserOperator]: startDate,
+                  },
+                },
+                {
+                  endDate: {
+                    [greaterOperator]: endDate,
+                  },
+                },
+              ],
+            },
+          ],
         },
         include: {
           user: {

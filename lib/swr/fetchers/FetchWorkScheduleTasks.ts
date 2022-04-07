@@ -4,11 +4,17 @@ import axios from "axios";
 export default async function FetchWorkScheduleTasks(
   workScheduleId?: string,
   startDate?: Date,
-  endDate?: Date
+  endDate?: Date,
+  acceptEqualDate?: boolean
 ) {
   return axios
     .get<WorkScheduleTaskFull[]>("/api/workScheduleTask", {
-      params: { workScheduleId, startDate, endDate },
+      params: {
+        workScheduleId,
+        startDate,
+        endDate,
+        acceptEqualDate: acceptEqualDate ? undefined : "false",
+      },
     })
     .then((res) => res.data);
 }

@@ -10,6 +10,10 @@ import { getToken } from "next-auth/jwt";
 import { z } from "zod";
 
 const QueryGetSchema = z.object({
+  acceptEqualDate: z
+    .string()
+    .optional()
+    .transform((value) => value === "false"),
   startDate: z
     .string()
     .optional()
@@ -51,8 +55,14 @@ const handler: NextApiHandler = async (req, res) => {
   switch (method) {
     case "GET": {
       if (userId) {
-        const { startDate, endDate } = QueryGetSchema.parse(req.query);
-        const data = await GetUnavailabilities(startDate, endDate);
+        const { startDate, endDate, acceptEqualDate } = QueryGetSchema.parse(
+          req.query
+        );
+        const data = await GetUnavailabilities(
+          startDate,
+          endDate,
+          acceptEqualDate
+        );
         res.json(data);
         break;
       }

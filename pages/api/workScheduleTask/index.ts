@@ -9,6 +9,10 @@ import { z } from "zod";
 
 const QueryGetSchema = z.object({
   workScheduleId: z.string().optional(),
+  acceptEqualDate: z
+    .string()
+    .optional()
+    .transform((value) => value === "false"),
   startDate: z
     .string()
     .optional()
@@ -39,13 +43,13 @@ const handler: NextApiHandler = async (req, res) => {
   switch (method) {
     case "GET": {
       if (userId) {
-        const { workScheduleId, endDate, startDate } = QueryGetSchema.parse(
-          req.query
-        );
+        const { workScheduleId, endDate, startDate, acceptEqualDate } =
+          QueryGetSchema.parse(req.query);
         const data = await FindWorkScheduleTask(
           workScheduleId,
           startDate,
-          endDate
+          endDate,
+          acceptEqualDate
         );
         res.json(data);
         break;

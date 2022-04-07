@@ -8,6 +8,13 @@ export enum Event {
   Unavailability = "Unavailability",
 }
 
+export function GetEventLabel(event: Event) {
+  if (event === Event.Course) return "Formation";
+  else if (event === Event.InternalWork) return "Travail Interne";
+  else if (event === Event.Unavailability) return "Indisponible";
+  else return "";
+}
+
 export type AllEventsSimplified = {
   courses: CourseEventSimplified[];
   internalWorks: InternalWorkEventSimplified[];
