@@ -129,7 +129,7 @@ export const CreateWorkScheduleTask: FC<CreateWorkScheduleTaskProps> = ({
           {currentUsersBusy.length === 0 ? (
             <p>
               <CircleFilled20 color="green" />
-              <span>Tous les tuteurs sont disponibles</span>
+              <span>Tous les tuteurs sélectionnés sont disponibles</span>
             </p>
           ) : (
             <ul>

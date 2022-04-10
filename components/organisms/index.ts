@@ -4,6 +4,7 @@ export * from "./History";
 export * from "./Login";
 export * from "./ManageInternalWorkModal";
 export * from "./ManagePlanning";
+export * from "./ManageTimeReport";
 export * from "./NavBar";
 export * from "./Planning";
 export * from "./SideBar";

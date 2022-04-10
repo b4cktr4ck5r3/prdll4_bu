@@ -17,6 +17,7 @@ model User {
   Unavailability   Unavailability[]
   InternalWork     InternalWork[]
   WorkScheduleTask WorkScheduleTask[]
+  TimeReport       TimeReport[]
 }
 
 model Unavailability {
@@ -28,13 +29,15 @@ model Unavailability {
 }
 
 model InternalWork {
-  id          String   @id @default(uuid())
-  date        DateTime
-  duration    Float
-  validated   Boolean
-  description String
-  user        User     @relation(fields: [userId], references: [id])
-  userId      String
+  id           String      @id @default(uuid())
+  date         DateTime
+  duration     Float
+  validated    Boolean
+  description  String
+  user         User        @relation(fields: [userId], references: [id])
+  userId       String
+  TimeReport   TimeReport? @relation(fields: [timeReportId], references: [id])
+  timeReportId String?
 }
 
 model WorkSchedule {
@@ -53,4 +56,27 @@ model WorkScheduleTask {
   users          User[]
   schedule       WorkSchedule @relation(fields: [workScheduleId], references: [id])
   workScheduleId String
+  TimeReport     TimeReport?  @relation(fields: [timeReportId], references: [id])
+  timeReportId   String?
+}
+
+model TimeReportExtra {
+  id           String      @id @default(uuid())
+  duration     Float
+  description  String
+  TimeReport   TimeReport? @relation(fields: [timeReportId], references: [id])
+  timeReportId String?
+}
+
+model TimeReport {
+  id                String             @id @default(uuid())
+  startDate         DateTime
+  endDate           DateTime
+  workScheduleTasks WorkScheduleTask[]
+  internalWorks     InternalWork[]
+  extraItems        TimeReportExtra[]
+  validated         Boolean
+  nbHoursValidated  Float
+  user              User               @relation(fields: [userId], references: [id])
+  userId            String
 }

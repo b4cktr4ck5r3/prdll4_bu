@@ -4,11 +4,18 @@ import {
   CheckmarkOutline16,
   Error16,
   Exit16,
+  Report16,
   Settings16,
   User16,
 } from "@carbon/icons-react";
 
 const userOptions = [
+  {
+    icon: Report16,
+    label: "États Horaires",
+    path: "/time-report",
+    forAdmin: true,
+  },
   { icon: Calendar16, label: "Planning", path: "/planning" },
   {
     icon: CalendarTools16,

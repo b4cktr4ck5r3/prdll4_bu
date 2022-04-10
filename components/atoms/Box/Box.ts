@@ -31,5 +31,6 @@ export const SettingBoxSC = styled("div", BoxSC, {
   },
 });
 
+export const TimeReportBoxSC = styled("div", SettingBoxSC);
 export const UsersBoxSC = styled("div", SettingBoxSC);
 export const ScheduleBoxSC = styled("div", SettingBoxSC);

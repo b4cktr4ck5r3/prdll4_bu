@@ -1,8 +1,8 @@
 import { redirectIfNotAdmin } from "@components/hoc";
-import { ManagePlanningTemplate } from "@components/templates";
+import { TimeReportTemplate } from "@components/templates";
 import { GetStaticProps, NextPage } from "next";
 
-const ManagePlanning: NextPage = () => <ManagePlanningTemplate />;
+const TimeReport: NextPage = () => <TimeReportTemplate />;
 
 export const getStaticProps: GetStaticProps = async () => {
   return {
@@ -10,4 +10,4 @@ export const getStaticProps: GetStaticProps = async () => {
   };
 };
 
-export default redirectIfNotAdmin(ManagePlanning);
+export default redirectIfNotAdmin(TimeReport);
