@@ -1,4 +1,5 @@
 import { BigCalendarModal } from "@components/molecules/BigCalendar/BigCalendarModal";
+import useHideWeekEnd from "@hooks/useHideWeekEnd";
 import useUnavailabilities from "@hooks/useUnavailabilities";
 import useWorkScheduleTasks from "@hooks/useWorkScheduleTasks";
 import { BigCalendarContext } from "@lib/contexts";
@@ -67,9 +68,17 @@ export const BigCalendarDaysSC = styled("div", {
   gridTemplateRows: "repeat(auto-fill, max-content)",
   marginTop: "$12",
   color: "$neutral7",
+  variants: {
+    hideWeekEnd: {
+      true: {
+        gridTemplateColumns: "repeat(5, 1fr)",
+      },
+    },
+  },
 });
 
 export const BigCalendarDays: FC = () => {
+  const { hideWeekEnd } = useHideWeekEnd();
   const { currentDate, dateSelected, view } = useContext(BigCalendarContext);
   const [modalDate, setModalDate] = useState<DateSimplified>();
   const { excludedPlannings, excludedUsers } = useContext(BigCalendarContext);
@@ -104,9 +113,11 @@ export const BigCalendarDays: FC = () => {
       );
   }, [modalDate, unavailabilities]);
 
+  const daysPerRow = useMemo(() => (hideWeekEnd ? 5 : 7), [hideWeekEnd]);
+
   return (
-    <BigCalendarDaysSC>
-      {AllDayNames.map((day) => (
+    <BigCalendarDaysSC hideWeekEnd={hideWeekEnd}>
+      {AllDayNames.slice(0, daysPerRow).map((day) => (
         <BigCalendarDaysTitleSC key={day}>
           <span className="label">{day.substring(0, 3)}</span>
         </BigCalendarDaysTitleSC>
@@ -118,13 +129,14 @@ export const BigCalendarDays: FC = () => {
             : i === GetActiveWeekIndex(dateSelected, allWeeksOfMonth)
         )
         .map((daysOfWeek) =>
-          daysOfWeek.map((date) => {
+          daysOfWeek.slice(0, daysPerRow).map((date) => {
             const dayTasks = workScheduleTasks.filter(({ startDate }) =>
               CompareDateToDateSimplified(new Date(startDate), date)
             );
             const dayUnavailabilities = unavailabilities.filter(
-              ({ startDate }) =>
-                CompareDateToDateSimplified(new Date(startDate), date)
+              ({ startDate, user }) =>
+                CompareDateToDateSimplified(new Date(startDate), date) &&
+                !excludedUsers.includes(user.id)
             );
             return (
               <BigCalendarDaysItemSC

@@ -3,13 +3,13 @@ import { BoxSC } from "@components/atoms";
 import { BasicForm } from "@components/molecules";
 import { FormList } from "@components/molecules/FormList";
 import { InternalWorkFormType, internalWorkInputs } from "@data/form";
+import useSyncCalendarForm from "@hooks/useSyncCalendarForm";
 import { PlanningContext } from "@lib/contexts";
-import { useListState, useLocalStorageValue } from "@mantine/hooks";
+import { useListState } from "@mantine/hooks";
 import { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 import { useNotifications } from "@mantine/notifications";
 import { styled } from "@stitches";
 import { Event, InternalWorkItemForm } from "@utils/calendar";
-import { BooleanString, Preferences } from "@utils/user";
 import axios from "axios";
 import { FC, useCallback, useContext, useEffect, useRef } from "react";
 
@@ -27,10 +27,7 @@ export const InternalWorkForm: FC<InternalWorkFormProps> = ({ onSubmit }) => {
   const { setRefresh, synchronizedDate, setSynchronizedDate } =
     useContext(PlanningContext);
   const formNewIW = useRef<UseForm<InternalWorkFormType>>();
-  const [syncCalendarForm] = useLocalStorageValue<BooleanString>({
-    key: Preferences.SyncCalendarForm,
-    defaultValue: "false",
-  });
+  const { syncCalendarForm } = useSyncCalendarForm();
   const [internalWorks, internalWorksHandlers] =
     useListState<InternalWorkItemForm>([]);
 
@@ -77,7 +74,7 @@ export const InternalWorkForm: FC<InternalWorkFormProps> = ({ onSubmit }) => {
   ]);
 
   useEffect(() => {
-    if (formNewIW.current && syncCalendarForm === "true" && synchronizedDate)
+    if (formNewIW.current && syncCalendarForm && synchronizedDate)
       formNewIW.current.setFieldValue("date", synchronizedDate);
   }, [syncCalendarForm, synchronizedDate]);
 

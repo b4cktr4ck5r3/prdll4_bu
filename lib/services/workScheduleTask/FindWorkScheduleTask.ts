@@ -10,7 +10,12 @@ const FindScheduleTask = z
     z.boolean().optional()
   )
   .implement(
-    async (workScheduleId, startDate, endDate, acceptEqualDate = true) => {
+    async (
+      workScheduleId,
+      startDate = new Date(1970),
+      endDate,
+      acceptEqualDate = true
+    ) => {
       const lesserOperator = acceptEqualDate ? "lte" : "lt";
       const greaterOperator = acceptEqualDate ? "gte" : "gt";
 

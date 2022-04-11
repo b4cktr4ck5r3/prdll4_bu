@@ -63,7 +63,10 @@ const HistoryComponent: React.ForwardRefRenderFunction<
   const findInternalWorks = useCallback(() => {
     if (type === Event.InternalWork) {
       axios
-        .get<InternalWorkEventDTO[]>("/api/internalWork", {})
+        .get<InternalWorkEventDTO[]>(
+          `/api/user/${sessionData?.user?.sub}/internalWork`,
+          {}
+        )
         .then(({ data }) => {
           setItems(
             data.map<InternalWorkEventSimplified>((props) => {
@@ -80,7 +83,7 @@ const HistoryComponent: React.ForwardRefRenderFunction<
           );
         });
     }
-  }, [type]);
+  }, [sessionData?.user?.sub, type]);
 
   const findUnavailabilities = useCallback(() => {
     if (type === Event.Unavailability)
@@ -174,7 +177,7 @@ const HistoryComponent: React.ForwardRefRenderFunction<
       <div className="title">Mon historique</div>
       {type === Event.InternalWork &&
         (items as InternalWorkEventSimplified[]).map((event, i) => {
-          const { id, date, duration } = event;
+          const { id, date, duration, validated } = event;
           const dateObject = new Date(date.year, date.month, date.date);
           return (
             <MiniEvent
@@ -195,6 +198,7 @@ const HistoryComponent: React.ForwardRefRenderFunction<
               infoLeft={`${duration}h`}
               onDelete={() => deleteEvent(id)}
               onEdit={(data) => updateEvent(id, data)}
+              allowEdit={!validated}
               type={type}
             />
           );

@@ -1,4 +1,5 @@
 import { ChevronLeft16, ChevronRight16 } from "@carbon/icons-react";
+import useHideWeekEnd from "@hooks/useHideWeekEnd";
 import { CalendarContext, PlanningContext } from "@lib/contexts";
 import { CSS, styled } from "@stitches";
 import {
@@ -52,6 +53,13 @@ export const MiniCalendarDaysSC = styled("div", {
   gridTemplateColumns: "repeat(7, 1fr)",
   marginTop: "$12",
   color: "$neutral7",
+  variants: {
+    hideWeekEnd: {
+      true: {
+        gridTemplateColumns: "repeat(5, 1fr)",
+      },
+    },
+  },
 });
 
 export const MiniCalendarDaysItemSC = styled("div", {
@@ -125,6 +133,7 @@ export type MiniCalendarProps = {
 type AllDateItemsType = { date: DateSimplified; count: number }[];
 
 export const MiniCalendar: FC<MiniCalendarProps> = ({ css }) => {
+  const { hideWeekEnd } = useHideWeekEnd();
   const { setSynchronizedDate } = useContext(PlanningContext);
   const { allEvents, daysInMonth, dateSelected, setDateSelected } =
     useContext(CalendarContext);
@@ -150,6 +159,7 @@ export const MiniCalendar: FC<MiniCalendarProps> = ({ css }) => {
     () => GetActiveWeekIndex(dateSelected, daysInMonth),
     [dateSelected, daysInMonth]
   );
+  const daysPerRow = useMemo(() => (hideWeekEnd ? 5 : 7), [hideWeekEnd]);
 
   const changeDate = useCallback(
     (date: Date) => {
@@ -191,17 +201,17 @@ export const MiniCalendar: FC<MiniCalendarProps> = ({ css }) => {
           <span>{dateSelected.getFullYear()}</span>
         </div>
       </MiniCalendarMonthSC>
-      <MiniCalendarDaysSC>
+      <MiniCalendarDaysSC hideWeekEnd={hideWeekEnd}>
         <MiniCalendarActiveWeekBgSC
           css={{ top: `${32 * (activeWeekIndex + 1)}px` }}
         />
-        {AllDayNames.map((day) => (
+        {AllDayNames.slice(0, daysPerRow).map((day) => (
           <MiniCalendarDaysItemSC key={day}>
             <span className="label">{day.substring(0, 3)}</span>
           </MiniCalendarDaysItemSC>
         ))}
         {daysInMonth.map((week) =>
-          week.map(({ date, month, year }) => {
+          week.slice(0, daysPerRow).map(({ date, month, year }) => {
             const nbDots =
               allDateItems.find((e) =>
                 CompareDateSimplified(e.date, { date, month, year })

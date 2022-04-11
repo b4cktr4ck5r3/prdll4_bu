@@ -1,4 +1,4 @@
-import { FindUnavailability } from "@lib/services/unavailability";
+import { FindInternalWork } from "@lib/services/internalWork";
 import { NextApiHandler } from "next";
 import { z } from "zod";
 
@@ -18,6 +18,14 @@ const QueryGetSchema = z.object({
       if (value && value !== "") return new Date(value);
       else return undefined;
     }),
+  validated: z
+    .string()
+    .optional()
+    .transform((value) => {
+      if (value === "true") return true;
+      else if (value === "false") return false;
+      else return undefined;
+    }),
 });
 
 const handler: NextApiHandler = async (req, res) => {
@@ -28,8 +36,15 @@ const handler: NextApiHandler = async (req, res) => {
   switch (method) {
     case "GET": {
       if (userId) {
-        const { startDate, endDate } = QueryGetSchema.parse(req.query);
-        const data = await FindUnavailability(userId, startDate, endDate, true);
+        const { startDate, endDate, validated } = QueryGetSchema.parse(
+          req.query
+        );
+        const data = await FindInternalWork(
+          userId,
+          startDate,
+          endDate,
+          validated
+        );
         res.json(data);
         break;
       }

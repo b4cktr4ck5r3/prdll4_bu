@@ -1,9 +1,12 @@
 import { SettingBoxSC } from "@components/atoms";
 import { DefaultLayout } from "@components/layouts";
+import useHideWeekEnd from "@hooks/useHideWeekEnd";
+import useSyncCalendarForm from "@hooks/useSyncCalendarForm";
+import useUserCalendarFilter from "@hooks/useUserCalendarView";
 import { Button, PasswordInput, Select, Switch } from "@mantine/core";
-import { useForm, useLocalStorageValue } from "@mantine/hooks";
+import { useForm } from "@mantine/hooks";
 import { styled } from "@stitches";
-import { BooleanString, Preferences } from "@utils/user";
+import { CalendarFilter } from "@utils/calendar/Calendar";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import type { FC } from "react";
@@ -18,11 +21,9 @@ export const SettingsTemplateSC = styled("div", {
 
 export const SettingsTemplate: FC = () => {
   const { data } = useSession();
-  const [syncCalendarForm, setSyncCalendarForm] =
-    useLocalStorageValue<BooleanString>({
-      key: Preferences.SyncCalendarForm,
-      defaultValue: "false",
-    });
+  const { hideWeekEnd, setHideWeekEnd } = useHideWeekEnd();
+  const { syncCalendarForm, setSyncCalendarForm } = useSyncCalendarForm();
+  const { userCalendarFilter, setUserCalendarFilter } = useUserCalendarFilter();
 
   const newPasswordForm = useForm({
     initialValues: {
@@ -53,7 +54,7 @@ export const SettingsTemplate: FC = () => {
           <Switch
             radius="md"
             label="Synchroniser la date du calendrier et du formulaire"
-            checked={syncCalendarForm === "true"}
+            checked={syncCalendarForm}
             onChange={(event) =>
               setSyncCalendarForm(
                 event.currentTarget.checked ? "true" : "false"
@@ -62,10 +63,22 @@ export const SettingsTemplate: FC = () => {
           />
           <div className="sub-title">Calendrier</div>
           <Switch
-            disabled
             radius="md"
-            label="Masquer les week-ends (à venir)"
-            checked={false}
+            label="Masquer les week-ends"
+            checked={hideWeekEnd}
+            onChange={(event) =>
+              setHideWeekEnd(event.currentTarget.checked ? "true" : "false")
+            }
+          />
+          <Switch
+            radius="md"
+            label="Activer la vue personnelle par défaut"
+            checked={userCalendarFilter === CalendarFilter.PERSONAL}
+            onChange={(event) =>
+              setUserCalendarFilter(
+                event.currentTarget.checked ? "personal" : "global"
+              )
+            }
           />
         </SettingBoxSC>
         <SettingBoxSC

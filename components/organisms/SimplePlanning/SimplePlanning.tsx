@@ -2,10 +2,10 @@ import { BoxSC } from "@components/atoms";
 import { MiniCalendar, MiniEvent, MiniEventSC } from "@components/molecules";
 import { InternalWorkFormType } from "@data/form";
 import { UnavailabilityFormType } from "@data/form/unavailability";
+import useSyncCalendarForm from "@hooks/useSyncCalendarForm";
 import useUsersInfo from "@hooks/useUsersInfo";
 import { CalendarContext, PlanningContext } from "@lib/contexts";
 import { Text } from "@mantine/core";
-import { useLocalStorageValue } from "@mantine/hooks";
 import { styled } from "@stitches";
 import {
   AllEventsSimplified,
@@ -19,7 +19,6 @@ import {
   UnavailabilityEventSimplified,
 } from "@utils/calendar";
 import { UnavailabilityItemForm } from "@utils/unavailability";
-import { BooleanString, Preferences } from "@utils/user";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useSession } from "next-auth/react";
@@ -90,10 +89,7 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
     },
   }));
   const { synchronizedDate } = useContext(PlanningContext);
-  const [syncCalendarForm] = useLocalStorageValue<BooleanString>({
-    key: Preferences.SyncCalendarForm,
-    defaultValue: "false",
-  });
+  const { syncCalendarForm } = useSyncCalendarForm();
   const [dateSelected, setDateSelected] = useState(new Date());
   const [internalWorks, setInternalWorks] = useState<
     InternalWorkEventSimplified[]
@@ -149,12 +145,15 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
   const findInternalWorks = useCallback(() => {
     if (type === "ALL" || type === Event.InternalWork)
       axios
-        .get<InternalWorkEventDTO[]>("/api/internalWork", {
-          params: {
-            startDate,
-            endDate,
-          },
-        })
+        .get<InternalWorkEventDTO[]>(
+          `/api/user/${sessionData?.user?.sub}/internalWork`,
+          {
+            params: {
+              startDate,
+              endDate,
+            },
+          }
+        )
         .then(({ data }) =>
           setInternalWorks(
             data.map<InternalWorkEventSimplified>((props) => {
@@ -170,7 +169,7 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
             })
           )
         );
-  }, [startDate, endDate, type]);
+  }, [type, sessionData?.user?.sub, startDate, endDate]);
 
   const findUnavailabilities = useCallback(() => {
     if (type === "ALL" || type === Event.Unavailability)
@@ -270,8 +269,7 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
   }, [findInternalWorks, findUnavailabilities]);
 
   useEffect(() => {
-    if (syncCalendarForm === "true" && synchronizedDate)
-      setDateSelected(synchronizedDate);
+    if (syncCalendarForm && synchronizedDate) setDateSelected(synchronizedDate);
   }, [syncCalendarForm, synchronizedDate]);
 
   return (
@@ -287,7 +285,7 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
         <MiniCalendar />
         <div className="title">Agenda du jour</div>
         {dayEvents.internalWorks.map((event, i) => {
-          const { id, duration, description } = event;
+          const { id, duration, description, validated } = event;
           return (
             <MiniEvent
               key={i}
@@ -316,6 +314,7 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
               onEdit={(data) =>
                 updateInternalWork(id, data as InternalWorkFormType)
               }
+              allowEdit={!validated}
               type={Event.InternalWork}
             />
           );

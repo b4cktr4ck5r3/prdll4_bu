@@ -1,9 +1,9 @@
 import {
   CreateInternalWork,
   DeleteInternalWork,
-  FindInternalWork,
   UpdateInternalWork,
 } from "@lib/services/internalWork";
+import GetInternalWork from "@lib/services/internalWork/GetInternalWork";
 import { ZodInternalWorkItemForm } from "@utils/internalWork";
 import { NextApiHandler } from "next";
 import { getToken } from "next-auth/jwt";
@@ -56,12 +56,7 @@ const handler: NextApiHandler = async (req, res) => {
         const { startDate, endDate, validated } = QueryGetSchema.parse(
           req.query
         );
-        const data = await FindInternalWork(
-          userId,
-          startDate,
-          endDate,
-          validated
-        );
+        const data = await GetInternalWork(startDate, endDate, validated);
         res.json(data);
         break;
       }

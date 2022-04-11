@@ -11,7 +11,13 @@ const FindTimeReport = z
     z.boolean().optional()
   )
   .implement(
-    async (userId, startDate, endDate, validated, acceptEqualDate = true) => {
+    async (
+      userId,
+      startDate = new Date(1970),
+      endDate,
+      validated,
+      acceptEqualDate = true
+    ) => {
       const lesserOperator = acceptEqualDate ? "lte" : "lt";
       const greaterOperator = acceptEqualDate ? "gte" : "gt";
 

@@ -97,6 +97,7 @@ export type MiniEventProps = VariantProps<typeof MiniEventTitleSC> & {
   title: string;
   description: ReactNode;
   infoLeft: string | [string, string];
+  allowEdit?: boolean;
   onDelete?: () => void;
   onEdit?: (data: InternalWorkFormType | UnavailabilityFormType) => void;
 };
@@ -106,6 +107,7 @@ export const MiniEvent: FC<MiniEventProps> = ({
   title,
   description,
   infoLeft,
+  allowEdit = false,
   onDelete,
   onEdit,
   event,
@@ -200,7 +202,7 @@ export const MiniEvent: FC<MiniEventProps> = ({
         <div className="end">{endText}</div>
       </MiniEventTimeSC>
       <Modal
-        opened={openedEdit}
+        opened={allowEdit && openedEdit}
         onClose={() => setOpenedEdit(false)}
         title="Modification d'un élément"
         centered
@@ -251,13 +253,13 @@ export const MiniEvent: FC<MiniEventProps> = ({
       </Modal>
 
       <MiniEventButtonsSC>
-        {onEdit && (
+        {onEdit && allowEdit && (
           <ActionIcon variant="default" onClick={() => setOpenedEdit(true)}>
             <Pen20 />
           </ActionIcon>
         )}
 
-        {onDelete && (
+        {onDelete && allowEdit && (
           <ActionIcon variant="default" onClick={openConfirmDeleteModal}>
             <TrashCan20 color="red" />
           </ActionIcon>

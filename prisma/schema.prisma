@@ -76,7 +76,7 @@ model TimeReport {
   internalWorks     InternalWork[]
   extraItems        TimeReportExtra[]
   validated         Boolean
-  nbHoursValidated  Float
+  nbHoursValidated  Float              @default(0)
   user              User               @relation(fields: [userId], references: [id])
   userId            String
 }

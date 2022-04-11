@@ -1,5 +1,5 @@
 import { CreateUser, GetUsers } from "@lib/services/user";
-import { Role, ZodRoleEnum } from "@utils/user";
+import { ZodRoleEnum } from "@utils/user";
 import { NextApiHandler } from "next";
 import { getToken } from "next-auth/jwt";
 import { z } from "zod";
@@ -25,7 +25,7 @@ const handler: NextApiHandler = async (req, res) => {
 
   switch (method) {
     case "GET": {
-      if (token && token.sub && token.role === Role.ADMIN) {
+      if (token) {
         const { active, role, complete } = QueryGetSchema.parse(req.query);
         const full = complete === "true";
         const status =

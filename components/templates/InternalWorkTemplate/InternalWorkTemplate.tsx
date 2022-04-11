@@ -33,7 +33,7 @@ export const InternalWorkToValidateSC = styled("div", {
 
 export const InternalWorkTemplate: FC = () => {
   const { isAdmin } = useAccountInfo();
-  const [openedModalIW, setOpenedModalIW] = useState(true);
+  const [openedModalIW, setOpenedModalIW] = useState(false);
   const { internalWorks: internalWorksNotValidated, mutate } = useInternalWorks(
     {
       validated: false,
@@ -117,13 +117,15 @@ export const InternalWorkTemplate: FC = () => {
           />
         </InternalWorkTemplateSC>
       </DefaultLayout>
-      <ManageInternalWorkModal
-        listInternalWorks={internalWorksNotValidated}
-        opened={openedModalIW}
-        onClose={() => setOpenedModalIW(false)}
-        title={"Travaux internes non validés"}
-        onChange={refreshComponents}
-      />
+      {isAdmin && (
+        <ManageInternalWorkModal
+          listInternalWorks={internalWorksNotValidated}
+          opened={openedModalIW}
+          onClose={() => setOpenedModalIW(false)}
+          title={"Travaux internes non validés"}
+          onChange={refreshComponents}
+        />
+      )}
     </PlanningContext.Provider>
   );
 };

@@ -150,7 +150,7 @@ export const CreateWorkScheduleTask: FC<CreateWorkScheduleTaskProps> = ({
           )}
         </div>
         <Group>
-          <Button mt="sm" type="submit">
+          <Button mt="sm" type="submit" disabled={currentUsersBusy.length > 0}>
             {"Créer la séance"}
           </Button>
           <Button

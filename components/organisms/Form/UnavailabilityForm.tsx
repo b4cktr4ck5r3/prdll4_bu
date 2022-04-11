@@ -5,12 +5,12 @@ import {
   UnavailabilityFormType,
   unavailabilityInputs,
 } from "@data/form/unavailability";
+import useSyncCalendarForm from "@hooks/useSyncCalendarForm";
 import { PlanningContext } from "@lib/contexts";
-import { useListState, useLocalStorageValue } from "@mantine/hooks";
+import { useListState } from "@mantine/hooks";
 import { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 import { useNotifications } from "@mantine/notifications";
 import { Event, UnavailabilityItemForm } from "@utils/calendar";
-import { BooleanString, Preferences } from "@utils/user";
 import axios from "axios";
 import dayjs from "dayjs";
 import { FC, useCallback, useContext, useEffect, useRef } from "react";
@@ -24,10 +24,7 @@ export const UnavailabilityForm: FC<UnavailabilityFormProps> = ({
 }) => {
   const { setRefresh, synchronizedDate, setSynchronizedDate } =
     useContext(PlanningContext);
-  const [syncCalendarForm] = useLocalStorageValue<BooleanString>({
-    key: Preferences.SyncCalendarForm,
-    defaultValue: "false",
-  });
+  const { syncCalendarForm } = useSyncCalendarForm();
   const [unavailabilities, unavailabilitiesHandlers] =
     useListState<UnavailabilityItemForm>([]);
 
@@ -70,7 +67,7 @@ export const UnavailabilityForm: FC<UnavailabilityFormProps> = ({
   useEffect(() => {
     if (
       formNewDate.current &&
-      syncCalendarForm === "true" &&
+      syncCalendarForm &&
       synchronizedDate &&
       synchronizedDate.getTime() !== formNewDate.current.values.date.getTime()
     )

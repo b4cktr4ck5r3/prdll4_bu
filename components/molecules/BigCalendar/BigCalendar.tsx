@@ -6,12 +6,15 @@ import {
 } from "@carbon/icons-react";
 import { BigCalendarExportButton } from "@components/molecules/BigCalendar/BigCalendarExportButton";
 import { BigCalendarFilter } from "@components/molecules/BigCalendar/BigCalendarFilter";
+import useUserCalendarFilter from "@hooks/useUserCalendarView";
+import useUsersInfo from "@hooks/useUsersInfo";
 import { BigCalendarContext } from "@lib/contexts";
 import { ActionIcon, Button, Group } from "@mantine/core";
 import { useListState, useToggle } from "@mantine/hooks";
 import { styled } from "@stitches";
-import { CalendarView } from "@utils/calendar/Calendar";
-import { FC, useMemo, useState } from "react";
+import { CalendarFilter, CalendarView } from "@utils/calendar/Calendar";
+import { useSession } from "next-auth/react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { BigCalendarDays } from "./BigCalendarDays";
 
 export const BigCalendarSC = styled("div", {
@@ -30,11 +33,14 @@ export const BigCalendarSC = styled("div", {
 });
 
 export const BigCalendar: FC = () => {
+  const { users } = useUsersInfo();
+  const { data: sessionData } = useSession();
+  const { userCalendarFilter } = useUserCalendarFilter();
   const [excludedUsers, excludedUsersHandlers] = useListState<string>([]);
   const [excludedPlannings, excludedPlanningsHandlers] = useListState<string>(
     []
   );
-  const [view, toggleView] = useToggle(CalendarView.WEEK, [
+  const [view, toggleView] = useToggle(CalendarView.MONTH, [
     CalendarView.WEEK,
     CalendarView.MONTH,
   ]);
@@ -45,6 +51,20 @@ export const BigCalendar: FC = () => {
     () => dateSelected.toLocaleString("fr", { month: "long" }),
     [dateSelected]
   );
+
+  useEffect(() => {
+    if (userCalendarFilter === CalendarFilter.PERSONAL)
+      excludedUsersHandlers.setState(
+        users
+          .map((user) => user.id)
+          .filter((id) => id !== sessionData?.user?.sub)
+      );
+  }, [
+    excludedUsersHandlers,
+    sessionData?.user?.sub,
+    userCalendarFilter,
+    users,
+  ]);
 
   return (
     <BigCalendarContext.Provider
@@ -130,7 +150,6 @@ export const BigCalendar: FC = () => {
             <BigCalendarExportButton />
           </Group>
         </div>
-
         {showFilter ? <BigCalendarFilter /> : <BigCalendarDays />}
       </BigCalendarSC>
     </BigCalendarContext.Provider>

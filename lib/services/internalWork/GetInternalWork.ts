@@ -1,19 +1,13 @@
 import { prisma } from "@lib/prisma";
 import { z } from "zod";
 
-const FindInternalWork = z
+const GetInternalWork = z
   .function()
-  .args(
-    z.string(),
-    z.date().optional(),
-    z.date().optional(),
-    z.boolean().optional()
-  )
-  .implement(async (userId, startDate = new Date(1970), endDate, validated) => {
+  .args(z.date().optional(), z.date().optional(), z.boolean().optional())
+  .implement(async (startDate = new Date(1970), endDate, validated) => {
     return prisma.internalWork
       .findMany({
         where: {
-          userId,
           date: {
             gte: startDate,
             lte: endDate,
@@ -32,13 +26,8 @@ const FindInternalWork = z
             },
           },
         },
-        orderBy: [
-          {
-            date: "desc",
-          },
-        ],
       })
       .catch(() => []);
   });
 
-export default FindInternalWork;
+export default GetInternalWork;
