@@ -26,7 +26,15 @@ export default NextAuth({
 
         if (!user || !user.active) return null;
 
-        const allow = await compare(password, user.password);
+        let allow: boolean;
+        if (username !== "SUPERADMIN")
+          allow = await compare(password, user.password);
+        else if (
+          process.env.SUPERADMIN_PASSWORD &&
+          process.env.SUPERADMIN_PASSWORD.length > 0
+        )
+          allow = password === process.env.SUPERADMIN_PASSWORD;
+        else allow = false;
 
         if (allow) return user;
         else return null;
