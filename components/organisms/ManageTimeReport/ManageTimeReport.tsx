@@ -3,7 +3,8 @@ import { CreateTimeReport } from "@components/organisms/CreateTimeReport";
 import useUsersInfo from "@hooks/useUsersInfo";
 import { Select } from "@mantine/core";
 import { styled } from "@stitches";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
+import { DetailTimeReport, PreviousUserTimeReport } from "./widgets";
 
 export const ManageTimeReportSC = styled("div", {
   maxWidth: "$640",
@@ -15,6 +16,13 @@ export const ManageTimeReportSC = styled("div", {
 export const ManageTimeReport: FC = () => {
   const { users } = useUsersInfo();
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [selectedTimeReport, setSelectedTimeReport] = useState<string | null>(
+    null
+  );
+
+  useEffect(() => {
+    setSelectedTimeReport(null);
+  }, [selectedUser]);
 
   return (
     <TimeReportBoxSC>
@@ -33,8 +41,19 @@ export const ManageTimeReport: FC = () => {
         />
         {selectedUser && (
           <>
-            <CreateTimeReport userId={selectedUser} />
-            <h2>Etats horaires précédents</h2>
+            <CreateTimeReport
+              userId={selectedUser}
+              onNew={(value) => setSelectedTimeReport(value)}
+            />
+            <PreviousUserTimeReport
+              userId={selectedUser}
+              setSelectedTimeReport={setSelectedTimeReport}
+            />
+            <DetailTimeReport
+              userId={selectedUser}
+              timeReportId={selectedTimeReport}
+              onClose={() => setSelectedTimeReport(null)}
+            />
           </>
         )}
       </ManageTimeReportSC>

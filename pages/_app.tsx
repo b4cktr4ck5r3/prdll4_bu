@@ -3,6 +3,7 @@ import { NotificationsProvider } from "@mantine/notifications";
 import { MantineProvider } from "@mantine/styles";
 import { Font } from "@react-pdf/renderer";
 import { globalStyles, theme } from "@stitches";
+import "dayjs/locale/fr";
 import "destyle.css/destyle.min.css";
 import { SessionProvider } from "next-auth/react";
 import { AppProps } from "next/app";

@@ -1,19 +1,13 @@
 import { prisma } from "@lib/prisma";
 import { z } from "zod";
 
-const FindTimeReport = z
+const GetTimeReport = z
   .function()
-  .args(
-    z.string(),
-    z.date().optional(),
-    z.date().optional(),
-    z.boolean().optional()
-  )
-  .implement(async (userId, startDate = new Date(1970), endDate, validated) => {
+  .args(z.date().optional(), z.date().optional(), z.boolean().optional())
+  .implement(async (startDate = new Date(1970), endDate, validated) => {
     return prisma.timeReport
       .findMany({
         where: {
-          userId,
           validated,
           OR: [
             {
@@ -71,4 +65,4 @@ const FindTimeReport = z
       .catch(() => []);
   });
 
-export default FindTimeReport;
+export default GetTimeReport;

@@ -1,10 +1,9 @@
-import { CreateTimeReport, GetTimeReport } from "@lib/services/timeReport";
-import { ZodTimeReportItemForm } from "@utils/timeReport";
+import { FindTimeReport } from "@lib/services/timeReport";
 import { NextApiHandler } from "next";
-import { getToken } from "next-auth/jwt";
 import { z } from "zod";
 
 const QueryGetSchema = z.object({
+  userId: z.string().min(1),
   startDate: z
     .string()
     .optional()
@@ -29,16 +28,10 @@ const QueryGetSchema = z.object({
     }),
 });
 
-const BodyPostSchema = ZodTimeReportItemForm;
-
 const handler: NextApiHandler = async (req, res) => {
-  const { method } = req;
-  const token = await getToken({
-    req,
-    secret: process.env.JWT_SECRET,
-  });
+  const { method, query } = req;
 
-  const userId = token?.sub;
+  const { userId } = QueryGetSchema.parse(query);
 
   switch (method) {
     case "GET": {
@@ -46,25 +39,19 @@ const handler: NextApiHandler = async (req, res) => {
         const { startDate, endDate, validated } = QueryGetSchema.parse(
           req.query
         );
-        const data = await GetTimeReport(startDate, endDate, validated);
+        const data = await FindTimeReport(
+          userId,
+          startDate,
+          endDate,
+          validated
+        );
         res.json(data);
         break;
       }
-    }
-    case "POST": {
-      if (userId) {
-        const { userId, startDate, endDate } = BodyPostSchema.parse(req.body);
-        const timeReportId = CreateTimeReport(userId, startDate, endDate);
-        res.json({
-          id: timeReportId,
-        });
-        break;
-      }
+      break;
     }
     default: {
-      res.json({
-        result: new Date().toISOString(),
-      });
+      res.status(400).end("Bad Request");
     }
   }
 };

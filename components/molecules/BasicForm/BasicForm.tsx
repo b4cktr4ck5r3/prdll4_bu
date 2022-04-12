@@ -78,6 +78,7 @@ export const BasicForm: FC<BasicFormProps> = ({
         inputs.push(
           <DatePicker
             key={key}
+            locale="fr"
             label={labels[key]}
             clearable={false}
             error={form.errors[key]}

@@ -55,6 +55,7 @@ const FindScheduleTask = z
           include: {
             schedule: true,
             users: true,
+            TimeReports: true,
           },
           orderBy: [
             {

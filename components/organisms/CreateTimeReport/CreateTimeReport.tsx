@@ -1,5 +1,6 @@
 import { BasicForm } from "@components/molecules";
 import { TimeReportFormType, timeReportInputs } from "@data/form";
+import useTimeReports from "@hooks/useTimeReports";
 import { Button } from "@mantine/core";
 import { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 import { useModals } from "@mantine/modals";
@@ -15,6 +16,7 @@ export const CreateTimeReport: FC<CreateTimeReportProps> = ({
   userId,
   onNew = () => null,
 }) => {
+  const { mutate } = useTimeReports({ userId });
   const formNewPlanning = useRef<UseForm<TimeReportFormType>>();
   const modals = useModals();
 
@@ -38,6 +40,7 @@ export const CreateTimeReport: FC<CreateTimeReportProps> = ({
             .post<{ id: string }>("/api/timeReport", { ...values, userId })
             .then(({ data }) => {
               modals.closeModal(idModal);
+              mutate();
               onNew(data.id);
             })
             .catch(() => alert("error"));
@@ -47,7 +50,7 @@ export const CreateTimeReport: FC<CreateTimeReportProps> = ({
         formNewPlanning.current?.reset();
       },
     });
-  }, [modals, onNew, userId]);
+  }, [modals, mutate, onNew, userId]);
 
   if (!userId) return null;
   else

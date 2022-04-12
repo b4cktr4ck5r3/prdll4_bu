@@ -1,23 +1,25 @@
-import { CheckmarkFilled20, TrashCan20 } from "@carbon/icons-react";
+import { Close20 } from "@carbon/icons-react";
 import { ActionIcon } from "@mantine/core";
-import { WorkScheduleTaskFull } from "@utils/workScheduleTask";
+import { WorkScheduleTask } from "@prisma/client";
 import axios from "axios";
 import dayjs from "dayjs";
 import { FC, useCallback, useMemo } from "react";
 import { CardEventBase } from "./CardEventBase";
 
-export type CardEventWorkScheduleTaskProps = {
-  workScheduleTask: WorkScheduleTaskFull;
-  buttonType?: "DELETE";
+export type CardEventSimplifiedWSTProps = {
+  timeReportId: string;
+  workScheduleTask: WorkScheduleTask;
+  buttonType?: "REPORT";
   buttonCallback?: () => void;
 };
 
-export const CardEventWorkScheduleTask: FC<CardEventWorkScheduleTaskProps> = ({
+export const CardEventSimplifiedWST: FC<CardEventSimplifiedWSTProps> = ({
+  timeReportId,
   workScheduleTask,
   buttonType,
   buttonCallback = () => null,
 }) => {
-  const { name, startDate, endDate, users, TimeReports } = useMemo(
+  const { name, startDate, endDate } = useMemo(
     () => workScheduleTask,
     [workScheduleTask]
   );
@@ -32,34 +34,26 @@ export const CardEventWorkScheduleTask: FC<CardEventWorkScheduleTaskProps> = ({
     )}`;
   }, [startDate, endDate]);
 
-  const usersString = useMemo(() => {
-    return `${users.map((user) => "@" + user.full_name).join("\n")}`;
-  }, [users]);
-
   const deleteWorkScheduleTask = useCallback(() => {
     return axios
-      .delete(`/api/workScheduleTask/${workScheduleTask.id}`)
+      .delete(
+        `/api/timeReport/${timeReportId}/workScheduleTask/${workScheduleTask.id}`
+      )
       .then(() => buttonCallback());
-  }, [buttonCallback, workScheduleTask.id]);
+  }, [buttonCallback, timeReportId, workScheduleTask.id]);
 
   return (
     <CardEventBase>
       <div className="card-event-date">{dateString}</div>
       <div className="card-event-title">{name}</div>
-      <div className="card-event-text">{usersString}</div>
       <div className="right-button">
-        {buttonType === "DELETE" && TimeReports.length === 0 && (
+        {buttonType === "REPORT" && (
           <ActionIcon
             color="red"
             variant="default"
             onClick={deleteWorkScheduleTask}
           >
-            <TrashCan20 color="red" />
-          </ActionIcon>
-        )}
-        {TimeReports.length > 0 && (
-          <ActionIcon color="green" variant="transparent">
-            <CheckmarkFilled20 />
+            <Close20 color="red" />
           </ActionIcon>
         )}
       </div>

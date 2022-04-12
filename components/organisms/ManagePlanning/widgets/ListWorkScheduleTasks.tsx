@@ -116,8 +116,8 @@ export const ListWorkScheduleTasks: FC<ListWorkScheduleTasksProps> = ({
             <CardEventWorkScheduleTask
               key={task.id}
               workScheduleTask={task}
-              deletable
-              onDelete={mutate}
+              buttonType={"DELETE"}
+              buttonCallback={mutate}
             />
           ))}
         </ul>

@@ -56,8 +56,7 @@ model WorkScheduleTask {
   users          User[]
   schedule       WorkSchedule @relation(fields: [workScheduleId], references: [id])
   workScheduleId String
-  TimeReport     TimeReport?  @relation(fields: [timeReportId], references: [id])
-  timeReportId   String?
+  TimeReports    TimeReport[]
 }
 
 model TimeReportExtra {

@@ -260,6 +260,9 @@ export const globalStyles = globalCss({
   ".mantine-date-picker-dropdownWrapper, .mantine-DatePicker-cell": {
     textAlign: "center",
   },
+  ".mantine-DatePicker-input": {
+    textTransform: "capitalize",
+  },
   body: {
     background: "$background",
     color: "$neutral9",

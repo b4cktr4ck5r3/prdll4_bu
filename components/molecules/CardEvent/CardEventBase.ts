@@ -8,12 +8,16 @@ export const CardEventBase = styled("div", {
   paddingRight: "48px",
   ".card-event-title": {
     fontWeight: "bold",
-    marginBottom: "$1",
   },
   ".card-event-date": {
     whiteSpace: "break-spaces",
     "&::first-letter": {
       textTransform: "uppercase",
+    },
+  },
+  ".card-event-dates": {
+    "& > span": {
+      textTransform: "capitalize",
     },
   },
   ".card-event-text": {

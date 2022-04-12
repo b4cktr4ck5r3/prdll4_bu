@@ -1,4 +1,9 @@
-import { User, WorkSchedule, WorkScheduleTask } from "@prisma/client";
+import {
+  TimeReport,
+  User,
+  WorkSchedule,
+  WorkScheduleTask,
+} from "@prisma/client";
 import { z } from "zod";
 
 export type WorkScheduleTaskItemForm = {
@@ -20,4 +25,5 @@ export const ZodWorkScheduleTaskItemForm = z.object({
 export type WorkScheduleTaskFull = WorkScheduleTask & {
   schedule: WorkSchedule;
   users: User[];
+  TimeReports: TimeReport[];
 };

@@ -40,9 +40,12 @@ export const FormList: FC<FormListProps> = ({
               key={i}
               type={Event.Unavailability}
               color="red"
-              title={`${startDate.getDate()} ${startDate.toLocaleString("fr", {
-                month: "long",
-              })} ${startDate.getFullYear()}`}
+              title={`${startDate.getDate()} ${startDate.toLocaleString(
+                "fr-FR",
+                {
+                  month: "long",
+                }
+              )} ${startDate.getFullYear()}`}
               description=""
               infoLeft={[leftTime, rightTime]}
               onDelete={() => onDeleteItem(i)}
@@ -57,7 +60,7 @@ export const FormList: FC<FormListProps> = ({
           <MiniEvent
             key={i}
             type={Event.InternalWork}
-            title={`${date.getDate()} ${date.toLocaleString("default", {
+            title={`${date.getDate()} ${date.toLocaleString("fr-FR", {
               month: "long",
             })} ${date.getFullYear()}`}
             description={description || "Sans description"}
