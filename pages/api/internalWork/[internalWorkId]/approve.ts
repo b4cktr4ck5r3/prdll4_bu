@@ -7,7 +7,7 @@ import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
 const QuerySchema = z.object({
-  internalWorkId: z.string().min(1),
+  internalWorkId: z.string(),
 });
 
 const handler = ApiHandler(async (req, res, { isAdmin }) => {

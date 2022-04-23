@@ -1,27 +1,14 @@
 import { ApiHandler } from "@lib/api/ApiHandler";
 import { CreateUser, FindUsers } from "@lib/services/user";
 import { ZodRoleEnum } from "@utils/user";
+import { ZodQueryBoolean, ZodQueryString } from "@utils/zod";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
 const QueryGetSchema = z.object({
-  active: z
-    .enum(["true", "false"])
-    .optional()
-    .transform((value) => {
-      if (value === "true") return true;
-      else if (value === "false") return false;
-      else return undefined;
-    }),
-  complete: z
-    .enum(["true", "false"])
-    .optional()
-    .transform((value) => {
-      if (value === "true") return true;
-      else if (value === "false") return false;
-      else return undefined;
-    }),
-  role: z.string().optional(),
+  active: ZodQueryBoolean,
+  complete: ZodQueryBoolean,
+  role: ZodQueryString,
 });
 
 const BodyPostSchema = z.object({

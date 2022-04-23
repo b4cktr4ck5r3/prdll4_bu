@@ -3,33 +3,15 @@ import {
   CreateUnavailability,
   FindUnavailability,
 } from "@lib/services/unavailability";
+import { ZodQueryBoolean, ZodQueryDate, ZodQueryString } from "@utils/zod";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
 const QueryGetSchema = z.object({
-  userId: z.string().optional(),
-  acceptEqualDate: z
-    .string()
-    .optional()
-    .transform((value) => {
-      if (value === "true") return true;
-      else if (value === "false") return false;
-      else return undefined;
-    }),
-  startDate: z
-    .string()
-    .optional()
-    .transform((value) => {
-      if (value && value !== "") return new Date(value);
-      else return undefined;
-    }),
-  endDate: z
-    .string()
-    .optional()
-    .transform((value) => {
-      if (value && value !== "") return new Date(value);
-      else return undefined;
-    }),
+  userId: ZodQueryString,
+  acceptEqualDate: ZodQueryBoolean,
+  startDate: ZodQueryDate,
+  endDate: ZodQueryDate,
 });
 
 const BodyPostSchema = z.array(

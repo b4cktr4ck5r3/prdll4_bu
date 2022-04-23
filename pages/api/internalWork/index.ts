@@ -4,41 +4,16 @@ import {
   FindInternalWork,
 } from "@lib/services/internalWork";
 import { ZodInternalWorkItemForm } from "@utils/internalWork";
+import { ZodQueryBoolean, ZodQueryDate, ZodQueryString } from "@utils/zod";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
 const QueryGetSchema = z.object({
-  userId: z.string().optional(),
-  startDate: z
-    .string()
-    .optional()
-    .transform((value) => {
-      if (value && value !== "") return new Date(value);
-      else return undefined;
-    }),
-  endDate: z
-    .string()
-    .optional()
-    .transform((value) => {
-      if (value && value !== "") return new Date(value);
-      else return undefined;
-    }),
-  validated: z
-    .string()
-    .optional()
-    .transform((value) => {
-      if (value === "true") return true;
-      else if (value === "false") return false;
-      else return undefined;
-    }),
-  withoutStatus: z
-    .string()
-    .optional()
-    .transform((value) => {
-      if (value === "true") return true;
-      else if (value === "false") return false;
-      else return undefined;
-    }),
+  userId: ZodQueryString,
+  startDate: ZodQueryDate,
+  endDate: ZodQueryDate,
+  validated: ZodQueryBoolean,
+  withoutStatus: ZodQueryBoolean,
 });
 
 const BodyPostSchema = z.array(ZodInternalWorkItemForm);
