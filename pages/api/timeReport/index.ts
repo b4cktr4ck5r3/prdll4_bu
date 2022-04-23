@@ -1,38 +1,20 @@
 import { ApiHandler } from "@lib/api/ApiHandler";
 import { CreateTimeReport, FindTimeReport } from "@lib/services/timeReport";
 import { ZodTimeReportItemForm } from "@utils/timeReport";
+import { ZodQueryBoolean, ZodQueryDate, ZodQueryString } from "@utils/zod";
 import { ReasonPhrases } from "http-status-codes";
 import { z } from "zod";
 
 const QueryGetSchema = z.object({
-  userId: z.string().optional(),
-  startDate: z
-    .string()
-    .optional()
-    .transform((value) => {
-      if (value && value !== "") return new Date(value);
-      else return undefined;
-    }),
-  endDate: z
-    .string()
-    .optional()
-    .transform((value) => {
-      if (value && value !== "") return new Date(value);
-      else return undefined;
-    }),
-  validated: z
-    .string()
-    .optional()
-    .transform((value) => {
-      if (value === "true") return true;
-      else if (value === "false") return false;
-      else return undefined;
-    }),
+  userId: ZodQueryString,
+  startDate: ZodQueryDate,
+  endDate: ZodQueryDate,
+  validated: ZodQueryBoolean,
 });
 
 const BodyPostSchema = ZodTimeReportItemForm;
 
-const handler = ApiHandler(async (req, res) => {
+const handler = ApiHandler(async (req, res, { isAdmin }) => {
   switch (req.method) {
     case "GET": {
       const { userId, startDate, endDate, validated } = QueryGetSchema.parse(
@@ -48,11 +30,14 @@ const handler = ApiHandler(async (req, res) => {
       break;
     }
     case "POST": {
+      if (!isAdmin) throw new Error(ReasonPhrases.UNAUTHORIZED);
       const { userId, startDate, endDate } = BodyPostSchema.parse(req.body);
       const timeReportId = CreateTimeReport(userId, startDate, endDate);
-      res.json({
-        id: timeReportId,
-      });
+      if (timeReportId)
+        res.json({
+          id: timeReportId,
+        });
+      else throw new Error(ReasonPhrases.BAD_REQUEST);
       break;
     }
     default: {

@@ -1,40 +1,41 @@
-import { DeleteTimeReportItem } from "@lib/services/timeReport";
-import { Role } from "@utils/user";
-import { NextApiHandler } from "next";
-import { getToken } from "next-auth/jwt";
+import { ApiHandler } from "@lib/api/ApiHandler";
+import {
+  DeleteTimeReportItem,
+  FindTimeReportById,
+} from "@lib/services/timeReport";
+import { FindWorkScheduleTaskById } from "@lib/services/workScheduleTask";
+import { ReasonPhrases } from "http-status-codes";
 import { z } from "zod";
 
 const QuerySchema = z.object({
-  internalWorkId: z.string().min(1),
-  timeReportId: z.string().min(1),
+  internalWorkId: z.string(),
+  timeReportId: z.string(),
 });
 
-const handler: NextApiHandler = async (req, res) => {
-  const { method, query } = req;
-  const requestUser = await getToken({
-    req,
-    secret: process.env.JWT_SECRET,
-  });
+const handler = ApiHandler(async (req, res, { isAdmin }) => {
+  const { timeReportId, internalWorkId } = QuerySchema.parse(req.query);
 
-  const { internalWorkId, timeReportId } = QuerySchema.parse(query);
+  const timeReport = await FindTimeReportById(timeReportId);
+  const internalWork = await FindWorkScheduleTaskById(internalWorkId);
 
-  switch (method) {
+  if (!timeReport || !internalWork) throw new Error(ReasonPhrases.NOT_FOUND);
+  if (!isAdmin) throw new Error(ReasonPhrases.UNAUTHORIZED);
+
+  switch (req.method) {
     case "DELETE": {
-      if (requestUser?.sub && requestUser?.role === Role.ADMIN) {
-        const done = await DeleteTimeReportItem(
-          timeReportId,
-          "IW",
-          internalWorkId
-        );
-        if (done) res.status(200).end();
-        else res.status(400).end("Bad Request");
-      } else res.status(400).end("Bad Request");
+      const done = await DeleteTimeReportItem(
+        timeReportId,
+        "IW",
+        internalWorkId
+      );
+      if (done) res.status(200).end();
+      else throw new Error(ReasonPhrases.BAD_REQUEST);
       break;
     }
     default: {
-      res.status(400).end("Bad Request");
+      throw new Error(ReasonPhrases.BAD_REQUEST);
     }
   }
-};
+});
 
 export default handler;

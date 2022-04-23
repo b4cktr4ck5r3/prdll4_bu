@@ -1,35 +1,35 @@
-import { ValidateTimeReport } from "@lib/services/timeReport";
-import { Role } from "@utils/user";
-import { NextApiHandler } from "next";
-import { getToken } from "next-auth/jwt";
+import { ApiHandler } from "@lib/api/ApiHandler";
+import {
+  FindTimeReportById,
+  ValidateTimeReport,
+} from "@lib/services/timeReport";
+import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
 const QuerySchema = z.object({
-  timeReportId: z.string().min(1),
+  timeReportId: z.string(),
 });
 
-const handler: NextApiHandler = async (req, res) => {
-  const { method, query } = req;
-  const requestUser = await getToken({
-    req,
-    secret: process.env.JWT_SECRET,
-  });
+const handler = ApiHandler(async (req, res, { isAdmin }) => {
+  const { timeReportId } = QuerySchema.parse(req.query);
 
-  const { timeReportId } = QuerySchema.parse(query);
+  const document = await FindTimeReportById(timeReportId);
 
-  switch (method) {
+  if (!document) throw new Error(ReasonPhrases.NOT_FOUND);
+  if (!isAdmin) throw new Error(ReasonPhrases.UNAUTHORIZED);
+
+  switch (req.method) {
     case "POST": {
-      if (requestUser?.sub && requestUser?.role === Role.ADMIN) {
-        const done = await ValidateTimeReport(timeReportId);
-        if (done) res.status(200).end();
-        else res.status(400).end("Bad Request");
-      } else res.status(400).end("Bad Request");
+      const done = await ValidateTimeReport(timeReportId);
+      if (done)
+        res.status(StatusCodes.NO_CONTENT).end(ReasonPhrases.NO_CONTENT);
+      else throw new Error(ReasonPhrases.BAD_REQUEST);
       break;
     }
     default: {
-      res.status(400).end("Bad Request");
+      throw new Error(ReasonPhrases.BAD_REQUEST);
     }
   }
-};
+});
 
 export default handler;

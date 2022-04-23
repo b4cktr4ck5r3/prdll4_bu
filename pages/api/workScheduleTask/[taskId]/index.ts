@@ -21,7 +21,8 @@ const handler = ApiHandler(async (req, res, { isAdmin }) => {
   switch (req.method) {
     case "DELETE": {
       const done = await DeleteWorkScheduleTask(taskId);
-      if (done) res.status(StatusCodes.NO_CONTENT).end();
+      if (done)
+        res.status(StatusCodes.NO_CONTENT).end(ReasonPhrases.NO_CONTENT);
       else throw new Error(ReasonPhrases.BAD_REQUEST);
       break;
     }
