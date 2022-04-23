@@ -1,9 +1,7 @@
 import { CircleFilled20 } from "@carbon/icons-react";
 import { BasicForm } from "@components/molecules";
 import { WorkScheduleTaskFormType, workScheduleTaskInputs } from "@data/form";
-import useUsersBusy from "@hooks/useUsersBusy";
-import useUsersInfo from "@hooks/useUsersInfo";
-import useWorkScheduleTasks from "@hooks/useWorkScheduleTasks";
+import { useUsersBusy, useUsersInfo, useWorkScheduleTasks } from "@hooks";
 import { Button, Group } from "@mantine/core";
 import { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 import { styled } from "@stitches";

@@ -1,5 +1,4 @@
-import useUnavailabilities from "@hooks/useUnavailabilities";
-import useWorkScheduleTasks from "@hooks/useWorkScheduleTasks";
+import { useUnavailabilities, useWorkScheduleTasks } from "@hooks";
 import { User } from "@prisma/client";
 import { Event } from "@utils/calendar";
 import { useMemo } from "react";
@@ -17,10 +16,7 @@ export type useUsersInfoProps = {
   endDate: Date;
 };
 
-export default function useUsersBusy({
-  startDate,
-  endDate,
-}: useUsersInfoProps) {
+export function useUsersBusy({ startDate, endDate }: useUsersInfoProps) {
   const { unavailabilities, mutate: mutateUnavailabilities } =
     useUnavailabilities({
       startDate,

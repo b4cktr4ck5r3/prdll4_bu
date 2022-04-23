@@ -1,4 +1,4 @@
-import usePlannings from "@hooks/usePlannings";
+import { usePlannings } from "@hooks";
 import { Group, Select, Text } from "@mantine/core";
 import { FC, forwardRef } from "react";
 

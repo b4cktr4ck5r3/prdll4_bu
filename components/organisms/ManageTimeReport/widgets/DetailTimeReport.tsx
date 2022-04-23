@@ -2,7 +2,7 @@ import {
   CardEventInternalWork,
   CardEventSimplifiedWST,
 } from "@components/molecules/CardEvent";
-import useTimeReports from "@hooks/useTimeReports";
+import { useTimeReports } from "@hooks";
 import { Accordion, Button, Divider, Group, Modal, Text } from "@mantine/core";
 import { styled } from "@stitches";
 import {

@@ -3,7 +3,7 @@ import { CalendarFilter } from "@utils/calendar/Calendar";
 import { CalendarFilterString, Preferences } from "@utils/user";
 import { useMemo } from "react";
 
-export default function useUserCalendarFilter() {
+export function useUserCalendarFilter() {
   const [userCalendarFilter, setUserCalendarFilter] =
     useLocalStorageValue<CalendarFilterString>({
       key: Preferences.UserCalendarFilter,

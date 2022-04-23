@@ -8,11 +8,7 @@ type Props = {
   endDate?: Date;
 };
 
-export default function useTimeReports({
-  userId,
-  endDate,
-  startDate,
-}: Props = {}) {
+export function useTimeReports({ userId, endDate, startDate }: Props = {}) {
   const requestName = useMemo(() => {
     let name = "timeReports";
     if (userId) name += "-" + userId;

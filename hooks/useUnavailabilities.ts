@@ -8,7 +8,7 @@ type Props = {
   acceptEqualDate?: boolean;
 };
 
-export default function useUnavailabilities({
+export function useUnavailabilities({
   endDate,
   startDate,
   acceptEqualDate,

@@ -1,8 +1,10 @@
 import { SettingBoxSC } from "@components/atoms";
 import { DefaultLayout } from "@components/layouts";
-import useHideWeekEnd from "@hooks/useHideWeekEnd";
-import useSyncCalendarForm from "@hooks/useSyncCalendarForm";
-import useUserCalendarFilter from "@hooks/useUserCalendarView";
+import {
+  useHideWeekEnd,
+  useSyncCalendarForm,
+  useUserCalendarFilter,
+} from "@hooks";
 import { Button, PasswordInput, Select, Switch } from "@mantine/core";
 import { useForm } from "@mantine/hooks";
 import { styled } from "@stitches";

@@ -6,8 +6,7 @@ import {
   ManageInternalWorkModal,
   SimplePlanning,
 } from "@components/organisms";
-import { useCurrentUser } from "@hooks/useCurrentUser";
-import useInternalWorks from "@hooks/useInternalWorks";
+import { useCurrentUser, useInternalWorks } from "@hooks";
 import { PlanningContext } from "@lib/contexts";
 import { Button } from "@mantine/core";
 import { useNotifications } from "@mantine/notifications";

@@ -1,5 +1,5 @@
 import { GeneratePdf16 } from "@carbon/icons-react";
-import useWorkScheduleTasks from "@hooks/useWorkScheduleTasks";
+import { useWorkScheduleTasks } from "@hooks";
 import { BigCalendarContext } from "@lib/contexts";
 import { Button } from "@mantine/core";
 import {

@@ -1,7 +1,7 @@
 import { Close32 } from "@carbon/icons-react";
 import { CPlannerHorizontal } from "@components/icons";
 import userOptions from "@data/navbar/userOptions";
-import { useCurrentUser } from "@hooks/useCurrentUser";
+import { useCurrentUser } from "@hooks";
 import { Text } from "@mantine/core";
 import { styled } from "@stitches";
 import { signOut } from "next-auth/react";

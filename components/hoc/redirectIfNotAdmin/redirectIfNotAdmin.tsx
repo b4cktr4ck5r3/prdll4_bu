@@ -1,5 +1,5 @@
 import { LoadingTemplate } from "@components/templates";
-import { useCurrentUser } from "@hooks/useCurrentUser";
+import { useCurrentUser } from "@hooks";
 import { GetDisplayName } from "@utils/react";
 import { NextPage } from "next";
 import { useSession } from "next-auth/react";

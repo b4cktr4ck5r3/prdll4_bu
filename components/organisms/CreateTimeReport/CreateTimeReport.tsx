@@ -1,6 +1,6 @@
 import { BasicForm } from "@components/molecules";
 import { TimeReportFormType, timeReportInputs } from "@data/form";
-import useTimeReports from "@hooks/useTimeReports";
+import { useTimeReports } from "@hooks";
 import { Button } from "@mantine/core";
 import { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 import { useModals } from "@mantine/modals";

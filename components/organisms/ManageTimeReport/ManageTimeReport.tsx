@@ -1,6 +1,6 @@
 import { TimeReportBoxSC } from "@components/atoms";
 import { CreateTimeReport } from "@components/organisms/CreateTimeReport";
-import useUsersInfo from "@hooks/useUsersInfo";
+import { useUsersInfo } from "@hooks";
 import { Select } from "@mantine/core";
 import { styled } from "@stitches";
 import { FC, useEffect, useState } from "react";

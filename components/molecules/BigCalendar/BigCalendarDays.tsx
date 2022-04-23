@@ -1,7 +1,9 @@
 import { BigCalendarModal } from "@components/molecules/BigCalendar/BigCalendarModal";
-import useHideWeekEnd from "@hooks/useHideWeekEnd";
-import useUnavailabilities from "@hooks/useUnavailabilities";
-import useWorkScheduleTasks from "@hooks/useWorkScheduleTasks";
+import {
+  useHideWeekEnd,
+  useUnavailabilities,
+  useWorkScheduleTasks,
+} from "@hooks";
 import { BigCalendarContext } from "@lib/contexts";
 import { Text } from "@mantine/core";
 import { styled } from "@stitches";

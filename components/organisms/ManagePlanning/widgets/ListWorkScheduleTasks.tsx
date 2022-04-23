@@ -1,7 +1,6 @@
 import { ArrowLeft20, ArrowRight20 } from "@carbon/icons-react";
 import { CardEventWorkScheduleTask } from "@components/molecules/CardEvent/CardEventWorkScheduleTask";
-import usePlannings from "@hooks/usePlannings";
-import useWorkScheduleTasks from "@hooks/useWorkScheduleTasks";
+import { usePlannings, useWorkScheduleTasks } from "@hooks";
 import { ActionIcon } from "@mantine/core";
 import { styled } from "@stitches";
 import { GetDaysInMonth, GetMonthLabel } from "@utils/calendar";

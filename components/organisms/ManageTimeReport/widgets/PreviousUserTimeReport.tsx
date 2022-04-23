@@ -1,5 +1,5 @@
 import { CardEventTimeReport } from "@components/molecules/CardEvent/CardEventTimeReport";
-import useTimeReports from "@hooks/useTimeReports";
+import { useTimeReports } from "@hooks";
 import { Group, Text } from "@mantine/core";
 import { styled } from "@stitches";
 import { FC } from "react";

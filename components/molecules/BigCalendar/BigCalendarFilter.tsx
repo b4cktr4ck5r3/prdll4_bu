@@ -1,5 +1,4 @@
-import usePlannings from "@hooks/usePlannings";
-import useUsersInfo from "@hooks/useUsersInfo";
+import { usePlannings, useUsersInfo } from "@hooks";
 import { BigCalendarContext } from "@lib/contexts";
 import { Checkbox } from "@mantine/core";
 import { styled } from "@stitches";

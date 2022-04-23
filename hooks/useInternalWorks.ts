@@ -9,7 +9,7 @@ type Props = {
   withoutStatus?: boolean;
 };
 
-export default function useInternalWorks({
+export function useInternalWorks({
   endDate,
   startDate,
   validated,

@@ -6,8 +6,7 @@ import {
 } from "@carbon/icons-react";
 import { BigCalendarExportButton } from "@components/molecules/BigCalendar/BigCalendarExportButton";
 import { BigCalendarFilter } from "@components/molecules/BigCalendar/BigCalendarFilter";
-import useUserCalendarFilter from "@hooks/useUserCalendarView";
-import useUsersInfo from "@hooks/useUsersInfo";
+import { useUserCalendarFilter, useUsersInfo } from "@hooks";
 import { BigCalendarContext } from "@lib/contexts";
 import { ActionIcon, Button, Group } from "@mantine/core";
 import { useListState, useToggle } from "@mantine/hooks";

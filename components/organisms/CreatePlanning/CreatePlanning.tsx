@@ -1,6 +1,6 @@
 import { BasicForm } from "@components/molecules";
 import { WorkScheduleFormType, workScheduleInputs } from "@data/form";
-import usePlannings from "@hooks/usePlannings";
+import { usePlannings } from "@hooks";
 import { Button } from "@mantine/core";
 import { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 import { useModals } from "@mantine/modals";

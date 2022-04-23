@@ -9,7 +9,7 @@ type Props = {
   acceptEqualDate?: boolean;
 };
 
-export default function useWorkScheduleTasks({
+export function useWorkScheduleTasks({
   workScheduleId,
   endDate,
   startDate,

@@ -1,5 +1,5 @@
 import { ChevronLeft16, ChevronRight16 } from "@carbon/icons-react";
-import useHideWeekEnd from "@hooks/useHideWeekEnd";
+import { useHideWeekEnd } from "@hooks";
 import { CalendarContext, PlanningContext } from "@lib/contexts";
 import { CSS, styled } from "@stitches";
 import {

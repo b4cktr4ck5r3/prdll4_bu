@@ -5,7 +5,7 @@ import {
   UnavailabilityFormType,
   unavailabilityInputs,
 } from "@data/form/unavailability";
-import useSyncCalendarForm from "@hooks/useSyncCalendarForm";
+import { useSyncCalendarForm } from "@hooks";
 import { PlanningContext } from "@lib/contexts";
 import { useListState } from "@mantine/hooks";
 import { UseForm } from "@mantine/hooks/lib/use-form/use-form";

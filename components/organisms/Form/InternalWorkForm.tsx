@@ -3,7 +3,7 @@ import { BoxSC } from "@components/atoms";
 import { BasicForm } from "@components/molecules";
 import { FormList } from "@components/molecules/FormList";
 import { InternalWorkFormType, internalWorkInputs } from "@data/form";
-import useSyncCalendarForm from "@hooks/useSyncCalendarForm";
+import { useSyncCalendarForm } from "@hooks";
 import { PlanningContext } from "@lib/contexts";
 import { useListState } from "@mantine/hooks";
 import { UseForm } from "@mantine/hooks/lib/use-form/use-form";
