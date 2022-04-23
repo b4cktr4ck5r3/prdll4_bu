@@ -1,42 +1,32 @@
-import CreateWorkSchedule from "@lib/services/workSchedule/CreateWorkSchedule";
-import GetWorkSchedules from "@lib/services/workSchedule/GetWorkSchedules";
+import { ApiHandler } from "@lib/api/ApiHandler";
+import {
+  CreateWorkSchedule,
+  GetWorkSchedules,
+} from "@lib/services/workSchedule";
 import { ZodWorkScheduleItemForm } from "@utils/workSchedule";
-import { NextApiHandler } from "next";
-import { getToken } from "next-auth/jwt";
+import { ReasonPhrases, StatusCodes } from "http-status-codes";
 
 const BodyPostSchema = ZodWorkScheduleItemForm;
 
-const handler: NextApiHandler = async (req, res) => {
-  const { method } = req;
-  const token = await getToken({
-    req,
-    secret: process.env.JWT_SECRET,
-  });
-
-  const userId = token?.sub;
-
-  switch (method) {
+const handler = ApiHandler(async (req, res, { isAdmin }) => {
+  switch (req.method) {
     case "GET": {
-      if (userId) {
-        const data = await GetWorkSchedules();
-        res.json(data);
-        break;
-      }
+      const data = await GetWorkSchedules();
+      res.json(data);
+      break;
     }
     case "POST": {
-      if (userId) {
-        const { name, startDate, endDate } = BodyPostSchema.parse(req.body);
-        const done = await CreateWorkSchedule(name, startDate, endDate);
-        res.json({
-          result: done,
-        });
-        break;
-      }
+      if (!isAdmin) throw new Error(ReasonPhrases.UNAUTHORIZED);
+      const { name, startDate, endDate } = BodyPostSchema.parse(req.body);
+      const done = await CreateWorkSchedule(name, startDate, endDate);
+      if (done) res.status(StatusCodes.CREATED).end(ReasonPhrases.CREATED);
+      else throw new Error(ReasonPhrases.BAD_REQUEST);
+      break;
     }
     default: {
-      res.status(400).end("Bad Request");
+      throw new Error(ReasonPhrases.METHOD_NOT_ALLOWED);
     }
   }
-};
+});
 
 export default handler;
