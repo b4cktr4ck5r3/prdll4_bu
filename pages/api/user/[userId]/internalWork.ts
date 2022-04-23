@@ -39,12 +39,12 @@ const handler: NextApiHandler = async (req, res) => {
         const { startDate, endDate, validated } = QueryGetSchema.parse(
           req.query
         );
-        const data = await FindInternalWork(
+        const data = await FindInternalWork({
           userId,
           startDate,
           endDate,
-          validated
-        );
+          validated,
+        });
         res.json(data);
         break;
       }

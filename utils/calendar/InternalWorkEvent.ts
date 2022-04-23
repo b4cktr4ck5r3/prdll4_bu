@@ -12,7 +12,9 @@ export type InternalWorkEvent = {
   date: Date;
   description: string;
   duration: number;
-  validated: boolean;
+  status: {
+    validated: boolean;
+  };
 };
 
 export type InternalWorkEventSimplified = Omit<InternalWorkEvent, "date"> & {
@@ -25,5 +27,7 @@ export type InternalWorkEventDTO = {
   date: string;
   description: string;
   duration: number;
-  validated: boolean;
+  status: {
+    validated: boolean;
+  };
 };

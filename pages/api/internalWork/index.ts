@@ -1,12 +1,10 @@
+import { ApiHandler } from "@lib/api/ApiHandler";
 import {
   CreateInternalWork,
-  DeleteInternalWork,
-  UpdateInternalWork,
+  FindInternalWork,
 } from "@lib/services/internalWork";
-import GetInternalWork from "@lib/services/internalWork/GetInternalWork";
 import { ZodInternalWorkItemForm } from "@utils/internalWork";
-import { NextApiHandler } from "next";
-import { getToken } from "next-auth/jwt";
+import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
 const QueryGetSchema = z.object({
@@ -32,77 +30,47 @@ const QueryGetSchema = z.object({
       else if (value === "false") return false;
       else return undefined;
     }),
+  withoutStatus: z
+    .string()
+    .optional()
+    .transform((value) => {
+      if (value === "true") return true;
+      else if (value === "false") return false;
+      else return undefined;
+    }),
 });
 
 const BodyPostSchema = z.array(ZodInternalWorkItemForm);
-const BodyPutSchema = ZodInternalWorkItemForm.partial();
 
-const QueryIdSchema = z.object({
-  id: z.string(),
-});
-
-const handler: NextApiHandler = async (req, res) => {
-  const { method } = req;
-  const token = await getToken({
-    req,
-    secret: process.env.JWT_SECRET,
-  });
-
-  const userId = token?.sub;
-
-  switch (method) {
+const handler = ApiHandler(async (req, res, { userId }) => {
+  switch (req.method) {
     case "GET": {
-      if (userId) {
-        const { startDate, endDate, validated } = QueryGetSchema.parse(
-          req.query
-        );
-        const data = await GetInternalWork(startDate, endDate, validated);
-        res.json(data);
-        break;
-      }
+      const { startDate, endDate, validated, withoutStatus } =
+        QueryGetSchema.parse(req.query);
+      const data = await FindInternalWork({
+        startDate,
+        endDate,
+        validated,
+        withoutStatus,
+      });
+      res.json(data);
+      break;
     }
     case "POST": {
-      if (userId) {
-        const listInternalWork = BodyPostSchema.parse(req.body);
-        const done = await Promise.all(
-          listInternalWork.map(({ date, description, duration }) =>
-            CreateInternalWork(userId, date, duration, description)
-          )
-        ).then((values) => values.every(Boolean));
-        res.json({
-          result: done,
-        });
-        break;
-      }
-    }
-    case "PUT": {
-      if (userId) {
-        const { id } = QueryIdSchema.parse(req.query);
-        const updateData = BodyPutSchema.parse(req.body);
-        const done = await UpdateInternalWork(id, updateData);
-        res.json({
-          result: done,
-        });
-        break;
-      }
-    }
-
-    case "DELETE": {
-      if (userId) {
-        const { id: internalWorkId } = QueryIdSchema.parse(req.query);
-        const done = await DeleteInternalWork(internalWorkId);
-        res.json({
-          result: done,
-        });
-        break;
-      }
+      const listInternalWork = BodyPostSchema.parse(req.body);
+      const done = await Promise.all(
+        listInternalWork.map(({ date, description, duration }) =>
+          CreateInternalWork(userId, date, duration, description)
+        )
+      ).then((values) => values.every(Boolean));
+      if (done) res.status(StatusCodes.CREATED).end(ReasonPhrases.CREATED);
+      else throw new Error(ReasonPhrases.BAD_REQUEST);
+      break;
     }
     default: {
-      res.json({
-        result: new Date().toISOString(),
-      });
+      throw new Error(ReasonPhrases.METHOD_NOT_ALLOWED);
     }
   }
-};
+});
 
 export default handler;

@@ -29,15 +29,22 @@ model Unavailability {
 }
 
 model InternalWork {
-  id           String      @id @default(uuid())
+  id           String              @id @default(uuid())
   date         DateTime
   duration     Float
-  validated    Boolean
   description  String
-  user         User        @relation(fields: [userId], references: [id])
+  status       InternalWorkStatus?
+  user         User                @relation(fields: [userId], references: [id])
   userId       String
-  TimeReport   TimeReport? @relation(fields: [timeReportId], references: [id])
+  TimeReport   TimeReport?         @relation(fields: [timeReportId], references: [id])
   timeReportId String?
+}
+
+model InternalWorkStatus {
+  id             String       @id @default(uuid())
+  validated      Boolean
+  InternalWork   InternalWork @relation(fields: [internalWorkId], references: [id])
+  internalWorkId String       @unique
 }
 
 model WorkSchedule {

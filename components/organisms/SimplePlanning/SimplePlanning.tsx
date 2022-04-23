@@ -206,13 +206,7 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
   const deleteInternalWork = useCallback(
     (eventId: string) => {
       if (type === Event.InternalWork) {
-        axios
-          .delete("/api/internalWork", {
-            params: {
-              id: eventId,
-            },
-          })
-          .then(onDeleteEvent);
+        axios.delete(`/api/internalWork/${eventId}`).then(onDeleteEvent);
       }
     },
     [onDeleteEvent, type]
@@ -221,13 +215,7 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
   const updateInternalWork = useCallback(
     (eventId: string, data: InternalWorkFormType) => {
       if (type === Event.InternalWork) {
-        axios
-          .put("/api/internalWork", data, {
-            params: {
-              id: eventId,
-            },
-          })
-          .then(onEditEvent);
+        axios.put(`/api/internalWork/${eventId}`, data).then(onEditEvent);
       }
     },
     [onEditEvent, type]
@@ -285,7 +273,7 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
         <MiniCalendar />
         <div className="title">Agenda du jour</div>
         {dayEvents.internalWorks.map((event, i) => {
-          const { id, duration, description, validated } = event;
+          const { id, duration, description, status } = event;
           return (
             <MiniEvent
               key={i}
@@ -302,10 +290,16 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
                       }`}
                   </Text>
                   <Text
-                    color={event.validated ? "green" : "orange"}
+                    color={
+                      status ? (status.validated ? "green" : "red") : "orange"
+                    }
                     weight={"bold"}
                   >
-                    {event.validated ? "Validé" : "Non validé"}
+                    {status
+                      ? status.validated
+                        ? "Validé"
+                        : "Annulé"
+                      : "En attente"}
                   </Text>
                 </>
               }
@@ -314,7 +308,7 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
               onEdit={(data) =>
                 updateInternalWork(id, data as InternalWorkFormType)
               }
-              allowEdit={!validated}
+              allowEdit={!status}
               type={Event.InternalWork}
             />
           );

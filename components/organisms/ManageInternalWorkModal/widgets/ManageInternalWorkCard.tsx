@@ -51,29 +51,13 @@ export const ManageInternalWorkCard: FC<ManageInternalWorkCardProps> = ({
 
   const deleteInternalWork = useCallback(() => {
     if (internalWork.id) {
-      axios
-        .delete("/api/internalWork", {
-          params: {
-            id: internalWork.id,
-          },
-        })
-        .then(onChange);
+      axios.post(`/api/internalWork/${internalWork.id}/decline`).then(onChange);
     }
   }, [internalWork.id, onChange]);
 
   const updateInternalWork = useCallback(() => {
     if (internalWork.id) {
-      axios
-        .put(
-          "/api/internalWork",
-          { validated: true },
-          {
-            params: {
-              id: internalWork.id,
-            },
-          }
-        )
-        .then(onChange);
+      axios.post(`/api/internalWork/${internalWork.id}/approve`).then(onChange);
     }
   }, [internalWork.id, onChange]);
 

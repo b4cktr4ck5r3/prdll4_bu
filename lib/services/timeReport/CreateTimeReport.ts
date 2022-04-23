@@ -50,7 +50,9 @@ const CreateTimeReport = z
         TimeReport: {
           is: null,
         },
-        validated: true,
+        status: {
+          validated: true,
+        },
         date: {
           lte: endDate,
         },

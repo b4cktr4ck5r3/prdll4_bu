@@ -1,44 +1,62 @@
 import { prisma } from "@lib/prisma";
+import { Prisma } from "@prisma/client";
+import { SafeUserSelect } from "@utils/user";
 import { z } from "zod";
 
-const FindInternalWork = z
+export const FindInternalWork = z
   .function()
   .args(
-    z.string(),
-    z.date().optional(),
-    z.date().optional(),
-    z.boolean().optional()
+    z.object({
+      userId: z.string().optional(),
+      startDate: z.date().optional(),
+      endDate: z.date().optional(),
+      validated: z.boolean().optional(),
+      withoutStatus: z.boolean().optional(),
+    })
   )
-  .implement(async (userId, startDate = new Date(1970), endDate, validated) => {
-    return prisma.internalWork
-      .findMany({
-        where: {
-          userId,
-          date: {
-            gte: startDate,
-            lte: endDate,
-          },
+  .implement(
+    async ({
+      userId,
+      startDate = new Date(1970),
+      endDate,
+      validated,
+      withoutStatus,
+    }) => {
+      let status:
+        | Prisma.InternalWorkStatusRelationFilter
+        | Prisma.InternalWorkStatusWhereInput
+        | undefined = undefined;
+      if (withoutStatus)
+        status = {
+          is: null,
+        };
+      else if (typeof validated !== "undefined")
+        status = {
           validated,
-        },
-        include: {
-          user: {
-            select: {
-              id: true,
-              username: true,
-              password: false,
-              full_name: true,
-              role: true,
-              active: true,
+        };
+
+      return prisma.internalWork
+        .findMany({
+          where: {
+            userId,
+            date: {
+              gte: startDate,
+              lte: endDate,
+            },
+            status,
+          },
+          include: {
+            status: true,
+            user: {
+              select: SafeUserSelect,
             },
           },
-        },
-        orderBy: [
-          {
-            date: "desc",
-          },
-        ],
-      })
-      .catch(() => []);
-  });
-
-export default FindInternalWork;
+          orderBy: [
+            {
+              date: "desc",
+            },
+          ],
+        })
+        .catch(() => []);
+    }
+  );

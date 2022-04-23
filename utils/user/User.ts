@@ -23,3 +23,12 @@ export type UserFull = {
 export const ZodUserUpdate = z.object({
   active: z.boolean().optional(),
 });
+
+export const SafeUserSelect = {
+  id: true,
+  username: true,
+  password: false,
+  full_name: true,
+  role: true,
+  active: true,
+};

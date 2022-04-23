@@ -1,16 +1,21 @@
 import { prisma } from "@lib/prisma";
-import { ZodInternalWorkItemForm } from "@utils/internalWork";
 import { z } from "zod";
 
-export const UpdateInternalWork = z
+export const ApproveInternalWork = z
   .function()
-  .args(z.string(), ZodInternalWorkItemForm.partial())
-  .implement(async (id, data) => {
+  .args(z.string())
+  .implement(async (id) => {
     return prisma.internalWork
       .update({
-        data: data,
         where: {
           id: id,
+        },
+        data: {
+          status: {
+            create: {
+              validated: true,
+            },
+          },
         },
       })
       .then(() => true)

@@ -1,7 +1,7 @@
 import { prisma } from "@lib/prisma";
 import { z } from "zod";
 
-const CreateInternalWork = z
+export const CreateInternalWork = z
   .function()
   .args(z.string(), z.date(), z.number(), z.string())
   .implement(async (userId, date, duration, description) => {
@@ -12,11 +12,8 @@ const CreateInternalWork = z
           date,
           duration,
           description,
-          validated: false,
         },
       })
       .then(() => true)
       .catch(() => false);
   });
-
-export default CreateInternalWork;

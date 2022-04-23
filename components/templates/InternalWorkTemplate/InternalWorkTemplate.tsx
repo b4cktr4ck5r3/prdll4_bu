@@ -36,7 +36,7 @@ export const InternalWorkTemplate: FC = () => {
   const [openedModalIW, setOpenedModalIW] = useState(false);
   const { internalWorks: internalWorksNotValidated, mutate } = useInternalWorks(
     {
-      validated: false,
+      withoutStatus: true,
     }
   );
   const [synchronizedDate, setSynchronizedDate] = useState(new Date());

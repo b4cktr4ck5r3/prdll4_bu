@@ -4,11 +4,12 @@ import axios from "axios";
 export default async function FetchInternalWorks(
   startDate?: Date,
   endDate?: Date,
-  validated?: boolean
+  validated?: boolean,
+  withoutStatus?: boolean
 ) {
   return axios
     .get<InternalWorkFull[]>("/api/internalWork", {
-      params: { startDate, endDate, validated },
+      params: { startDate, endDate, validated, withoutStatus },
     })
     .then((res) => res.data);
 }

@@ -1,4 +1,7 @@
-export { default as CreateInternalWork } from "./CreateInternalWork";
-export { default as FindInternalWork } from "./FindInternalWork";
-export { default as DeleteInternalWork } from "./DeleteInternalWork";
-export { default as UpdateInternalWork } from "./UpdateInternalWork";
+export * from "./ApproveInternalWork";
+export * from "./CreateInternalWork";
+export * from "./DeclineInternalWork";
+export * from "./FindInternalWork";
+export * from "./FindInternalWorkById";
+export * from "./DeleteInternalWork";
+export * from "./UpdateInternalWork";

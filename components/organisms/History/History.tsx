@@ -64,8 +64,7 @@ const HistoryComponent: React.ForwardRefRenderFunction<
     if (type === Event.InternalWork) {
       axios
         .get<InternalWorkEventDTO[]>(
-          `/api/user/${sessionData?.user?.sub}/internalWork`,
-          {}
+          `/api/user/${sessionData?.user?.sub}/internalWork`
         )
         .then(({ data }) => {
           setItems(
@@ -125,7 +124,7 @@ const HistoryComponent: React.ForwardRefRenderFunction<
     (eventId: string) => {
       let url = "";
       if (type === Event.InternalWork) {
-        url = "/api/internalWork";
+        url = `/api/internalWork/${eventId}`;
       } else if (type === Event.Unavailability) {
         url = "/api/unavailability";
       }
@@ -144,13 +143,7 @@ const HistoryComponent: React.ForwardRefRenderFunction<
   const updateEvent = useCallback(
     (eventId: string, data: InternalWorkFormType | UnavailabilityFormType) => {
       if (type === Event.InternalWork) {
-        axios
-          .put("/api/internalWork", data, {
-            params: {
-              id: eventId,
-            },
-          })
-          .then(onEditEvent);
+        axios.put(`/api/internalWork/${eventId}`, data).then(onEditEvent);
       } else if (type === Event.Unavailability) {
         const { time } = data as UnavailabilityFormType;
         axios
@@ -177,7 +170,7 @@ const HistoryComponent: React.ForwardRefRenderFunction<
       <div className="title">Mon historique</div>
       {type === Event.InternalWork &&
         (items as InternalWorkEventSimplified[]).map((event, i) => {
-          const { id, date, duration, validated } = event;
+          const { id, date, duration, status } = event;
           const dateObject = new Date(date.year, date.month, date.date);
           return (
             <MiniEvent
@@ -189,16 +182,22 @@ const HistoryComponent: React.ForwardRefRenderFunction<
               )} ${dateObject.getFullYear()}`}
               description={
                 <Text
-                  color={event.validated ? "green" : "orange"}
+                  color={
+                    status ? (status.validated ? "green" : "red") : "orange"
+                  }
                   weight={"bold"}
                 >
-                  {event.validated ? "Validé" : "Non validé"}
+                  {status
+                    ? status.validated
+                      ? "Validé"
+                      : "Annulé"
+                    : "En attente"}
                 </Text>
               }
               infoLeft={`${duration}h`}
               onDelete={() => deleteEvent(id)}
               onEdit={(data) => updateEvent(id, data)}
-              allowEdit={!validated}
+              allowEdit={!status}
               type={type}
             />
           );
