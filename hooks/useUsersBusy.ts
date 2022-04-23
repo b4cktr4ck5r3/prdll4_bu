@@ -25,7 +25,7 @@ export default function useUsersBusy({
     useUnavailabilities({
       startDate,
       endDate,
-      acceptEqualDate: false,
+      acceptEqualDate: true,
     });
   const { workScheduleTasks, mutate: mutateWST } = useWorkScheduleTasks({
     startDate,

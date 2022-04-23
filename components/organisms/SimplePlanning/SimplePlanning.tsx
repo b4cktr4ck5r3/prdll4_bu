@@ -224,13 +224,7 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
   const deleteUnavailability = useCallback(
     (eventId: string) => {
       if (type === Event.Unavailability) {
-        axios
-          .delete("/api/unavailability", {
-            params: {
-              id: eventId,
-            },
-          })
-          .then(onDeleteEvent);
+        axios.delete(`/api/unavailability/${eventId}`).then(onDeleteEvent);
       }
     },
     [onDeleteEvent, type]
@@ -239,13 +233,7 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
   const updateUnavailability = useCallback(
     (eventId: string, data: UnavailabilityItemForm) => {
       if (type === Event.Unavailability) {
-        axios
-          .put("/api/unavailability", data, {
-            params: {
-              id: eventId,
-            },
-          })
-          .then(onEditEvent);
+        axios.put(`/api/unavailability/${eventId}`, data).then(onEditEvent);
       }
     },
     [onEditEvent, type]
@@ -351,6 +339,7 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
                   endDate: end.toDate(),
                 });
               }}
+              allowEdit={new Date().getTime() < new Date(startDate).getTime()}
               type={Event.Unavailability}
             />
           );

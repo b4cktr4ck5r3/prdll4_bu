@@ -28,7 +28,7 @@ export const ApiHandler = (callback: ApiHandlerCallback): NextApiHandler => {
     }
 
     try {
-      callback(req, res, {
+      return callback(req, res, {
         userId: token.sub,
         userRole: token.role,
         isAdmin: token.role === Role.ADMIN,

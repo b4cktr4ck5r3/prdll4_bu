@@ -1,19 +1,20 @@
+import { ApiHandler } from "@lib/api/ApiHandler";
 import {
   CreateUnavailability,
-  DeleteUnavailability,
+  FindUnavailability,
 } from "@lib/services/unavailability";
-import GetUnavailabilities from "@lib/services/unavailability/GetUnavailabilities";
-import UpdateUnavailability from "@lib/services/unavailability/UpdateUnavailability";
-import { ZodUnavailabilityItemForm } from "@utils/unavailability/unavailability";
-import { NextApiHandler } from "next";
-import { getToken } from "next-auth/jwt";
+import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
 const QueryGetSchema = z.object({
   acceptEqualDate: z
     .string()
     .optional()
-    .transform((value) => value === "false"),
+    .transform((value) => {
+      if (value === "true") return true;
+      else if (value === "false") return false;
+      else return undefined;
+    }),
   startDate: z
     .string()
     .optional()
@@ -37,78 +38,35 @@ const BodyPostSchema = z.array(
   })
 );
 
-const BodyPutSchema = ZodUnavailabilityItemForm;
-
-const QueryIdSchema = z.object({
-  id: z.string(),
-});
-
-const handler: NextApiHandler = async (req, res) => {
-  const { method } = req;
-  const token = await getToken({
-    req,
-    secret: process.env.JWT_SECRET,
-  });
-
-  const userId = token?.sub;
-
-  switch (method) {
+const handler = ApiHandler(async (req, res, { userId }) => {
+  switch (req.method) {
     case "GET": {
-      if (userId) {
-        const { startDate, endDate, acceptEqualDate } = QueryGetSchema.parse(
-          req.query
-        );
-        const data = await GetUnavailabilities(
-          startDate,
-          endDate,
-          acceptEqualDate
-        );
-        res.json(data);
-        break;
-      }
+      const { startDate, endDate, acceptEqualDate } = QueryGetSchema.parse(
+        req.query
+      );
+      const data = await FindUnavailability({
+        startDate,
+        endDate,
+        acceptEqualDate,
+      });
+      res.json(data);
+      break;
     }
     case "POST": {
-      if (userId) {
-        const listUnavailability = BodyPostSchema.parse(req.body);
-        const done = await Promise.all(
-          listUnavailability.map(({ startDate, endDate }) =>
-            CreateUnavailability(userId, startDate, endDate)
-          )
-        ).then((values) => values.every(Boolean));
-        res.json({
-          result: done,
-        });
-        break;
-      }
-    }
-    case "PUT": {
-      if (userId) {
-        const { id } = QueryIdSchema.parse(req.query);
-        const updateData = BodyPutSchema.parse(req.body);
-        const done = await UpdateUnavailability(id, updateData);
-        res.json({
-          result: done,
-        });
-        break;
-      }
-    }
-
-    case "DELETE": {
-      if (userId) {
-        const { id: unavailabilityId } = QueryIdSchema.parse(req.query);
-        const done = await DeleteUnavailability(unavailabilityId);
-        res.json({
-          result: done,
-        });
-        break;
-      }
+      const listUnavailability = BodyPostSchema.parse(req.body);
+      const done = await Promise.all(
+        listUnavailability.map(({ startDate, endDate }) =>
+          CreateUnavailability(userId, startDate, endDate)
+        )
+      ).then((values) => values.every(Boolean));
+      if (done) res.status(StatusCodes.CREATED).end(ReasonPhrases.CREATED);
+      else throw new Error(ReasonPhrases.BAD_REQUEST);
+      break;
     }
     default: {
-      res.json({
-        result: new Date().toISOString(),
-      });
+      throw new Error(ReasonPhrases.METHOD_NOT_ALLOWED);
     }
   }
-};
+});
 
 export default handler;

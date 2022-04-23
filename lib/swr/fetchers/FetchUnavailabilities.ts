@@ -11,7 +11,7 @@ export default async function FetchUnavailabilities(
       params: {
         startDate,
         endDate,
-        acceptEqualDate: acceptEqualDate ? undefined : "false",
+        acceptEqualDate,
       },
     })
     .then((res) => res.data);

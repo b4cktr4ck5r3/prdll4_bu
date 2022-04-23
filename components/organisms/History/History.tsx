@@ -126,16 +126,10 @@ const HistoryComponent: React.ForwardRefRenderFunction<
       if (type === Event.InternalWork) {
         url = `/api/internalWork/${eventId}`;
       } else if (type === Event.Unavailability) {
-        url = "/api/unavailability";
+        url = `/api/unavailability/${eventId}`;
       }
 
-      axios
-        .delete(url, {
-          params: {
-            id: eventId,
-          },
-        })
-        .then(onDeleteEvent);
+      axios.delete(url).then(onDeleteEvent);
     },
     [onDeleteEvent, type]
   );
@@ -147,18 +141,10 @@ const HistoryComponent: React.ForwardRefRenderFunction<
       } else if (type === Event.Unavailability) {
         const { time } = data as UnavailabilityFormType;
         axios
-          .put(
-            "/api/unavailability",
-            {
-              startDate: time[0],
-              endDate: time[1],
-            },
-            {
-              params: {
-                id: eventId,
-              },
-            }
-          )
+          .put(`/api/unavailability/${eventId}`, {
+            startDate: time[0],
+            endDate: time[1],
+          })
           .then(onEditEvent);
       }
     },
@@ -202,7 +188,6 @@ const HistoryComponent: React.ForwardRefRenderFunction<
             />
           );
         })}
-
       {type === Event.Unavailability &&
         (items as UnavailabilityEventSimplified[]).map((event, i) => {
           const { id, startDate, endDate } = event;
@@ -220,6 +205,7 @@ const HistoryComponent: React.ForwardRefRenderFunction<
               infoLeft={[leftTime, rightTime]}
               onDelete={() => deleteEvent(id)}
               onEdit={(data) => updateEvent(id, data)}
+              allowEdit={new Date().getTime() < new Date(startDate).getTime()}
               type={type}
             />
           );

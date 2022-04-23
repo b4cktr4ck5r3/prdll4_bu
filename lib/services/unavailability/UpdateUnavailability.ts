@@ -2,19 +2,17 @@ import { prisma } from "@lib/prisma";
 import { ZodUnavailabilityItemForm } from "@utils/unavailability/unavailability";
 import { z } from "zod";
 
-const UpdateUnavailability = z
+export const UpdateUnavailability = z
   .function()
   .args(z.string(), ZodUnavailabilityItemForm)
   .implement(async (id, data) => {
     return prisma.unavailability
       .update({
-          data: data,
-          where: {
-              id: id
-          }
+        data: data,
+        where: {
+          id: id,
+        },
       })
       .then(() => true)
       .catch(() => false);
   });
-
-export default UpdateUnavailability;

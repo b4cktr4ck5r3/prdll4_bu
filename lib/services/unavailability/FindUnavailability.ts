@@ -1,21 +1,24 @@
 import { prisma } from "@lib/prisma";
+import { SafeUserSelect } from "@utils/user";
 import { z } from "zod";
 
-const FindUnavailability = z
+export const FindUnavailability = z
   .function()
   .args(
-    z.string(),
-    z.date().optional(),
-    z.date().optional(),
-    z.boolean().optional()
+    z.object({
+      userId: z.string().optional(),
+      startDate: z.date().optional(),
+      endDate: z.date().optional(),
+      acceptEqualDate: z.boolean().optional(),
+    })
   )
   .implement(
-    async (
+    async ({
       userId,
       startDate = new Date(1970),
       endDate,
-      acceptEqualDate = true
-    ) => {
+      acceptEqualDate = true,
+    }) => {
       const lesserOperator = acceptEqualDate ? "lte" : "lt";
       const greaterOperator = acceptEqualDate ? "gte" : "gt";
 
@@ -60,9 +63,12 @@ const FindUnavailability = z
               startDate: "desc",
             },
           ],
+          include: {
+            user: {
+              select: SafeUserSelect,
+            },
+          },
         })
         .catch(() => []);
     }
   );
-
-export default FindUnavailability;

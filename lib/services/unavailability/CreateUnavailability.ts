@@ -1,7 +1,7 @@
 import { prisma } from "@lib/prisma";
 import { z } from "zod";
 
-const CreateUnavailability = z
+export const CreateUnavailability = z
   .function()
   .args(z.string(), z.date(), z.date())
   .implement(async (userId, startDate, endDate) => {
@@ -16,5 +16,3 @@ const CreateUnavailability = z
       .then(() => true)
       .catch(() => false);
   });
-
-export default CreateUnavailability;

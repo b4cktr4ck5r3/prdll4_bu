@@ -29,7 +29,12 @@ const handler: NextApiHandler = async (req, res) => {
     case "GET": {
       if (userId) {
         const { startDate, endDate } = QueryGetSchema.parse(req.query);
-        const data = await FindUnavailability(userId, startDate, endDate, true);
+        const data = await FindUnavailability({
+          userId,
+          startDate,
+          endDate,
+          acceptEqualDate: true,
+        });
         res.json(data);
         break;
       }

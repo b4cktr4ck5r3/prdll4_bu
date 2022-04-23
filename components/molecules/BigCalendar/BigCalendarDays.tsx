@@ -97,7 +97,11 @@ export const BigCalendarDays: FC = () => {
   }, [allWeeksOfMonth]);
 
   const { workScheduleTasks } = useWorkScheduleTasks({ startDate, endDate });
-  const { unavailabilities } = useUnavailabilities({ startDate, endDate });
+  const { unavailabilities } = useUnavailabilities({
+    startDate,
+    endDate,
+    acceptEqualDate: true,
+  });
 
   const modalWorkScheduleTasks = useMemo(() => {
     if (modalDate)
