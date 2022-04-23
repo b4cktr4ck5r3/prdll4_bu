@@ -1,9 +1,9 @@
 import { ApiHandler } from "@lib/api/ApiHandler";
+import { FindInternalWorkById } from "@lib/services/internalWork";
 import {
   DeleteTimeReportItem,
   FindTimeReportById,
 } from "@lib/services/timeReport";
-import { FindWorkScheduleTaskById } from "@lib/services/workScheduleTask";
 import { ReasonPhrases } from "http-status-codes";
 import { z } from "zod";
 
@@ -16,7 +16,7 @@ const handler = ApiHandler(async (req, res, { isAdmin }) => {
   const { timeReportId, internalWorkId } = QuerySchema.parse(req.query);
 
   const timeReport = await FindTimeReportById(timeReportId);
-  const internalWork = await FindWorkScheduleTaskById(internalWorkId);
+  const internalWork = await FindInternalWorkById(internalWorkId);
 
   if (!timeReport || !internalWork) throw new Error(ReasonPhrases.NOT_FOUND);
   if (!isAdmin) throw new Error(ReasonPhrases.UNAUTHORIZED);
