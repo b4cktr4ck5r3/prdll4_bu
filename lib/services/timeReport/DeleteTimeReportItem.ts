@@ -2,7 +2,7 @@ import { prisma } from "@lib/prisma";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
-const DeleteTimeReportItem = z
+export const DeleteTimeReportItem = z
   .function()
   .args(z.string(), z.enum(["IW", "WST", "Extra"]), z.string())
   .implement(async (timeReportId, type, itemId) => {
@@ -40,5 +40,3 @@ const DeleteTimeReportItem = z
       .then(() => true)
       .catch(() => false);
   });
-
-export default DeleteTimeReportItem;

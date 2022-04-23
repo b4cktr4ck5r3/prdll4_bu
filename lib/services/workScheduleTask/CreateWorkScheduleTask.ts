@@ -1,7 +1,7 @@
 import { prisma } from "@lib/prisma";
 import { z } from "zod";
 
-const CreateWorkScheduleTask = z
+export const CreateWorkScheduleTask = z
   .function()
   .args(z.string(), z.string(), z.string().array(), z.date(), z.date())
   .implement(async (planningID, name, userIDs, startDate, endDate) => {
@@ -22,5 +22,3 @@ const CreateWorkScheduleTask = z
       .then(() => true)
       .catch(() => false);
   });
-
-export default CreateWorkScheduleTask;

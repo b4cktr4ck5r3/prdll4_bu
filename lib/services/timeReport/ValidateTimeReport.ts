@@ -2,7 +2,7 @@ import { prisma } from "@lib/prisma";
 import { CalculDeclaredHours } from "@utils/timeReport";
 import { z } from "zod";
 
-const ValidateTimeReport = z
+export const ValidateTimeReport = z
   .function()
   .args(z.string())
   .implement(async (timeReportId) => {
@@ -36,5 +36,3 @@ const ValidateTimeReport = z
       .then(() => true)
       .catch(() => false);
   });
-
-export default ValidateTimeReport;

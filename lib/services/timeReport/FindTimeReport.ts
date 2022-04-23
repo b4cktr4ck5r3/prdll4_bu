@@ -2,7 +2,7 @@ import { prisma } from "@lib/prisma";
 import { SafeUserSelect } from "@utils/user";
 import { z } from "zod";
 
-const FindTimeReport = z
+export const FindTimeReport = z
   .function()
   .args(
     z.object({
@@ -68,5 +68,3 @@ const FindTimeReport = z
         .catch(() => []);
     }
   );
-
-export default FindTimeReport;

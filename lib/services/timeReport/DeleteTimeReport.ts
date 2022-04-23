@@ -1,7 +1,7 @@
 import { prisma } from "@lib/prisma";
 import { z } from "zod";
 
-const DeleteTimeReport = z
+export const DeleteTimeReport = z
   .function()
   .args(z.string())
   .implement(async (timeReportId) => {
@@ -20,5 +20,3 @@ const DeleteTimeReport = z
         .catch(() => false);
     else return Promise.resolve(false);
   });
-
-export default DeleteTimeReport;

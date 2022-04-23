@@ -1,7 +1,7 @@
 import { ApiHandler } from "@lib/api/ApiHandler";
 import {
   CreateWorkSchedule,
-  GetWorkSchedules,
+  FindWorkSchedules,
 } from "@lib/services/workSchedule";
 import { ZodWorkScheduleItemForm } from "@utils/workSchedule";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
@@ -11,7 +11,7 @@ const BodyPostSchema = ZodWorkScheduleItemForm;
 const handler = ApiHandler(async (req, res, { isAdmin }) => {
   switch (req.method) {
     case "GET": {
-      const data = await GetWorkSchedules();
+      const data = await FindWorkSchedules();
       res.json(data);
       break;
     }

@@ -1,2 +1,2 @@
 export * from "./CreateWorkSchedule";
-export * from "./GetWorkSchedules";
+export * from "lib/services/workSchedule/FindWorkSchedules";

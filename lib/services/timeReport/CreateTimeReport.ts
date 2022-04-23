@@ -1,9 +1,9 @@
 import { prisma } from "@lib/prisma";
-import FindTimeReport from "@lib/services/timeReport/FindTimeReport";
+import { FindTimeReport } from "@lib/services/timeReport";
 import dayjs from "dayjs";
 import { z } from "zod";
 
-const CreateTimeReport = z
+export const CreateTimeReport = z
   .function()
   .args(z.string(), z.date(), z.date())
   .implement(async (userId = "", startDate, endDate) => {
@@ -84,5 +84,3 @@ const CreateTimeReport = z
       .then((doc) => doc.id)
       .catch(() => false);
   });
-
-export default CreateTimeReport;

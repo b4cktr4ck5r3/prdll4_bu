@@ -1,35 +1,34 @@
-import { DeleteWorkScheduleTask } from "@lib/services/workScheduleTask";
-import { Role } from "@utils/user";
-import { NextApiHandler } from "next";
-import { getToken } from "next-auth/jwt";
+import { ApiHandler } from "@lib/api/ApiHandler";
+import {
+  DeleteWorkScheduleTask,
+  FindWorkScheduleTaskById,
+} from "@lib/services/workScheduleTask";
+import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
 const QuerySchema = z.object({
-  taskId: z.string().min(1),
+  taskId: z.string(),
 });
 
-const handler: NextApiHandler = async (req, res) => {
-  const { method, query } = req;
-  const requestUser = await getToken({
-    req,
-    secret: process.env.JWT_SECRET,
-  });
+const handler = ApiHandler(async (req, res, { isAdmin }) => {
+  const { taskId } = QuerySchema.parse(req.query);
 
-  const { taskId } = QuerySchema.parse(query);
+  const document = await FindWorkScheduleTaskById(taskId);
 
-  switch (method) {
+  if (!document) throw new Error(ReasonPhrases.NOT_FOUND);
+  if (!isAdmin) throw new Error(ReasonPhrases.UNAUTHORIZED);
+
+  switch (req.method) {
     case "DELETE": {
-      if (requestUser?.sub && requestUser?.role === Role.ADMIN) {
-        const done = await DeleteWorkScheduleTask(taskId);
-        if (done) res.status(200).end();
-        else res.status(400).end("Bad Request");
-      } else res.status(400).end("Bad Request");
+      const done = await DeleteWorkScheduleTask(taskId);
+      if (done) res.status(StatusCodes.NO_CONTENT).end();
+      else throw new Error(ReasonPhrases.BAD_REQUEST);
       break;
     }
     default: {
-      res.status(400).end("Bad Request");
+      throw new Error(ReasonPhrases.BAD_REQUEST);
     }
   }
-};
+});
 
 export default handler;

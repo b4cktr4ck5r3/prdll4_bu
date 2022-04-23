@@ -30,7 +30,7 @@ export default function useUsersBusy({
   const { workScheduleTasks, mutate: mutateWST } = useWorkScheduleTasks({
     startDate,
     endDate,
-    acceptEqualDate: false,
+    acceptEqualDate: true,
   });
 
   const usersBusy = useMemo<UserBusyInfo[]>(() => {

@@ -1,21 +1,23 @@
 import { prisma } from "@lib/prisma";
 import { z } from "zod";
 
-const FindScheduleTask = z
+export const FindWorkScheduleTask = z
   .function()
   .args(
-    z.string().optional(),
-    z.date().optional(),
-    z.date().optional(),
-    z.boolean().optional()
+    z.object({
+      workScheduleId: z.string().optional(),
+      startDate: z.date().optional(),
+      endDate: z.date().optional(),
+      acceptEqualDate: z.boolean().optional(),
+    })
   )
   .implement(
-    async (
+    async ({
       workScheduleId,
       startDate = new Date(1970),
       endDate,
-      acceptEqualDate = true
-    ) => {
+      acceptEqualDate = true,
+    }) => {
       const lesserOperator = acceptEqualDate ? "lte" : "lt";
       const greaterOperator = acceptEqualDate ? "gte" : "gt";
 
@@ -69,5 +71,3 @@ const FindScheduleTask = z
         .catch(() => []);
     }
   );
-
-export default FindScheduleTask;

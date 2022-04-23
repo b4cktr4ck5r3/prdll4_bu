@@ -1,81 +1,54 @@
+import { ApiHandler } from "@lib/api/ApiHandler";
 import {
   CreateWorkScheduleTask,
   FindWorkScheduleTask,
 } from "@lib/services/workScheduleTask";
 import { ZodWorkScheduleTaskItemForm } from "@utils/workScheduleTask";
-import { NextApiHandler } from "next";
-import { getToken } from "next-auth/jwt";
+import { ZodQueryBoolean, ZodQueryDate, ZodQueryString } from "@utils/zod";
+import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
 const QueryGetSchema = z.object({
-  workScheduleId: z.string().optional(),
-  acceptEqualDate: z
-    .string()
-    .optional()
-    .transform((value) => value === "false"),
-  startDate: z
-    .string()
-    .optional()
-    .transform((value) => {
-      if (value && value !== "") return new Date(value);
-      else return undefined;
-    }),
-  endDate: z
-    .string()
-    .optional()
-    .transform((value) => {
-      if (value && value !== "") return new Date(value);
-      else return undefined;
-    }),
+  workScheduleId: ZodQueryString,
+  acceptEqualDate: ZodQueryBoolean,
+  startDate: ZodQueryDate,
+  endDate: ZodQueryDate,
 });
 
 const BodyPostSchema = ZodWorkScheduleTaskItemForm;
 
-const handler: NextApiHandler = async (req, res) => {
-  const { method } = req;
-  const token = await getToken({
-    req,
-    secret: process.env.JWT_SECRET,
-  });
-
-  const userId = token?.sub;
-
-  switch (method) {
+const handler = ApiHandler(async (req, res) => {
+  switch (req.method) {
     case "GET": {
-      if (userId) {
-        const { workScheduleId, endDate, startDate, acceptEqualDate } =
-          QueryGetSchema.parse(req.query);
-        const data = await FindWorkScheduleTask(
-          workScheduleId,
-          startDate,
-          endDate,
-          acceptEqualDate
-        );
-        res.json(data);
-        break;
-      }
+      const { workScheduleId, endDate, startDate, acceptEqualDate } =
+        QueryGetSchema.parse(req.query);
+      const data = await FindWorkScheduleTask({
+        workScheduleId,
+        startDate,
+        endDate,
+        acceptEqualDate,
+      });
+      res.json(data);
+      break;
     }
     case "POST": {
-      if (userId) {
-        const { workScheduleId, name, users, startDate, endDate } =
-          BodyPostSchema.parse(req.body);
-        const done = await CreateWorkScheduleTask(
-          workScheduleId,
-          name,
-          users,
-          startDate,
-          endDate
-        );
-        res.json({
-          result: done,
-        });
-        break;
-      }
+      const { workScheduleId, name, users, startDate, endDate } =
+        BodyPostSchema.parse(req.body);
+      const done = await CreateWorkScheduleTask(
+        workScheduleId,
+        name,
+        users,
+        startDate,
+        endDate
+      );
+      if (done) res.status(StatusCodes.CREATED).end(ReasonPhrases.CREATED);
+      else throw new Error(ReasonPhrases.BAD_REQUEST);
+      break;
     }
     default: {
-      res.status(400).end("Bad Request");
+      throw new Error(ReasonPhrases.BAD_REQUEST);
     }
   }
-};
+});
 
 export default handler;

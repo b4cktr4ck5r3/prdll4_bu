@@ -13,7 +13,7 @@ export default async function FetchWorkScheduleTasks(
         workScheduleId,
         startDate,
         endDate,
-        acceptEqualDate: acceptEqualDate ? undefined : "false",
+        acceptEqualDate,
       },
     })
     .then((res) => res.data);
