@@ -1,10 +1,11 @@
-import { CreateTimeReport, GetTimeReport } from "@lib/services/timeReport";
+import { ApiHandler } from "@lib/api/ApiHandler";
+import { CreateTimeReport, FindTimeReport } from "@lib/services/timeReport";
 import { ZodTimeReportItemForm } from "@utils/timeReport";
-import { NextApiHandler } from "next";
-import { getToken } from "next-auth/jwt";
+import { ReasonPhrases } from "http-status-codes";
 import { z } from "zod";
 
 const QueryGetSchema = z.object({
+  userId: z.string().optional(),
   startDate: z
     .string()
     .optional()
@@ -31,42 +32,33 @@ const QueryGetSchema = z.object({
 
 const BodyPostSchema = ZodTimeReportItemForm;
 
-const handler: NextApiHandler = async (req, res) => {
-  const { method } = req;
-  const token = await getToken({
-    req,
-    secret: process.env.JWT_SECRET,
-  });
-
-  const userId = token?.sub;
-
-  switch (method) {
+const handler = ApiHandler(async (req, res) => {
+  switch (req.method) {
     case "GET": {
-      if (userId) {
-        const { startDate, endDate, validated } = QueryGetSchema.parse(
-          req.query
-        );
-        const data = await GetTimeReport(startDate, endDate, validated);
-        res.json(data);
-        break;
-      }
+      const { userId, startDate, endDate, validated } = QueryGetSchema.parse(
+        req.query
+      );
+      const data = await FindTimeReport({
+        userId,
+        startDate,
+        endDate,
+        validated,
+      });
+      res.json(data);
+      break;
     }
     case "POST": {
-      if (userId) {
-        const { userId, startDate, endDate } = BodyPostSchema.parse(req.body);
-        const timeReportId = CreateTimeReport(userId, startDate, endDate);
-        res.json({
-          id: timeReportId,
-        });
-        break;
-      }
+      const { userId, startDate, endDate } = BodyPostSchema.parse(req.body);
+      const timeReportId = CreateTimeReport(userId, startDate, endDate);
+      res.json({
+        id: timeReportId,
+      });
+      break;
     }
     default: {
-      res.json({
-        result: new Date().toISOString(),
-      });
+      throw new Error(ReasonPhrases.METHOD_NOT_ALLOWED);
     }
   }
-};
+});
 
 export default handler;

@@ -4,7 +4,7 @@ import { hash } from "bcryptjs";
 import { generate } from "generate-password";
 import { z } from "zod";
 
-const CreateUser = z
+export const CreateUser = z
   .function()
   .args(z.string(), z.string(), ZodRoleEnum)
   .implement(async (username, full_name, role) => {
@@ -32,5 +32,3 @@ const CreateUser = z
       password,
     };
   });
-
-export default CreateUser;

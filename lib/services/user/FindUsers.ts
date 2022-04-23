@@ -1,10 +1,17 @@
 import { prisma } from "@lib/prisma";
+import { SafeUserSelect } from "@utils/user";
 import { z } from "zod";
 
-const GetUsers = z
+export const FindUsers = z
   .function()
-  .args(z.boolean().optional(), z.string().optional(), z.boolean().optional())
-  .implement(async (full = false, role, status) => {
+  .args(
+    z.object({
+      full: z.boolean().optional(),
+      role: z.string().optional(),
+      status: z.boolean().optional(),
+    })
+  )
+  .implement(async ({ full = false, role, status }) => {
     return prisma.user
       .findMany({
         where: {
@@ -15,15 +22,8 @@ const GetUsers = z
           InternalWork: full,
           WorkScheduleTask: full,
           Unavailability: full,
-          id: true,
-          username: true,
-          password: false,
-          full_name: true,
-          role: true,
-          active: true,
+          ...SafeUserSelect,
         },
       })
       .catch(() => []);
   });
-
-export default GetUsers;

@@ -1,12 +1,26 @@
-import { CreateUser, GetUsers } from "@lib/services/user";
+import { ApiHandler } from "@lib/api/ApiHandler";
+import { CreateUser, FindUsers } from "@lib/services/user";
 import { ZodRoleEnum } from "@utils/user";
-import { NextApiHandler } from "next";
-import { getToken } from "next-auth/jwt";
+import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
 const QueryGetSchema = z.object({
-  active: z.enum(["true", "false"]).optional(),
-  complete: z.enum(["true"]).optional(),
+  active: z
+    .enum(["true", "false"])
+    .optional()
+    .transform((value) => {
+      if (value === "true") return true;
+      else if (value === "false") return false;
+      else return undefined;
+    }),
+  complete: z
+    .enum(["true", "false"])
+    .optional()
+    .transform((value) => {
+      if (value === "true") return true;
+      else if (value === "false") return false;
+      else return undefined;
+    }),
   role: z.string().optional(),
 });
 
@@ -16,37 +30,26 @@ const BodyPostSchema = z.object({
   role: ZodRoleEnum,
 });
 
-const handler: NextApiHandler = async (req, res) => {
-  const { method } = req;
-  const token = await getToken({
-    req,
-    secret: process.env.JWT_SECRET,
-  });
-
-  switch (method) {
+const handler = ApiHandler(async (req, res, { isAdmin }) => {
+  switch (req.method) {
     case "GET": {
-      if (token) {
-        const { active, role, complete } = QueryGetSchema.parse(req.query);
-        const full = complete === "true";
-        const status =
-          typeof active === "undefined" ? undefined : active === "true";
-        const data = await GetUsers(full, role, status);
-        res.json(data);
-      } else res.status(403).end("Forbidden");
+      const { active, role, complete } = QueryGetSchema.parse(req.query);
+      const data = await FindUsers({ full: complete, role, status: active });
+      res.json(data);
       break;
     }
     case "POST": {
+      if (!isAdmin) throw new Error(ReasonPhrases.UNAUTHORIZED);
       const { full_name, role, username } = BodyPostSchema.parse(req.body);
       const user = await CreateUser(username, full_name, role);
-      if (user) res.status(201).json(user);
-      else res.status(400).end("Bad Request");
+      if (user) res.status(StatusCodes.CREATED).json(user);
+      else throw new Error(ReasonPhrases.BAD_REQUEST);
       break;
     }
     default: {
-      res.status(400).end("Bad Request");
-      break;
+      throw new Error(ReasonPhrases.BAD_REQUEST);
     }
   }
-};
+});
 
 export default handler;

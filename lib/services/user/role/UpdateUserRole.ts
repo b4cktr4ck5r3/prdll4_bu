@@ -2,7 +2,7 @@ import { prisma } from "@lib/prisma";
 import { ZodRoleEnum } from "@utils/user";
 import { z } from "zod";
 
-const UpdateUserRole = z
+export const UpdateUserRole = z
   .function()
   .args(z.string(), ZodRoleEnum)
   .implement(async (userId, role) => {
@@ -18,5 +18,3 @@ const UpdateUserRole = z
       .then(() => true)
       .catch(() => false);
   });
-
-export default UpdateUserRole;

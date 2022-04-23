@@ -85,7 +85,7 @@ export const SettingsTemplate: FC = () => {
           as="form"
           onSubmit={newPasswordForm.onSubmit((values) => {
             if (data?.user?.sub)
-              axios.put(`/api/user/${data.user?.sub}/password`, {
+              axios.post(`/api/user/${data.user?.sub}/change_password`, {
                 currentPassword: values.currentPassword,
                 newPassword: values.newPassword,
               });

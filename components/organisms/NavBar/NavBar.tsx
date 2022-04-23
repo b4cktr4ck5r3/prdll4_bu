@@ -1,7 +1,7 @@
 import { Close32 } from "@carbon/icons-react";
 import { CPlannerHorizontal } from "@components/icons";
 import userOptions from "@data/navbar/userOptions";
-import useAccountInfo from "@hooks/useAccountInfo";
+import { useCurrentUser } from "@hooks/useCurrentUser";
 import { Text } from "@mantine/core";
 import { styled } from "@stitches";
 import { signOut } from "next-auth/react";
@@ -148,7 +148,7 @@ export type NavBarProps = {
 };
 
 export const NavBar: FC<NavBarProps> = ({ closeMenu, onItemClick }) => {
-  const { isAdmin } = useAccountInfo();
+  const { isAdmin } = useCurrentUser();
   const router = useRouter();
 
   return (

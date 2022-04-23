@@ -1,42 +1,30 @@
-import { UpdateUser } from "@lib/services/user";
-import { Role, ZodUserUpdate } from "@utils/user";
-import { NextApiHandler } from "next";
-import { getToken } from "next-auth/jwt";
+import { ApiHandler } from "@lib/api/ApiHandler";
+import { FindUserById } from "@lib/services/user/FindUserById";
+import { ReasonPhrases } from "http-status-codes";
 import { z } from "zod";
 
 const QuerySchema = z.object({
-  userId: z.string().min(1),
+  userId: z.string(),
 });
 
-const BodyPutSchema = ZodUserUpdate.partial();
+const handler = ApiHandler(async (req, res, { isAdmin, userId: reqUserId }) => {
+  const { userId } = QuerySchema.parse(req.query);
 
-const handler: NextApiHandler = async (req, res) => {
-  const { method, query } = req;
-  const requestUser = await getToken({
-    req,
-    secret: process.env.JWT_SECRET,
-  });
+  const document = await FindUserById(userId);
 
-  const { userId } = QuerySchema.parse(query);
+  if (!document) throw new Error(ReasonPhrases.NOT_FOUND);
+  if (!(isAdmin || document.id === reqUserId))
+    throw new Error(ReasonPhrases.UNAUTHORIZED);
 
-  switch (method) {
-    case "PUT": {
-      const body = BodyPutSchema.parse(req.body);
-      if (
-        requestUser?.sub &&
-        requestUser?.role === Role.ADMIN &&
-        requestUser?.sub !== userId
-      ) {
-        const done = await UpdateUser(userId, body);
-        if (done) res.status(200).end();
-        else res.status(400).end("Bad Request");
-      } else res.status(400).end("Bad Request");
+  switch (req.method) {
+    case "GET": {
+      res.json(document);
       break;
     }
     default: {
-      res.status(400).end("Bad Request");
+      throw new Error(ReasonPhrases.BAD_REQUEST);
     }
   }
-};
+});
 
 export default handler;

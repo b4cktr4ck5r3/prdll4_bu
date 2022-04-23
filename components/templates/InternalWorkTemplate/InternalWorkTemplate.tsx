@@ -6,7 +6,7 @@ import {
   ManageInternalWorkModal,
   SimplePlanning,
 } from "@components/organisms";
-import useAccountInfo from "@hooks/useAccountInfo";
+import { useCurrentUser } from "@hooks/useCurrentUser";
 import useInternalWorks from "@hooks/useInternalWorks";
 import { PlanningContext } from "@lib/contexts";
 import { Button } from "@mantine/core";
@@ -32,7 +32,7 @@ export const InternalWorkToValidateSC = styled("div", {
 });
 
 export const InternalWorkTemplate: FC = () => {
-  const { isAdmin } = useAccountInfo();
+  const { isAdmin } = useCurrentUser();
   const [openedModalIW, setOpenedModalIW] = useState(false);
   const { internalWorks: internalWorksNotValidated, mutate } = useInternalWorks(
     {

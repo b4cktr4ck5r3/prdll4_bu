@@ -1,18 +1,17 @@
 import { prisma } from "@lib/prisma";
-import { hash } from "bcryptjs";
 import { z } from "zod";
 
-export const UpdateUserPassword = z
+export const UpdateUserStatus = z
   .function()
-  .args(z.string(), z.string())
-  .implement(async (userId, newPassword) => {
+  .args(z.string(), z.boolean())
+  .implement(async (userId, status) => {
     return prisma.user
       .update({
         where: {
           id: userId,
         },
         data: {
-          password: await hash(newPassword, 12),
+          active: status,
         },
       })
       .catch(() => Promise.resolve(null));

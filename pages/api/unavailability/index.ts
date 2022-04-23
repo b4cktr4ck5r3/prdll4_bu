@@ -7,6 +7,7 @@ import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
 const QueryGetSchema = z.object({
+  userId: z.string().optional(),
   acceptEqualDate: z
     .string()
     .optional()
@@ -41,10 +42,10 @@ const BodyPostSchema = z.array(
 const handler = ApiHandler(async (req, res, { userId }) => {
   switch (req.method) {
     case "GET": {
-      const { startDate, endDate, acceptEqualDate } = QueryGetSchema.parse(
-        req.query
-      );
+      const { userId, startDate, endDate, acceptEqualDate } =
+        QueryGetSchema.parse(req.query);
       const data = await FindUnavailability({
+        userId,
         startDate,
         endDate,
         acceptEqualDate,

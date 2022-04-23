@@ -1,3 +1,4 @@
+import { FindUserById } from "@lib/services/user/FindUserById";
 import { Role } from "@utils/user";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
@@ -22,16 +23,23 @@ export const ApiHandler = (callback: ApiHandlerCallback): NextApiHandler => {
       secret: process.env.JWT_SECRET,
     });
 
-    if (!token || !token.sub || !token.role) {
+    if (!token || !token.sub) {
+      res.status(StatusCodes.UNAUTHORIZED).end(ReasonPhrases.UNAUTHORIZED);
+      return;
+    }
+
+    const user = await FindUserById(token.sub);
+
+    if (!user) {
       res.status(StatusCodes.UNAUTHORIZED).end(ReasonPhrases.UNAUTHORIZED);
       return;
     }
 
     try {
       return callback(req, res, {
-        userId: token.sub,
-        userRole: token.role,
-        isAdmin: token.role === Role.ADMIN,
+        userId: user.id,
+        userRole: user.role,
+        isAdmin: user.role === Role.ADMIN,
       });
     } catch (error) {
       if (error instanceof Error) {

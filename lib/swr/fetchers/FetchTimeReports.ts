@@ -7,8 +7,9 @@ export default async function FetchTimeReports(
   endDate?: Date
 ) {
   return axios
-    .get<TimeReportFull[]>(`/api/user/${userId}/timeReport`, {
+    .get<TimeReportFull[]>("/api/timeReport", {
       params: {
+        userId,
         startDate,
         endDate,
       },

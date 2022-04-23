@@ -4,7 +4,7 @@ import { hash } from "bcryptjs";
 import { generate } from "generate-password";
 import { z } from "zod";
 
-const ResetUserPassword = z
+export const ResetUserPassword = z
   .function()
   .args(z.string())
   .implement(async (userId) => {
@@ -29,7 +29,5 @@ const ResetUserPassword = z
         userName: user.username,
         newPassword,
       }))
-      .catch(() => null);
+      .catch(() => Promise.resolve(null));
   });
-
-export default ResetUserPassword;

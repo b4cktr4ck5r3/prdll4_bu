@@ -11,7 +11,7 @@ import { z } from "zod";
 const BodyPutSchema = ZodUnavailabilityItemForm;
 
 const QuerySchema = z.object({
-  unavailabilityId: z.string(),
+  unavailabilityId: z.string().min(1),
 });
 
 const handler = ApiHandler(async (req, res, { userId, isAdmin }) => {

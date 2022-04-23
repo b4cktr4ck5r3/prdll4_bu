@@ -1,1 +1,1 @@
-export { default as UpdateUserRole } from "./UpdateUserRole";
+export * from "./UpdateUserRole";

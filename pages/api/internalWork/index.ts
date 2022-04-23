@@ -8,6 +8,7 @@ import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
 const QueryGetSchema = z.object({
+  userId: z.string().optional(),
   startDate: z
     .string()
     .optional()
@@ -45,9 +46,10 @@ const BodyPostSchema = z.array(ZodInternalWorkItemForm);
 const handler = ApiHandler(async (req, res, { userId }) => {
   switch (req.method) {
     case "GET": {
-      const { startDate, endDate, validated, withoutStatus } =
+      const { userId, startDate, endDate, validated, withoutStatus } =
         QueryGetSchema.parse(req.query);
       const data = await FindInternalWork({
+        userId,
         startDate,
         endDate,
         validated,

@@ -2,6 +2,7 @@
   "name": "cplanner",
   "version": "1.0.0",
   "scripts": {
+    "ts-check": "tsc --noEmit --incremental false",
     "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",

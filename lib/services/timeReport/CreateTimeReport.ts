@@ -22,7 +22,7 @@ const CreateTimeReport = z
 
     if (
       endDate.getTime() < startDate.getTime() ||
-      (await FindTimeReport(userId, startDate, endDate, undefined)).length > 0
+      (await FindTimeReport({ userId, startDate, endDate })).length > 0
     )
       return Promise.resolve(false);
 

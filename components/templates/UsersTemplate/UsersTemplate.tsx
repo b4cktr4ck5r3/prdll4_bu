@@ -52,17 +52,16 @@ export const UsersTemplate: FC = () => {
 
   const resetUserPassword = useCallback((userId: string) => {
     axios
-      .put<ResetPasswordInfo>(`/api/user/${userId}/password`)
+      .post<ResetPasswordInfo>(`/api/user/${userId}/reset_password`)
       .then(({ data }) => setNewPasswordInfo(data))
       .catch(() => alert("Error reset password"));
   }, []);
 
   const changeStatusUser = useCallback(
     (userId: string, value: boolean) => {
+      const endpoint = value ? "activate" : "deactivate";
       axios
-        .put(`/api/user/${userId}`, {
-          active: value,
-        })
+        .post(`/api/user/${userId}/${endpoint}`)
         .then(searchUsers)
         .catch(() => alert("Error disable user"));
     },
@@ -72,9 +71,7 @@ export const UsersTemplate: FC = () => {
   const upgradeUserRole = useCallback(
     (userId: string) => {
       axios
-        .put(`/api/user/${userId}/role`, {
-          role: Role.ADMIN,
-        })
+        .post(`/api/user/${userId}/promote`)
         .then(searchUsers)
         .catch(() => alert("Error upgrade role"));
     },

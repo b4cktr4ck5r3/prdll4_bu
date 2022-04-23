@@ -1,5 +1,4 @@
 import { InternalWork, Unavailability, WorkScheduleTask } from "@prisma/client";
-import { z } from "zod";
 
 export type UserSimplified = {
   id: string;
@@ -19,10 +18,6 @@ export type UserFull = {
   role: string;
   active: boolean;
 };
-
-export const ZodUserUpdate = z.object({
-  active: z.boolean().optional(),
-});
 
 export const SafeUserSelect = {
   id: true,

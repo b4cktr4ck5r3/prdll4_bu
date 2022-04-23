@@ -145,15 +145,13 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
   const findInternalWorks = useCallback(() => {
     if (type === "ALL" || type === Event.InternalWork)
       axios
-        .get<InternalWorkEventDTO[]>(
-          `/api/user/${sessionData?.user?.sub}/internalWork`,
-          {
-            params: {
-              startDate,
-              endDate,
-            },
-          }
-        )
+        .get<InternalWorkEventDTO[]>(`/api/internalWork`, {
+          params: {
+            userId: sessionData?.user?.sub,
+            startDate,
+            endDate,
+          },
+        })
         .then(({ data }) =>
           setInternalWorks(
             data.map<InternalWorkEventSimplified>((props) => {
@@ -174,15 +172,13 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
   const findUnavailabilities = useCallback(() => {
     if (type === "ALL" || type === Event.Unavailability)
       axios
-        .get<UnavailabilityEventDTO[]>(
-          `/api/user/${sessionData?.user?.sub}/unavailability`,
-          {
-            params: {
-              startDate,
-              endDate,
-            },
-          }
-        )
+        .get<UnavailabilityEventDTO[]>(`/api/unavailability`, {
+          params: {
+            userId: sessionData?.user?.sub,
+            startDate,
+            endDate,
+          },
+        })
         .then(({ data }) =>
           setUnavailabilities(
             data.map<UnavailabilityEventSimplified>((props) => {
