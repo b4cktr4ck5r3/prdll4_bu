@@ -182,7 +182,7 @@ const HistoryComponent: React.ForwardRefRenderFunction<
                     : "En attente"}
                 </Text>
               }
-              infoLeft={`${duration}h`}
+              infoLeft={`${duration.toFixed(2)}h`}
               onDelete={() => deleteEvent(id)}
               onEdit={(data) => updateEvent(id, data)}
               allowEdit={!status}

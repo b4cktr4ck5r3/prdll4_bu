@@ -6,7 +6,7 @@ import {
   Textarea,
   TextInput,
 } from "@mantine/core";
-import { DatePicker, TimeRangeInput } from "@mantine/dates";
+import { DatePicker, TimeInput, TimeRangeInput } from "@mantine/dates";
 import { useForm } from "@mantine/hooks";
 import {
   UseForm,
@@ -27,6 +27,7 @@ export type BasicFormProps<T = Record<string, unknown>> = {
       | { type: "SELECT"; data: { label: string; value: string }[] }
       | { type: "TEXTAREA"; placeholder?: string }
       | { type: "DATE"; minDate?: Date; maxDate?: Date }
+      | { type: "TIME" }
       | {
           type: "NUMBER";
           step?: number;
@@ -161,6 +162,19 @@ export const BasicForm: FC<BasicFormProps> = ({
             data={data || []}
             error={form.errors[key]}
             value={form.values[key] as string}
+            onChange={(value) => {
+              form.setFieldValue(key, value);
+              callback(value);
+            }}
+          />
+        );
+      else if (typeInput?.type === "TIME")
+        inputs.push(
+          <TimeInput
+            key={key}
+            label={labels[key]}
+            error={form.errors[key]}
+            value={form.values[key] as Date}
             onChange={(value) => {
               form.setFieldValue(key, value);
               callback(value);

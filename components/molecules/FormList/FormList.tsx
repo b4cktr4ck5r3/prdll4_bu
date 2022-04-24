@@ -64,7 +64,7 @@ export const FormList: FC<FormListProps> = ({
               month: "long",
             })} ${date.getFullYear()}`}
             description={description || "Sans description"}
-            infoLeft={`${duration}h`}
+            infoLeft={`${duration.toFixed(2)}h`}
             onDelete={() => onDeleteItem(i)}
           />
         );

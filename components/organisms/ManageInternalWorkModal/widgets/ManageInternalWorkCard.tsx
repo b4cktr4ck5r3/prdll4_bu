@@ -36,11 +36,11 @@ export const ManageInternalWorkCard: FC<ManageInternalWorkCardProps> = ({
       },
       {
         label: "Date",
-        value: new Date(internalWork.date).toISOString(),
+        value: new Date(internalWork.date).toLocaleDateString("fr-FR"),
       },
       {
         label: "Durée",
-        value: `${internalWork.duration}H`,
+        value: `${internalWork.duration.toFixed(2)}H`,
       },
       {
         label: "Description",

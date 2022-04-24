@@ -40,7 +40,7 @@ export const CardEventInternalWork: FC<CardEventInternalWorkProps> = ({
   return (
     <CardEventBase>
       <div className="card-event-date">{dateString}</div>
-      <div className="card-event-title">Durée : {duration}h</div>
+      <div className="card-event-title">Durée : {duration.toFixed(2)}h</div>
       {description && <div>Description : {description}</div>}
       <div className="right-button">
         {buttonType === "REPORT" && (

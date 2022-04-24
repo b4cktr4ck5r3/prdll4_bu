@@ -286,7 +286,7 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
                   </Text>
                 </>
               }
-              infoLeft={`${duration}h`}
+              infoLeft={`${duration.toFixed(2)}h`}
               onDelete={() => deleteInternalWork(id)}
               onEdit={(data) =>
                 updateInternalWork(id, data as InternalWorkFormType)

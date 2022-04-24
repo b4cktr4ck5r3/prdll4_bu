@@ -129,11 +129,15 @@ export const MiniEvent: FC<MiniEventProps> = ({
   const modals = useModals();
 
   const basicFormProps = useMemo<BasicFormProps>(() => {
-    if (type === Event.InternalWork && event) {
+    if (type === Event.InternalWork && event && "duration" in event) {
+      const duration = dayjs()
+        .hour(Math.floor(event.duration))
+        .minute(Math.round((event.duration - Math.floor(event.duration)) * 60))
+        .toDate();
       return internalWorkInputs({
         date: new Date(event.date.year, event.date.month, event.date.date),
-        description: (event as InternalWorkEventSimplified).description,
-        duration: (event as InternalWorkEventSimplified).duration,
+        description: event.description,
+        duration,
       });
     } else if (type === Event.Unavailability && event) {
       return unavailabilityInputs({

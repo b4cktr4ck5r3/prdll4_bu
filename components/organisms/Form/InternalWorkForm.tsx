@@ -11,6 +11,7 @@ import { useNotifications } from "@mantine/notifications";
 import { styled } from "@stitches";
 import { Event, InternalWorkItemForm } from "@utils/calendar";
 import axios from "axios";
+import dayjs from "dayjs";
 import { FC, useCallback, useContext, useEffect, useRef } from "react";
 
 export const InternalWorkFormSC = styled("form", BoxSC, {
@@ -94,10 +95,11 @@ export const InternalWorkForm: FC<InternalWorkFormProps> = ({ onSubmit }) => {
       onDeleteItem={deleteItem}
       onSubmitItem={(event) => {
         formNewIW.current?.onSubmit((newInternalWork) => {
+          const time = dayjs(newInternalWork.duration);
           internalWorksHandlers.append({
             date: new Date(newInternalWork.date),
             description: newInternalWork.description,
-            duration: newInternalWork.duration,
+            duration: time.hour() + time.minute() / 60,
           });
         })(event);
       }}

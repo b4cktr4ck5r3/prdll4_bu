@@ -60,12 +60,8 @@ export const DetailTimeReport: FC<DetailTimeReportProps> = ({
     const endDate = new Date(timeReport.endDate);
 
     const { extraItems, internalWorks, workScheduleTasks } = timeReport;
-    const {
-      declaredHours,
-      // sumExtraItems,
-      sumInternalWorks,
-      sumWorkScheduleTasks,
-    } = CalculDeclaredHours(internalWorks, workScheduleTasks, extraItems);
+    const { declaredHours, sumInternalWorks, sumWorkScheduleTasks } =
+      CalculDeclaredHours(internalWorks, workScheduleTasks, extraItems);
 
     const { currentIW, currentWST, previousIW, previousWST } =
       SplitTimeReport(timeReport);
@@ -157,16 +153,18 @@ export const DetailTimeReport: FC<DetailTimeReportProps> = ({
                 </Group>
               </Accordion.Item>
             )}
-            {/* <Accordion.Item label={"Extra"}>
-            </Accordion.Item> */}
           </Accordion>
           <div>
             <div>{`Total d'heures des séances  : ${sumWorkScheduleTasks}h`}</div>
-            <div>{`Total d'heures des travaux internes : ${sumInternalWorks}h`}</div>
-            {/* <div>{`Total d'heures des suppléments manuels: ${sumExtraItems}h`}</div> */}
+            <div>{`Total d'heures des travaux internes : ${sumInternalWorks.toFixed(
+              2
+            )}h`}</div>
             <Divider mt={"sm"} mb={"sm"} />
-            {/* <div>{`Formule du total des heures à déclarer : ${sumWorkScheduleTasks} + ${sumInternalWorks} + ${sumExtraItems} + ((${sumWorkScheduleTasks} + ${sumInternalWorks} + ${sumExtraItems}) / 5)`}</div> */}
-            <div>{`Formule du total des heures à déclarer : ${sumWorkScheduleTasks} + ${sumInternalWorks} + ((${sumWorkScheduleTasks} + ${sumInternalWorks}) / 5)`}</div>
+            <div>{`Formule du total des heures à déclarer : ${sumWorkScheduleTasks} + ${sumInternalWorks.toFixed(
+              2
+            )} + ((${sumWorkScheduleTasks} + ${sumInternalWorks.toFixed(
+              2
+            )}) / 5)`}</div>
             <div
               style={{ fontWeight: "bold" }}
             >{`Total des heures à déclarer : ${declaredHours.toFixed(
