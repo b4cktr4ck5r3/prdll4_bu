@@ -5,7 +5,8 @@ export default async function FetchWorkScheduleTasks(
   workScheduleId?: string,
   startDate?: Date,
   endDate?: Date,
-  acceptEqualDate?: boolean
+  acceptEqualDate?: boolean,
+  activeOnly?: boolean
 ) {
   return axios
     .get<WorkScheduleTaskFull[]>("/api/workScheduleTask", {
@@ -14,6 +15,7 @@ export default async function FetchWorkScheduleTasks(
         startDate,
         endDate,
         acceptEqualDate,
+        activeOnly,
       },
     })
     .then((res) => res.data);

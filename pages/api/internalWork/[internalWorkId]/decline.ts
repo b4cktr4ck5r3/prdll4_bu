@@ -22,7 +22,8 @@ const handler = ApiHandler(async (req, res, { isAdmin }) => {
     case "POST": {
       if (document.status) throw new Error(ReasonPhrases.FORBIDDEN);
       const done = await DeclineInternalWork(internalWorkId);
-      if (done) res.status(StatusCodes.NO_CONTENT).end();
+      if (done)
+        res.status(StatusCodes.NO_CONTENT).end(ReasonPhrases.NO_CONTENT);
       else throw new Error(ReasonPhrases.BAD_REQUEST);
       break;
     }

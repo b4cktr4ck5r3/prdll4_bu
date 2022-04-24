@@ -26,7 +26,7 @@ export const BigCalendarFilter: FC = () => {
     excludedPlanningsHandlers,
     excludedUsersHandlers,
   } = useContext(BigCalendarContext);
-  const { plannings } = usePlannings();
+  const { plannings } = usePlannings({ hidden: false });
   const { users } = useUsersInfo();
 
   return (

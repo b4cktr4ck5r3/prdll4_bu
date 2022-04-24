@@ -1,4 +1,5 @@
 import { prisma } from "@lib/prisma";
+import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 export const FindWorkScheduleTask = z
@@ -9,6 +10,7 @@ export const FindWorkScheduleTask = z
       startDate: z.date().optional(),
       endDate: z.date().optional(),
       acceptEqualDate: z.boolean().optional(),
+      activeOnly: z.boolean().optional(),
     })
   )
   .implement(
@@ -17,9 +19,24 @@ export const FindWorkScheduleTask = z
       startDate = new Date(1970),
       endDate,
       acceptEqualDate = true,
+      activeOnly,
     }) => {
       const lesserOperator = acceptEqualDate ? "lte" : "lt";
       const greaterOperator = acceptEqualDate ? "gte" : "gt";
+
+      let activeState: Prisma.WorkScheduleTaskWhereInput = {};
+      if (activeOnly) {
+        activeState = {
+          users: {
+            some: {
+              active: true,
+            },
+          },
+          schedule: {
+            hidden: false,
+          },
+        };
+      }
 
       return prisma.workScheduleTask
         .findMany({
@@ -53,6 +70,7 @@ export const FindWorkScheduleTask = z
                 ],
               },
             ],
+            ...activeState,
           },
           include: {
             schedule: true,

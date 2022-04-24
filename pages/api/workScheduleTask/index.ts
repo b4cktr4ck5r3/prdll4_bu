@@ -11,6 +11,7 @@ import { z } from "zod";
 const QueryGetSchema = z.object({
   workScheduleId: ZodQueryString,
   acceptEqualDate: ZodQueryBoolean,
+  activeOnly: ZodQueryBoolean,
   startDate: ZodQueryDate,
   endDate: ZodQueryDate,
 });
@@ -20,13 +21,19 @@ const BodyPostSchema = ZodWorkScheduleTaskItemForm;
 const handler = ApiHandler(async (req, res) => {
   switch (req.method) {
     case "GET": {
-      const { workScheduleId, endDate, startDate, acceptEqualDate } =
-        QueryGetSchema.parse(req.query);
+      const {
+        workScheduleId,
+        endDate,
+        startDate,
+        acceptEqualDate,
+        activeOnly,
+      } = QueryGetSchema.parse(req.query);
       const data = await FindWorkScheduleTask({
         workScheduleId,
         startDate,
         endDate,
         acceptEqualDate,
+        activeOnly,
       });
       res.json(data);
       break;

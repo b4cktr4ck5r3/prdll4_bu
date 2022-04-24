@@ -8,7 +8,7 @@ import axios from "axios";
 import { FC, useCallback, useRef } from "react";
 
 export const CreatePlanning: FC = () => {
-  const { mutate } = usePlannings();
+  const { mutate } = usePlannings({ hidden: false });
   const formNewPlanning = useRef<UseForm<WorkScheduleFormType>>();
   const modals = useModals();
 

@@ -27,14 +27,16 @@ const handler = ApiHandler(async (req, res, { userId, isAdmin }) => {
     case "PUT": {
       const updateData = BodyPutSchema.parse(req.body);
       const done = await UpdateInternalWork(internalWorkId, updateData);
-      if (done) res.status(StatusCodes.NO_CONTENT).end();
+      if (done)
+        res.status(StatusCodes.NO_CONTENT).end(ReasonPhrases.NO_CONTENT);
       else throw new Error(ReasonPhrases.BAD_REQUEST);
       break;
     }
     case "DELETE": {
       if (document.status) throw new Error(ReasonPhrases.FORBIDDEN);
       const done = await DeleteInternalWork(internalWorkId);
-      if (done) res.status(StatusCodes.NO_CONTENT).end();
+      if (done)
+        res.status(StatusCodes.NO_CONTENT).end(ReasonPhrases.NO_CONTENT);
       else throw new Error(ReasonPhrases.BAD_REQUEST);
       break;
     }

@@ -52,6 +52,7 @@ model WorkSchedule {
   name             String
   startDate        DateTime
   endDate          DateTime
+  hidden           Boolean            @default(false)
   WorkScheduleTask WorkScheduleTask[]
 }
 

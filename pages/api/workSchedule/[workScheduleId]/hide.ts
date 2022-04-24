@@ -1,27 +1,27 @@
 import { ApiHandler } from "@lib/api/ApiHandler";
 import {
-  ApproveInternalWork,
-  FindInternalWorkById,
-} from "@lib/services/internalWork";
+  FindWorkScheduleById,
+  HideWorkSchedule,
+} from "@lib/services/workSchedule";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
 const QuerySchema = z.object({
-  internalWorkId: z.string(),
+  workScheduleId: z.string(),
 });
 
 const handler = ApiHandler(async (req, res, { isAdmin }) => {
-  const { internalWorkId } = QuerySchema.parse(req.query);
+  const { workScheduleId } = QuerySchema.parse(req.query);
 
-  const document = await FindInternalWorkById(internalWorkId);
+  const document = await FindWorkScheduleById(workScheduleId);
 
   if (!document) throw new Error(ReasonPhrases.NOT_FOUND);
   if (!isAdmin) throw new Error(ReasonPhrases.UNAUTHORIZED);
 
   switch (req.method) {
     case "POST": {
-      if (document.status) throw new Error(ReasonPhrases.FORBIDDEN);
-      const done = await ApproveInternalWork(internalWorkId);
+      if (document.hidden) throw new Error(ReasonPhrases.FORBIDDEN);
+      const done = await HideWorkSchedule(workScheduleId);
       if (done)
         res.status(StatusCodes.NO_CONTENT).end(ReasonPhrases.NO_CONTENT);
       else throw new Error(ReasonPhrases.BAD_REQUEST);

@@ -22,7 +22,7 @@ export const ManagePlanningSC = styled("div", ScheduleBoxSC, {
 });
 
 export const ManagePlanning: FC = () => {
-  const [selectedPlanning, setSelectedPlanning] = useState("");
+  const [selectedPlanning, setSelectedPlanning] = useState<string | null>(null);
   const [view, setView] = useState<ViewType>("list");
 
   return (

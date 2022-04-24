@@ -1,4 +1,5 @@
 import { Close20 } from "@carbon/icons-react";
+import { usePlannings } from "@hooks";
 import { ActionIcon } from "@mantine/core";
 import { WorkScheduleTask } from "@prisma/client";
 import axios from "axios";
@@ -19,9 +20,15 @@ export const CardEventSimplifiedWST: FC<CardEventSimplifiedWSTProps> = ({
   buttonType,
   buttonCallback = () => null,
 }) => {
+  const { plannings } = usePlannings();
   const { name, startDate, endDate } = useMemo(
     () => workScheduleTask,
     [workScheduleTask]
+  );
+
+  const planningName = useMemo(
+    () => plannings.find((e) => e.id === workScheduleTask.workScheduleId)?.name,
+    [plannings, workScheduleTask.workScheduleId]
   );
 
   const dateString = useMemo(() => {
@@ -46,6 +53,9 @@ export const CardEventSimplifiedWST: FC<CardEventSimplifiedWSTProps> = ({
     <CardEventBase>
       <div className="card-event-date">{dateString}</div>
       <div className="card-event-title">{name}</div>
+      {planningName && (
+        <div className="card-event-description">Planning : {planningName}</div>
+      )}
       <div className="right-button">
         {buttonType === "REPORT" && (
           <ActionIcon

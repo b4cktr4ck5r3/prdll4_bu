@@ -4,14 +4,21 @@ import {
   FindWorkSchedules,
 } from "@lib/services/workSchedule";
 import { ZodWorkScheduleItemForm } from "@utils/workSchedule";
+import { ZodQueryBoolean } from "@utils/zod";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
+import { z } from "zod";
+
+const QueryGetSchema = z.object({
+  hidden: ZodQueryBoolean,
+});
 
 const BodyPostSchema = ZodWorkScheduleItemForm;
 
 const handler = ApiHandler(async (req, res, { isAdmin }) => {
   switch (req.method) {
     case "GET": {
-      const data = await FindWorkSchedules();
+      const { hidden } = QueryGetSchema.parse(req.query);
+      const data = await FindWorkSchedules({ hidden });
       res.json(data);
       break;
     }
