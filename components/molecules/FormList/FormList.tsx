@@ -14,7 +14,8 @@ import { FC, FormEventHandler, useMemo } from "react";
 type FormListProps = {
   type: Event;
   data: (InternalWorkItemForm | UnavailabilityItemForm)[];
-  disabled?: boolean;
+  disabledAll?: boolean;
+  disabledItem?: boolean;
   onSubmitAll: () => void;
   onSubmitItem?: FormEventHandler<HTMLFormElement>;
   onDeleteItem: (index: number) => void;
@@ -24,7 +25,8 @@ export const FormList: FC<FormListProps> = ({
   children,
   data,
   type,
-  disabled,
+  disabledAll,
+  disabledItem,
   onSubmitItem,
   onSubmitAll,
   onDeleteItem,
@@ -75,7 +77,12 @@ export const FormList: FC<FormListProps> = ({
     <FormListSC>
       <FormListInputsSC onSubmit={onSubmitItem}>
         {children}
-        <Button color="blue" type="submit" leftIcon={<Add16 />}>
+        <Button
+          color="blue"
+          disabled={disabledItem}
+          type="submit"
+          leftIcon={<Add16 />}
+        >
           Ajouter
         </Button>
       </FormListInputsSC>
@@ -83,7 +90,7 @@ export const FormList: FC<FormListProps> = ({
         {items}
         <Button
           color="green"
-          disabled={disabled}
+          disabled={disabledAll}
           leftIcon={<Checkmark16 />}
           onClick={onSubmitAll}
         >

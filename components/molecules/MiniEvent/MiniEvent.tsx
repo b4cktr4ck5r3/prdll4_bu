@@ -5,6 +5,7 @@ import {
   UnavailabilityFormType,
   unavailabilityInputs,
 } from "@data/form/unavailability";
+import { useCurrentUser } from "@hooks";
 import { ActionIcon, Button, Modal, Text } from "@mantine/core";
 import { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 import { useModals } from "@mantine/modals";
@@ -14,6 +15,8 @@ import {
   InternalWorkEventSimplified,
   UnavailabilityEventSimplified,
 } from "@utils/calendar";
+import { WorkScheduleTaskFull } from "@utils/workScheduleTask";
+import axios from "axios";
 import dayjs from "dayjs";
 import { FC, ReactNode, useCallback, useMemo, useState } from "react";
 
@@ -113,6 +116,7 @@ export const MiniEvent: FC<MiniEventProps> = ({
   event,
   type,
 }) => {
+  const { user } = useCurrentUser();
   const [formEvent, setFormEvent] =
     useState<UseForm<InternalWorkFormType | UnavailabilityFormType>>();
   const [openedEdit, setOpenedEdit] = useState(false);
@@ -192,6 +196,22 @@ export const MiniEvent: FC<MiniEventProps> = ({
     );
   }, [basicFormProps]);
 
+  const checkWorkScheduleTask = useCallback(
+    (startDate: Date, endDate: Date) => {
+      return axios
+        .get<WorkScheduleTaskFull[]>("/api/workScheduleTask", {
+          params: {
+            userId: user?.id,
+            startDate,
+            endDate,
+            acceptEqualDate: false,
+          },
+        })
+        .then((res) => res.data);
+    },
+    [user]
+  );
+
   return (
     <MiniEventSC>
       <MiniEventTitleSC color={color}>
@@ -212,9 +232,8 @@ export const MiniEvent: FC<MiniEventProps> = ({
         centered
       >
         <form
-          onSubmit={formEvent?.onSubmit((data) => {
+          onSubmit={formEvent?.onSubmit(async (data) => {
             if (type === Event.Unavailability) {
-              //TODO: voir si on peut améliorer ce morceau de code
               const {
                 date,
                 time: [startDate, endDate],
@@ -229,6 +248,14 @@ export const MiniEvent: FC<MiniEventProps> = ({
                 .second(0)
                 .minute(endDate.getMinutes())
                 .hour(endDate.getHours());
+
+              const tasks = await checkWorkScheduleTask(
+                start.toDate(),
+                end.toDate()
+              );
+
+              if (tasks.length > 0)
+                return alert("Une séance est prévue à cette période");
 
               data = {
                 date: date,

@@ -6,6 +6,7 @@ export const FindWorkScheduleTask = z
   .function()
   .args(
     z.object({
+      userId: z.string().optional(),
       workScheduleId: z.string().optional(),
       startDate: z.date().optional(),
       endDate: z.date().optional(),
@@ -15,6 +16,7 @@ export const FindWorkScheduleTask = z
   )
   .implement(
     async ({
+      userId,
       workScheduleId,
       startDate = new Date(1970),
       endDate,
@@ -42,29 +44,34 @@ export const FindWorkScheduleTask = z
         .findMany({
           where: {
             workScheduleId,
+            users: {
+              some: {
+                id: userId,
+              },
+            },
             OR: [
               {
                 startDate: {
-                  [greaterOperator]: startDate,
+                  gte: startDate,
                   [lesserOperator]: endDate,
                 },
               },
               {
                 endDate: {
                   [greaterOperator]: startDate,
-                  [lesserOperator]: endDate,
+                  lte: endDate,
                 },
               },
               {
                 AND: [
                   {
                     startDate: {
-                      [lesserOperator]: startDate,
+                      lte: startDate,
                     },
                   },
                   {
                     endDate: {
-                      [greaterOperator]: endDate,
+                      gte: endDate,
                     },
                   },
                 ],

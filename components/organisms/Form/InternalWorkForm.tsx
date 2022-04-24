@@ -90,7 +90,7 @@ export const InternalWorkForm: FC<InternalWorkFormProps> = ({ onSubmit }) => {
     <FormList
       data={internalWorks}
       type={Event.InternalWork}
-      disabled={internalWorks.length === 0}
+      disabledAll={internalWorks.length === 0}
       onSubmitAll={sendInternalWorks}
       onDeleteItem={deleteItem}
       onSubmitItem={(event) => {

@@ -29,26 +29,26 @@ export const FindUnavailability = z
             OR: [
               {
                 startDate: {
-                  [greaterOperator]: startDate,
+                  gte: startDate,
                   [lesserOperator]: endDate,
                 },
               },
               {
                 endDate: {
                   [greaterOperator]: startDate,
-                  [lesserOperator]: endDate,
+                  lte: endDate,
                 },
               },
               {
                 AND: [
                   {
                     startDate: {
-                      [lesserOperator]: startDate,
+                      lte: startDate,
                     },
                   },
                   {
                     endDate: {
-                      [greaterOperator]: endDate,
+                      gte: endDate,
                     },
                   },
                 ],

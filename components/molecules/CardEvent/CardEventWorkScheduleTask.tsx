@@ -58,7 +58,11 @@ export const CardEventWorkScheduleTask: FC<CardEventWorkScheduleTaskProps> = ({
           </ActionIcon>
         )}
         {TimeReports.length > 0 && (
-          <ActionIcon color="green" variant="transparent">
+          <ActionIcon
+            color="green"
+            variant="transparent"
+            title={"Validé dans un état horaire"}
+          >
             <CheckmarkFilled20 />
           </ActionIcon>
         )}

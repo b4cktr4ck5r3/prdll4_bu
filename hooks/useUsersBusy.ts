@@ -21,12 +21,12 @@ export function useUsersBusy({ startDate, endDate }: useUsersInfoProps) {
     useUnavailabilities({
       startDate,
       endDate,
-      acceptEqualDate: true,
+      acceptEqualDate: false,
     });
   const { workScheduleTasks, mutate: mutateWST } = useWorkScheduleTasks({
     startDate,
     endDate,
-    acceptEqualDate: true,
+    acceptEqualDate: false,
   });
 
   const usersBusy = useMemo<UserBusyInfo[]>(() => {

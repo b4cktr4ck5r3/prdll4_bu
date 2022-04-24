@@ -9,6 +9,7 @@ import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
 const QueryGetSchema = z.object({
+  userId: ZodQueryString,
   workScheduleId: ZodQueryString,
   acceptEqualDate: ZodQueryBoolean,
   activeOnly: ZodQueryBoolean,
@@ -22,6 +23,7 @@ const handler = ApiHandler(async (req, res) => {
   switch (req.method) {
     case "GET": {
       const {
+        userId,
         workScheduleId,
         endDate,
         startDate,
@@ -29,6 +31,7 @@ const handler = ApiHandler(async (req, res) => {
         activeOnly,
       } = QueryGetSchema.parse(req.query);
       const data = await FindWorkScheduleTask({
+        userId,
         workScheduleId,
         startDate,
         endDate,
