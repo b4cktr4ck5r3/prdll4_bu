@@ -45,6 +45,8 @@ export const ApiHandler = (callback: ApiHandlerCallback): NextApiHandler => {
       if (error instanceof Error) {
         if (error.message === ReasonPhrases.UNAUTHORIZED) {
           res.status(StatusCodes.UNAUTHORIZED).end(ReasonPhrases.UNAUTHORIZED);
+        } else if (error.message === ReasonPhrases.FORBIDDEN) {
+          res.status(StatusCodes.FORBIDDEN).end(ReasonPhrases.FORBIDDEN);
         } else if (error.message === ReasonPhrases.METHOD_NOT_ALLOWED) {
           res
             .status(StatusCodes.METHOD_NOT_ALLOWED)

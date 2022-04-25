@@ -1,3 +1,4 @@
+import { Export16 } from "@carbon/icons-react";
 import {
   CardEventInternalWork,
   CardEventSimplifiedWST,
@@ -11,6 +12,7 @@ import {
   SplitTimeReport,
 } from "@utils/timeReport";
 import axios from "axios";
+import Link from "next/link";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 
 export const DetailTimeReportSC = styled("div", {});
@@ -173,12 +175,21 @@ export const DetailTimeReport: FC<DetailTimeReportProps> = ({
           </div>
           <Divider mt={"sm"} mb={"sm"} />
           {timeReport.validated ? (
-            <Text weight={"bold"}>
-              Statut :{" "}
-              <Text color="green" weight={"bold"} component="span">
-                Validé
+            <Group direction="column">
+              <Text weight={"bold"}>
+                Statut :{" "}
+                <Text color="green" weight={"bold"} component="span">
+                  Validé
+                </Text>
               </Text>
-            </Text>
+              <Link href={`/api/timeReport/${timeReport.id}/export`}>
+                <a>
+                  <Button color="green" leftIcon={<Export16 />}>
+                    Exporter
+                  </Button>
+                </a>
+              </Link>
+            </Group>
           ) : (
             <Group>
               <Button
