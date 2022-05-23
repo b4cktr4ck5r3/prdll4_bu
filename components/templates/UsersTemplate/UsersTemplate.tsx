@@ -50,32 +50,65 @@ export const UsersTemplate: FC = () => {
       .then(({ data }) => setCurrentUsers(data));
   }, []);
 
-  const resetUserPassword = useCallback((userId: string) => {
-    axios
-      .post<ResetPasswordInfo>(`/api/user/${userId}/reset_password`)
-      .then(({ data }) => setNewPasswordInfo(data))
-      .catch(() => alert("Error reset password"));
-  }, []);
+  const getUserFullName = useCallback(
+    (userId: string) => {
+      return currentUsers.find((user) => user.id === userId)?.full_name;
+    },
+    [currentUsers]
+  );
+
+  const resetUserPassword = useCallback(
+    (userId: string) => {
+      if (
+        confirm(
+          `Êtes-vous sûr de vouloir réinitialiser le mot de passe de "${getUserFullName(
+            userId
+          )}"`
+        )
+      ) {
+        axios
+          .post<ResetPasswordInfo>(`/api/user/${userId}/reset_password`)
+          .then(({ data }) => setNewPasswordInfo(data))
+          .catch(() => alert("Error reset password"));
+      }
+    },
+    [getUserFullName]
+  );
 
   const changeStatusUser = useCallback(
     (userId: string, value: boolean) => {
-      const endpoint = value ? "activate" : "deactivate";
-      axios
-        .post(`/api/user/${userId}/${endpoint}`)
-        .then(searchUsers)
-        .catch(() => alert("Error disable user"));
+      if (
+        confirm(
+          `Êtes-vous sûr de vouloir changer le statut de "${getUserFullName(
+            userId
+          )}"`
+        )
+      ) {
+        const endpoint = value ? "activate" : "deactivate";
+        axios
+          .post(`/api/user/${userId}/${endpoint}`)
+          .then(searchUsers)
+          .catch(() => alert("Error disable user"));
+      }
     },
-    [searchUsers]
+    [getUserFullName, searchUsers]
   );
 
   const upgradeUserRole = useCallback(
     (userId: string) => {
-      axios
-        .post(`/api/user/${userId}/promote`)
-        .then(searchUsers)
-        .catch(() => alert("Error upgrade role"));
+      if (
+        confirm(
+          `Êtes-vous sûr de vouloir améliorer le role de "${getUserFullName(
+            userId
+          )}"`
+        )
+      )
+        axios
+          .post(`/api/user/${userId}/promote`)
+          .then(searchUsers)
+          .catch(() => alert("Error upgrade role"));
     },
-    [searchUsers]
+    [getUserFullName, searchUsers]
   );
 
   useEffect(searchUsers, [searchUsers]);

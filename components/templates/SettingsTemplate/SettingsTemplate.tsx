@@ -87,10 +87,13 @@ export const SettingsTemplate: FC = () => {
           as="form"
           onSubmit={newPasswordForm.onSubmit((values) => {
             if (data?.user?.sub)
-              axios.post(`/api/user/${data.user?.sub}/change_password`, {
-                currentPassword: values.currentPassword,
-                newPassword: values.newPassword,
-              });
+              axios
+                .post(`/api/user/${data.user?.sub}/change_password`, {
+                  currentPassword: values.currentPassword,
+                  newPassword: values.newPassword,
+                })
+                .then(() => alert("Votre mot de passe a été modifié"))
+                .catch(() => alert("Le mot de passe n'a pas pu être modifié"));
             newPasswordForm.reset();
           })}
         >
