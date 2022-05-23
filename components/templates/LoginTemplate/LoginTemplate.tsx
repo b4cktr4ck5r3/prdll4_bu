@@ -30,7 +30,7 @@ export const LoginTemplate: FC = () => {
       <SideBar />
       <MainSC>
         <Login />
-        <VersionningSC>v0.1.0</VersionningSC>
+        <VersionningSC>v1.1.0</VersionningSC>
       </MainSC>
     </LoginLayoutSC>
   );

@@ -1,5 +1,4 @@
 import { MisuseOutline32, Save20 } from "@carbon/icons-react";
-import { BoxSC } from "@components/atoms";
 import { BasicForm } from "@components/molecules";
 import { FormList } from "@components/molecules/FormList";
 import { InternalWorkFormType, internalWorkInputs } from "@data/form";
@@ -8,17 +7,10 @@ import { PlanningContext } from "@lib/contexts";
 import { useListState } from "@mantine/hooks";
 import { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 import { useNotifications } from "@mantine/notifications";
-import { styled } from "@stitches";
 import { Event, InternalWorkItemForm } from "@utils/calendar";
 import axios from "axios";
 import dayjs from "dayjs";
 import { FC, useCallback, useContext, useEffect, useRef } from "react";
-
-export const InternalWorkFormSC = styled("form", BoxSC, {
-  width: "100%",
-  maxWidth: "$384",
-  minWidth: "$256",
-});
 
 type InternalWorkFormProps = {
   onSubmit: () => void;
@@ -50,7 +42,7 @@ export const InternalWorkForm: FC<InternalWorkFormProps> = ({ onSubmit }) => {
         onSubmit();
         internalWorksHandlers.setState([]);
         notifications.showNotification({
-          color: "dark",
+          color: "blue",
           title: `Ajout de ${internalWorks.length} travaux interne`,
           message: `${internalWorks.length} travaux interne ajouté(s)`,
           icon: <Save20 />,
@@ -59,7 +51,7 @@ export const InternalWorkForm: FC<InternalWorkFormProps> = ({ onSubmit }) => {
       })
       .catch(() => {
         notifications.showNotification({
-          color: "dark",
+          color: "red",
           title: `Ajout de ${internalWorks.length} travaux interne`,
           message: "Erreur dans l'ajout",
           icon: <MisuseOutline32 />,

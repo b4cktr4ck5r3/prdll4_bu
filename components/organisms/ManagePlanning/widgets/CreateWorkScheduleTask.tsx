@@ -97,7 +97,8 @@ export const CreateWorkScheduleTask: FC<CreateWorkScheduleTaskProps> = ({
               })
               .then(() => mutateWorkScheduleTasks())
               .then(() => mutate())
-              .then(() => alert("Séance ajoutée"));
+              .then(() => alert("Séance ajoutée"))
+              .catch(() => alert("Erreur dans l'ajout"));
           })(event);
         }}
       >

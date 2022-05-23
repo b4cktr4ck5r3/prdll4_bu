@@ -1,4 +1,5 @@
 import { prisma } from "@lib/prisma";
+import { FindUnavailability } from "@lib/services/unavailability";
 import { z } from "zod";
 
 export const CreateWorkScheduleTask = z
@@ -10,7 +11,22 @@ export const CreateWorkScheduleTask = z
         id: planningID,
       },
     });
-    if (!planning) return Promise.resolve(false);
+    const hasUnavailabilities = await Promise.all(
+      userIDs.map((userId) =>
+        FindUnavailability({
+          startDate,
+          endDate,
+          userId,
+          acceptEqualDate: false,
+        }).then((unavailabilities) => unavailabilities.length > 0)
+      )
+    ).then((list) => list.find(Boolean));
+    if (
+      !planning ||
+      hasUnavailabilities ||
+      startDate.getTime() > endDate.getTime()
+    )
+      return Promise.resolve(false);
     if (startDate < planning.startDate)
       await prisma.workSchedule.update({
         where: { id: planningID },

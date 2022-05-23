@@ -42,7 +42,7 @@ export const UnavailabilityForm: FC<UnavailabilityFormProps> = ({
         onSubmit();
         unavailabilitiesHandlers.setState([]);
         notifications.showNotification({
-          color: "dark",
+          color: "blue",
           title: `Ajout de ${unavailabilities.length} indisponibilité(s)`,
           message: `${unavailabilities.length} indisponibilité(s) ajoutée(s)`,
           icon: <Save20 />,
@@ -51,7 +51,7 @@ export const UnavailabilityForm: FC<UnavailabilityFormProps> = ({
       })
       .catch(() => {
         notifications.showNotification({
-          color: "dark",
+          color: "red",
           title: `Ajout de ${unavailabilities.length} indisponibilité(s)`,
           message: "Erreur dans l'ajout",
           icon: <MisuseOutline32 />,

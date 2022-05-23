@@ -6,6 +6,12 @@ export const UpdateUnavailability = z
   .function()
   .args(z.string(), ZodUnavailabilityItemForm)
   .implement(async (id, data) => {
+    if (
+      data.startDate &&
+      data.endDate &&
+      data.startDate.getTime() > data.endDate.getTime()
+    )
+      return Promise.resolve(false);
     return prisma.unavailability
       .update({
         data: data,

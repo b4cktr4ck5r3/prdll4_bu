@@ -32,7 +32,7 @@ const handler = ApiHandler(async (req, res, { isAdmin }) => {
     case "POST": {
       if (!isAdmin) throw new Error(ReasonPhrases.UNAUTHORIZED);
       const { userId, startDate, endDate } = BodyPostSchema.parse(req.body);
-      const timeReportId = CreateTimeReport(userId, startDate, endDate);
+      const timeReportId = await CreateTimeReport(userId, startDate, endDate);
       if (timeReportId)
         res.json({
           id: timeReportId,

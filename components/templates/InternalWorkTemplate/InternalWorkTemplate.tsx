@@ -59,7 +59,7 @@ export const InternalWorkTemplate: FC = () => {
     refreshComponents();
 
     notifications.showNotification({
-      color: "dark",
+      color: "blue",
       title: `Un élément a été supprimé`,
       message: "Suppression d'un élément",
       icon: <TrashCan32 />,
@@ -71,7 +71,7 @@ export const InternalWorkTemplate: FC = () => {
     refreshComponents();
 
     notifications.showNotification({
-      color: "dark",
+      color: "blue",
       title: `Un élément a été modifié`,
       message: "Modification d'un élément",
       icon: <Pen32 />,
