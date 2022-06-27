@@ -30,7 +30,11 @@ export const FindInternalWork = z
         status = {
           is: null,
         };
-      else if (typeof validated !== "undefined")
+      else if (withoutStatus === false) {
+        status = {
+          isNot: null,
+        };
+      } else if (typeof validated !== "undefined")
         status = {
           validated,
         };
@@ -38,7 +42,7 @@ export const FindInternalWork = z
       return prisma.internalWork
         .findMany({
           where: {
-            userId,
+            userId: userId || undefined, // case ""
             date: {
               gte: startDate,
               lte: endDate,

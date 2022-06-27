@@ -2,7 +2,7 @@ export * from "./CreatePlanning";
 export * from "./Form";
 export * from "./History";
 export * from "./Login";
-export * from "./ManageInternalWorkModal";
+export * from "./ManageInternalWork";
 export * from "./ManagePlanning";
 export * from "./ManageTimeReport";
 export * from "./NavBar";

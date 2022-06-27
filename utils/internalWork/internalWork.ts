@@ -1,4 +1,4 @@
-import { InternalWork, User } from "@prisma/client";
+import { InternalWork, InternalWorkStatus, User } from "@prisma/client";
 import { z } from "zod";
 
 export type InternalWorkItemForm = {
@@ -15,4 +15,5 @@ export const ZodInternalWorkItemForm = z.object({
 
 export type InternalWorkFull = InternalWork & {
   user?: User;
+  status?: InternalWorkStatus;
 };

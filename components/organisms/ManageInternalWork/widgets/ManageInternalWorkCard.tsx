@@ -61,6 +61,10 @@ export const ManageInternalWorkCard: FC<ManageInternalWorkCardProps> = ({
     }
   }, [internalWork.id, onChange]);
 
+  const hasStatus = useMemo(() => {
+    return internalWork.status !== null;
+  }, [internalWork]);
+
   return (
     <ManageInternalWorkCardSC>
       {data.map((row, index) => (
@@ -69,14 +73,16 @@ export const ManageInternalWorkCard: FC<ManageInternalWorkCardProps> = ({
           <span className="miw-row--value">{row.value}</span>
         </div>
       ))}
-      <div className="miw-actions">
-        <Button compact onClick={updateInternalWork}>
-          Valider
-        </Button>
-        <Button color="red" compact onClick={deleteInternalWork}>
-          Supprimer
-        </Button>
-      </div>
+      {!hasStatus && (
+        <div className="miw-actions">
+          <Button compact onClick={updateInternalWork}>
+            Valider
+          </Button>
+          <Button color="red" compact onClick={deleteInternalWork}>
+            Supprimer
+          </Button>
+        </div>
+      )}
     </ManageInternalWorkCardSC>
   );
 };

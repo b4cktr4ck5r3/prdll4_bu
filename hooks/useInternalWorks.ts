@@ -5,6 +5,7 @@ import useSWR from "swr";
 type Props = {
   startDate?: Date;
   endDate?: Date;
+  userId?: string;
   validated?: boolean;
   withoutStatus?: boolean;
 };
@@ -12,6 +13,7 @@ type Props = {
 export function useInternalWorks({
   endDate,
   startDate,
+  userId,
   validated,
   withoutStatus,
 }: Props = {}) {
@@ -19,13 +21,14 @@ export function useInternalWorks({
     let name = "internalWorks";
     if (startDate) name += "-" + startDate.toISOString();
     if (endDate) name += "-" + endDate.toISOString();
+    if (userId) name += "-uid" + userId;
     if (typeof validated === "boolean") name += "-v" + validated;
     if (typeof withoutStatus === "boolean") name += "-w" + withoutStatus;
     return name;
-  }, [endDate, startDate, validated, withoutStatus]);
+  }, [endDate, startDate, userId, validated, withoutStatus]);
 
   const { data: internalWorks, mutate } = useSWR(requestName, () =>
-    FetchInternalWorks(startDate, endDate, validated, withoutStatus)
+    FetchInternalWorks(startDate, endDate, userId, validated, withoutStatus)
   );
 
   return {
