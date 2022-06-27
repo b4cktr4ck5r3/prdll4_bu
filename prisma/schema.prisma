@@ -67,6 +67,11 @@ model WorkScheduleTask {
   TimeReports    TimeReport[]
 }
 
+model WorkScheduleTaskName {
+  id             String       @id @default(uuid())
+  name           String
+}
+
 model TimeReportExtra {
   id           String      @id @default(uuid())
   duration     Float

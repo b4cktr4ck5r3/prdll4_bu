@@ -2,6 +2,7 @@ export * from "./useCurrentUser";
 export * from "./useHideWeekEnd";
 export * from "./useInternalWorks";
 export * from "./usePlannings";
+export * from "./useWorkScheduleTaskNames";
 export * from "./useSyncCalendarForm";
 export * from "./useTimeReports";
 export * from "./useUnavailabilities";

@@ -1,6 +1,10 @@
 import { DefaultLayout } from "@components/layouts";
-import { CreatePlanning, ManagePlanning } from "@components/organisms";
-import { Button, Group } from "@mantine/core";
+import {
+  CreatePlanning,
+  ManagePlanning,
+  ManageWorkScheduleTaskName,
+} from "@components/organisms";
+import { Group } from "@mantine/core";
 import { styled } from "@stitches";
 import { FC } from "react";
 
@@ -16,7 +20,7 @@ export const ManagePlanningTemplate: FC = () => {
       <ManagePlanningTemplateSC>
         <Group>
           <CreatePlanning />
-          <Button>Gestion des modèles de cours</Button>
+          <ManageWorkScheduleTaskName />
         </Group>
         <ManagePlanning />
       </ManagePlanningTemplateSC>

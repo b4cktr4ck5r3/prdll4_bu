@@ -1,7 +1,12 @@
 import { CircleFilled20 } from "@carbon/icons-react";
 import { BasicForm } from "@components/molecules";
 import { WorkScheduleTaskFormType, workScheduleTaskInputs } from "@data/form";
-import { useUsersBusy, useUsersInfo, useWorkScheduleTasks } from "@hooks";
+import {
+  useUsersBusy,
+  useUsersInfo,
+  useWorkScheduleTaskNames,
+  useWorkScheduleTasks,
+} from "@hooks";
 import { Button, Group } from "@mantine/core";
 import { UseForm } from "@mantine/hooks/lib/use-form/use-form";
 import { styled } from "@stitches";
@@ -31,8 +36,10 @@ export const CreateWorkScheduleTask: FC<CreateWorkScheduleTaskProps> = ({
   hidden = false,
   workScheduleId,
 }) => {
-  const { workScheduleTasks, mutate: mutateWorkScheduleTasks } =
-    useWorkScheduleTasks({ workScheduleId });
+  const { mutate: mutateWorkScheduleTasks } = useWorkScheduleTasks({
+    workScheduleId,
+  });
+  const { workScheduleTaskNames } = useWorkScheduleTaskNames();
   const { users } = useUsersInfo();
   const formNewWST = useRef<UseForm<WorkScheduleTaskFormType>>();
   const [currentDates, setCurrentDates] = useState([new Date(), new Date()]);
@@ -105,7 +112,7 @@ export const CreateWorkScheduleTask: FC<CreateWorkScheduleTaskProps> = ({
         <BasicForm
           {...workScheduleTaskInputs()}
           listData={{
-            name: workScheduleTasks
+            name: workScheduleTaskNames
               .map((e) => e.name)
               .filter((e, i, a) => a.indexOf(e) === i),
             users: users.map((user) => ({

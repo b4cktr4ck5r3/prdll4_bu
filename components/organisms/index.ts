@@ -3,6 +3,7 @@ export * from "./Form";
 export * from "./History";
 export * from "./Login";
 export * from "./ManageInternalWork";
+export * from "./ManageWorkScheduleTaskName";
 export * from "./ManagePlanning";
 export * from "./ManageTimeReport";
 export * from "./NavBar";
