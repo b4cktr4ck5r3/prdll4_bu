@@ -1,13 +1,19 @@
 import { UsersBoxSC } from "@components/atoms";
 import { DefaultLayout } from "@components/layouts";
 import { UserForm } from "@components/organisms";
-import { Button, Modal, SegmentedControl } from "@mantine/core";
+import {
+  Button,
+  Group,
+  Modal,
+  Pagination,
+  SegmentedControl,
+} from "@mantine/core";
 import { styled } from "@stitches";
 import { Role, UserSimplified } from "@utils/user";
 import { ResetPasswordInfo } from "@utils/user/Password";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 
 export const UserRowSC = styled("li", {
   h3: {
@@ -35,6 +41,8 @@ export const UsersTemplateSC = styled("div", {
   },
 });
 
+const limit = 5;
+
 export const UsersTemplate: FC = () => {
   const { data } = useSession();
   const [filterStatusUser, setFilterStatusUser] = useState<
@@ -43,6 +51,7 @@ export const UsersTemplate: FC = () => {
   const [currentUsers, setCurrentUsers] = useState<UserSimplified[]>([]);
   const [newPasswordInfo, setNewPasswordInfo] =
     useState<ResetPasswordInfo | null>(null);
+  const [page, setPage] = useState(0);
 
   const searchUsers = useCallback(() => {
     axios
@@ -111,6 +120,25 @@ export const UsersTemplate: FC = () => {
     [getUserFullName, searchUsers]
   );
 
+  const filteredCurrentUsers = useMemo(
+    () =>
+      currentUsers.filter(
+        ({ active }) =>
+          filterStatusUser === "null" ||
+          (filterStatusUser === "true" && active) ||
+          (filterStatusUser === "false" && !active)
+      ),
+    [currentUsers, filterStatusUser]
+  );
+
+  const totalPage = useMemo(() => {
+    return Math.max(Math.ceil(filteredCurrentUsers.length / limit), 1);
+  }, [filteredCurrentUsers.length]);
+
+  useEffect(() => {
+    setPage(0);
+  }, [filteredCurrentUsers]);
+
   useEffect(searchUsers, [searchUsers]);
 
   return (
@@ -131,13 +159,8 @@ export const UsersTemplate: FC = () => {
             style={{ marginTop: 0 }}
           />
           <ul>
-            {currentUsers
-              .filter(
-                ({ active }) =>
-                  filterStatusUser === "null" ||
-                  (filterStatusUser === "true" && active) ||
-                  (filterStatusUser === "false" && !active)
-              )
+            {filteredCurrentUsers
+              .slice(page * limit, page * limit + limit)
               .map((user) => {
                 return (
                   <UserRowSC key={user.id}>
@@ -194,6 +217,13 @@ export const UsersTemplate: FC = () => {
                 );
               })}
           </ul>
+          <Group position="center" mt="md">
+            <Pagination
+              page={page + 1}
+              total={totalPage}
+              onChange={(page) => setPage(page - 1)}
+            />
+          </Group>
         </UsersBoxSC>
         <UsersBoxSC>
           <h2 className="title">Ajouter un utilisateur</h2>

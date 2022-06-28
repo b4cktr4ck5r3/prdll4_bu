@@ -26,7 +26,7 @@ export const ManageInternalWorkList: FC<ManageInternalWorkListProps> = ({
   const [page, setPage] = useState(0);
 
   const totalPage = useMemo(() => {
-    return Math.ceil(internalWorks.length / limit);
+    return Math.max(Math.ceil(internalWorks.length / limit), 1);
   }, [internalWorks.length]);
 
   useEffect(() => {
