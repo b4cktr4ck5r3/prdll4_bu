@@ -92,9 +92,26 @@ export const BigCalendarDays: FC = () => {
     const firstDate = allWeeksOfMonth[0][0];
     const lastDate = allWeeksOfMonth[allWeeksOfMonth.length - 1][6];
 
+    const start = dayjs()
+      .year(firstDate.year)
+      .month(firstDate.month)
+      .date(firstDate.date)
+      .hour(0)
+      .minute(0)
+      .second(0)
+      .millisecond(0);
+    const end = dayjs()
+      .year(lastDate.year)
+      .month(lastDate.month)
+      .date(lastDate.date)
+      .hour(23)
+      .minute(59)
+      .second(59)
+      .millisecond(999);
+
     return {
-      startDate: new Date(firstDate.year, firstDate.month, firstDate.date),
-      endDate: new Date(lastDate.year, lastDate.month, lastDate.date),
+      startDate: start.toDate(),
+      endDate: end.toDate(),
     };
   }, [allWeeksOfMonth]);
 
@@ -108,14 +125,14 @@ export const BigCalendarDays: FC = () => {
   const modalWorkScheduleTasks = useMemo(() => {
     if (modalDate)
       return workScheduleTasks.filter(({ startDate }) =>
-        CompareDateToDateSimplified(new Date(startDate), modalDate)
+        CompareDateToDateSimplified(dayjs(startDate).toDate(), modalDate)
       );
   }, [modalDate, workScheduleTasks]);
 
   const modalUnavailabilities = useMemo(() => {
     if (modalDate)
       return unavailabilities.filter(({ startDate }) =>
-        CompareDateToDateSimplified(new Date(startDate), modalDate)
+        CompareDateToDateSimplified(dayjs(startDate).toDate(), modalDate)
       );
   }, [modalDate, unavailabilities]);
 
@@ -137,11 +154,11 @@ export const BigCalendarDays: FC = () => {
         .map((daysOfWeek) =>
           daysOfWeek.slice(0, daysPerRow).map((date) => {
             const dayTasks = workScheduleTasks.filter(({ startDate }) =>
-              CompareDateToDateSimplified(new Date(startDate), date)
+              CompareDateToDateSimplified(dayjs(startDate).toDate(), date)
             );
             const dayUnavailabilities = unavailabilities.filter(
               ({ startDate, user }) =>
-                CompareDateToDateSimplified(new Date(startDate), date) &&
+                CompareDateToDateSimplified(dayjs(startDate).toDate(), date) &&
                 !excludedUsers.includes(user.id)
             );
             return (

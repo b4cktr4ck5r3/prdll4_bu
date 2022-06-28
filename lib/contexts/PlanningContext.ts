@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { createContext, Dispatch, SetStateAction } from "react";
 
 export type PlanningContextProps = {
@@ -8,7 +9,7 @@ export type PlanningContextProps = {
 };
 
 export const PlanningContext = createContext<PlanningContextProps>({
-  synchronizedDate: new Date(),
+  synchronizedDate: dayjs().toDate(),
   refresh: false,
   setRefresh: () => null,
   setSynchronizedDate: () => null,

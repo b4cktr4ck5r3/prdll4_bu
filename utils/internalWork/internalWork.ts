@@ -1,4 +1,5 @@
 import { InternalWork, InternalWorkStatus, User } from "@prisma/client";
+import dayjs from "dayjs";
 import { z } from "zod";
 
 export type InternalWorkItemForm = {
@@ -8,7 +9,7 @@ export type InternalWorkItemForm = {
 };
 
 export const ZodInternalWorkItemForm = z.object({
-  date: z.date().or(z.string().transform((value) => new Date(value))),
+  date: z.date().or(z.string().transform((value) => dayjs(value).toDate())),
   description: z.string(),
   duration: z.number(),
 });

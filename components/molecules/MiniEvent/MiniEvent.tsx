@@ -139,13 +139,21 @@ export const MiniEvent: FC<MiniEventProps> = ({
         .minute(Math.round((event.duration - Math.floor(event.duration)) * 60))
         .toDate();
       return internalWorkInputs({
-        date: new Date(event.date.year, event.date.month, event.date.date),
+        date: dayjs()
+          .year(event.date.year)
+          .month(event.date.month)
+          .date(event.date.date)
+          .toDate(),
         description: event.description,
         duration,
       });
     } else if (type === Event.Unavailability && event) {
       return unavailabilityInputs({
-        date: new Date(event.date.year, event.date.month, event.date.date),
+        date: dayjs()
+          .year(event.date.year)
+          .month(event.date.month)
+          .date(event.date.date)
+          .toDate(),
         time: [
           (event as UnavailabilityEventSimplified).startDate,
           (event as UnavailabilityEventSimplified).endDate,

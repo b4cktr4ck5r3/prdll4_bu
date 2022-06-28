@@ -2,8 +2,8 @@ import { BasicFormProps } from "@components/molecules";
 import dayjs from "dayjs";
 
 const defaultInitialValues = {
-  date: new Date(),
-  duration: dayjs(new Date()).hour(0).minute(0).toDate(),
+  date: dayjs().toDate(),
+  duration: dayjs(dayjs().toDate()).hour(0).minute(0).toDate(),
   description: "",
 };
 
@@ -15,7 +15,7 @@ export const internalWorkInputs = (
 ): BasicFormProps<InternalWorkFormType> => ({
   validationRules: {
     date: (value: Date) => {
-      const today = new Date();
+      const today = dayjs().toDate();
       return (
         value.getTime() < today.getTime() ||
         (value.getFullYear() === today.getFullYear() &&
@@ -36,7 +36,7 @@ export const internalWorkInputs = (
     description: "Description",
   },
   typeInputs: {
-    date: { type: "DATE", maxDate: new Date() },
+    date: { type: "DATE", maxDate: dayjs().toDate() },
     duration: { type: "TIME" },
     description: { type: "TEXTAREA" },
   },

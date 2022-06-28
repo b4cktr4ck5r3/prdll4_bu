@@ -1,6 +1,7 @@
 import { useUnavailabilities, useWorkScheduleTasks } from "@hooks";
 import { User } from "@prisma/client";
 import { Event } from "@utils/calendar";
+import dayjs from "dayjs";
 import { useMemo } from "react";
 
 export type UserBusyInfo = {
@@ -35,8 +36,8 @@ export function useUsersBusy({ startDate, endDate }: useUsersInfoProps) {
         id: item.id,
         user: item.user,
         type: Event.Unavailability,
-        startDate: new Date(item.startDate),
-        endDate: new Date(item.endDate),
+        startDate: dayjs(item.startDate).toDate(),
+        endDate: dayjs(item.endDate).toDate(),
       }))
       .concat(
         workScheduleTasks
@@ -45,8 +46,8 @@ export function useUsersBusy({ startDate, endDate }: useUsersInfoProps) {
               id: item.id,
               user,
               type: Event.Course,
-              startDate: new Date(item.startDate),
-              endDate: new Date(item.endDate),
+              startDate: dayjs(item.startDate).toDate(),
+              endDate: dayjs(item.endDate).toDate(),
             }))
           )
           .flat()

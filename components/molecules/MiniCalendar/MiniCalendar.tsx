@@ -9,6 +9,7 @@ import {
   GetAllDayNames,
   GetMonthLabel,
 } from "@utils/calendar";
+import dayjs from "dayjs";
 import { FC, useCallback, useContext, useMemo } from "react";
 
 const AllDayNames = GetAllDayNames();
@@ -225,7 +226,11 @@ export const MiniCalendar: FC<MiniCalendarProps> = ({ css }) => {
                 cursor="pointer"
                 greyed={month !== dateSelected.getMonth()}
                 key={date}
-                onClick={() => changeDate(new Date(year, month, date))}
+                onClick={() =>
+                  changeDate(
+                    dayjs().year(year).month(month).date(date).toDate()
+                  )
+                }
               >
                 <span className="label">{date}</span>
                 <div className="dots">

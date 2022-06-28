@@ -2,6 +2,7 @@ import { Button } from "@mantine/core";
 import { styled } from "@stitches/react";
 import { InternalWorkFull } from "@utils/internalWork";
 import axios from "axios";
+import dayjs from "dayjs";
 import { FC, useCallback, useMemo } from "react";
 
 export type ManageInternalWorkCardProps = {
@@ -36,7 +37,7 @@ export const ManageInternalWorkCard: FC<ManageInternalWorkCardProps> = ({
       },
       {
         label: "Date",
-        value: new Date(internalWork.date).toLocaleDateString("fr-FR"),
+        value: dayjs(internalWork.date).toDate().toLocaleDateString("fr-FR"),
       },
       {
         label: "Durée",

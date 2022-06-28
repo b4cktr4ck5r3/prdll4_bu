@@ -1,5 +1,6 @@
 import { useListState } from "@mantine/hooks";
 import { CalendarView } from "@utils/calendar/Calendar";
+import dayjs from "dayjs";
 import { createContext } from "react";
 
 export type BigCalendarContextProps = {
@@ -14,8 +15,8 @@ export type BigCalendarContextProps = {
 
 export const BigCalendarContext = createContext<BigCalendarContextProps>({
   view: CalendarView.WEEK,
-  currentDate: new Date(),
-  dateSelected: new Date(),
+  currentDate: dayjs().toDate(),
+  dateSelected: dayjs().toDate(),
   excludedUsers: [],
   excludedPlannings: [],
 });

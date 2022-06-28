@@ -89,7 +89,7 @@ export const InternalWorkForm: FC<InternalWorkFormProps> = ({ onSubmit }) => {
         formNewIW.current?.onSubmit((newInternalWork) => {
           const time = dayjs(newInternalWork.duration);
           internalWorksHandlers.append({
-            date: new Date(newInternalWork.date),
+            date: dayjs(newInternalWork.date).toDate(),
             description: newInternalWork.description,
             duration: time.hour() + time.minute() / 60,
           });

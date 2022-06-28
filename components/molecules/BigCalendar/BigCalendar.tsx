@@ -12,6 +12,7 @@ import { ActionIcon, Button, Group } from "@mantine/core";
 import { useListState, useToggle } from "@mantine/hooks";
 import { styled } from "@stitches";
 import { CalendarFilter, CalendarView } from "@utils/calendar/Calendar";
+import dayjs from "dayjs";
 import { useSession } from "next-auth/react";
 import { FC, useEffect, useMemo, useState } from "react";
 import { BigCalendarDays } from "./BigCalendarDays";
@@ -44,8 +45,8 @@ export const BigCalendar: FC = () => {
     CalendarView.MONTH,
   ]);
   const [showFilter, toggleFilter] = useToggle(false, [false, true]);
-  const currentDate = useMemo(() => new Date(), []);
-  const [dateSelected, setDateSelected] = useState(new Date());
+  const currentDate = useMemo(() => dayjs().toDate(), []);
+  const [dateSelected, setDateSelected] = useState(dayjs().toDate());
   const monthLabel = useMemo(
     () => dateSelected.toLocaleString("fr", { month: "long" }),
     [dateSelected]

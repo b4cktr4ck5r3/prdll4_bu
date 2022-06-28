@@ -1,9 +1,10 @@
 import { BasicFormProps } from "@components/molecules";
+import dayjs from "dayjs";
 
 const defaultInitialValues = {
   name: "",
-  date: new Date(),
-  time: [new Date(), new Date()],
+  date: dayjs().toDate(),
+  time: [dayjs().toDate(), dayjs().toDate()],
   users: [],
 };
 

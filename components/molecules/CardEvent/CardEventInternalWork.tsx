@@ -2,6 +2,7 @@ import { Close20 } from "@carbon/icons-react";
 import { ActionIcon } from "@mantine/core";
 import { InternalWork } from "@prisma/client";
 import axios from "axios";
+import dayjs from "dayjs";
 import { FC, useCallback, useMemo } from "react";
 import { CardEventBase } from "./CardEventBase";
 
@@ -24,7 +25,7 @@ export const CardEventInternalWork: FC<CardEventInternalWorkProps> = ({
   );
 
   const dateString = useMemo(() => {
-    return `${new Date(date).toLocaleDateString("fr", {
+    return `${dayjs(date).toDate().toLocaleDateString("fr", {
       weekday: "long",
       month: "long",
       day: "numeric",

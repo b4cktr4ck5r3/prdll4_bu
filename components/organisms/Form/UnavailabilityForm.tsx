@@ -73,7 +73,10 @@ export const UnavailabilityForm: FC<UnavailabilityFormProps> = ({
       synchronizedDate &&
       synchronizedDate.getTime() !== formNewDate.current.values.date.getTime()
     )
-      formNewDate.current.setFieldValue("date", new Date(synchronizedDate));
+      formNewDate.current.setFieldValue(
+        "date",
+        dayjs(synchronizedDate).toDate()
+      );
   }, [syncCalendarForm, synchronizedDate]);
 
   const deleteItem = useCallback(

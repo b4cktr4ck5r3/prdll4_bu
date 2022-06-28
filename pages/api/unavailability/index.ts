@@ -4,6 +4,7 @@ import {
   FindUnavailability,
 } from "@lib/services/unavailability";
 import { ZodQueryBoolean, ZodQueryDate, ZodQueryString } from "@utils/zod";
+import dayjs from "dayjs";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
@@ -16,8 +17,8 @@ const QueryGetSchema = z.object({
 
 const BodyPostSchema = z.array(
   z.object({
-    startDate: z.string().transform((value) => new Date(value)),
-    endDate: z.string().transform((value) => new Date(value)),
+    startDate: z.string().transform((value) => dayjs(value).toDate()),
+    endDate: z.string().transform((value) => dayjs(value).toDate()),
   })
 );
 

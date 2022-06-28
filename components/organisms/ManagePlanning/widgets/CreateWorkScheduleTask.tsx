@@ -42,7 +42,10 @@ export const CreateWorkScheduleTask: FC<CreateWorkScheduleTaskProps> = ({
   const { workScheduleTaskNames } = useWorkScheduleTaskNames();
   const { users } = useUsersInfo();
   const formNewWST = useRef<UseForm<WorkScheduleTaskFormType>>();
-  const [currentDates, setCurrentDates] = useState([new Date(), new Date()]);
+  const [currentDates, setCurrentDates] = useState([
+    dayjs().toDate(),
+    dayjs().toDate(),
+  ]);
   const [currentUsers, setCurrentUsers] = useState<string[]>([]);
 
   const generateFormDates = useCallback(

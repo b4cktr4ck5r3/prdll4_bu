@@ -39,7 +39,7 @@ export const ExportTimeReport = z
         task.endDate
       )}`,
       `${task.name} - [${task.schedule.name}]`,
-      Math.abs(dayjs(task.startDate).diff(dayjs(task.endDate), "h")),
+      Math.abs(dayjs(task.startDate).diff(dayjs(task.endDate), "h", true)),
       document.startDate.getTime() - task.startDate.getTime() > 0
         ? "OUI"
         : "NON",

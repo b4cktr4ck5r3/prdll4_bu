@@ -16,8 +16,10 @@ export type TimeReportItemForm = {
 
 export const ZodTimeReportItemForm = z.object({
   userId: z.string(),
-  startDate: z.date().or(z.string().transform((value) => new Date(value))),
-  endDate: z.date().or(z.string().transform((value) => new Date(value))),
+  startDate: z
+    .date()
+    .or(z.string().transform((value) => dayjs(value).toDate())),
+  endDate: z.date().or(z.string().transform((value) => dayjs(value).toDate())),
 });
 
 export type TimeReportFull = TimeReport & {
@@ -39,7 +41,7 @@ export const CalculDeclaredHours = (
   );
   const sumWorkScheduleTasks = workScheduleTasks.reduce(
     (acc, cur) =>
-      acc + Math.abs(dayjs(cur.startDate).diff(dayjs(cur.endDate), "h")),
+      acc + Math.abs(dayjs(cur.startDate).diff(dayjs(cur.endDate), "h", true)),
     0
   );
 
@@ -58,7 +60,7 @@ export const CalculDeclaredHours = (
 };
 
 export const FormatDateText = (date: Date | string) => {
-  return new Date(date).toLocaleDateString("fr-FR", {
+  return dayjs(date).toDate().toLocaleDateString("fr-FR", {
     weekday: "long",
     year: "numeric",
     month: "long",
@@ -67,7 +69,7 @@ export const FormatDateText = (date: Date | string) => {
 };
 
 const CompareDate = (date1: Date | string, date2: Date | string) => {
-  return new Date(date1).getTime() - new Date(date2).getTime();
+  return dayjs(date1).toDate().getTime() - dayjs(date2).toDate().getTime();
 };
 
 export const SplitTimeReport = (timeReport: TimeReportFull) => {

@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 export function GetMonthLabel(date: Date | string) {
-  return new Date(date).toLocaleString("fr", { month: "long" });
+  return dayjs(date).toDate().toLocaleString("fr", { month: "long" });
 }

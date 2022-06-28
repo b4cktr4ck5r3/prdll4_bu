@@ -1,8 +1,9 @@
 import { BasicFormProps } from "@components/molecules";
+import dayjs from "dayjs";
 
 const defaultInitialValues = {
-  startDate: new Date(),
-  endDate: new Date(),
+  startDate: dayjs().toDate(),
+  endDate: dayjs().toDate(),
 };
 
 export type TimeReportFormType = typeof defaultInitialValues;

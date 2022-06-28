@@ -23,7 +23,7 @@ export const CardEventWorkScheduleTask: FC<CardEventWorkScheduleTaskProps> = ({
   );
 
   const dateString = useMemo(() => {
-    return `${new Date(startDate).toLocaleDateString("fr", {
+    return `${dayjs(startDate).toDate().toLocaleDateString("fr", {
       weekday: "long",
       month: "long",
       day: "numeric",

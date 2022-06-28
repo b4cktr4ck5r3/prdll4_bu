@@ -1,4 +1,5 @@
 import { AllEventsSimplified, DateSimplified } from "@utils/calendar";
+import dayjs from "dayjs";
 import { createContext, Dispatch, SetStateAction } from "react";
 
 export type CalendarContextProps = {
@@ -15,6 +16,6 @@ export const CalendarContext = createContext<CalendarContextProps>({
     unavailabilities: [],
   },
   daysInMonth: [],
-  dateSelected: new Date(),
+  dateSelected: dayjs().toDate(),
   setDateSelected: () => null,
 });

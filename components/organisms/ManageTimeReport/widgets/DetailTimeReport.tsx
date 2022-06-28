@@ -12,6 +12,7 @@ import {
   SplitTimeReport,
 } from "@utils/timeReport";
 import axios from "axios";
+import dayjs from "dayjs";
 import Link from "next/link";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 
@@ -58,8 +59,8 @@ export const DetailTimeReport: FC<DetailTimeReportProps> = ({
   }, [mutate, onClose, timeReportId]);
 
   if (timeReport) {
-    const startDate = new Date(timeReport.startDate);
-    const endDate = new Date(timeReport.endDate);
+    const startDate = dayjs(timeReport.startDate).toDate();
+    const endDate = dayjs(timeReport.endDate).toDate();
 
     const { extraItems, internalWorks, workScheduleTasks } = timeReport;
     const { declaredHours, sumInternalWorks, sumWorkScheduleTasks } =
@@ -157,16 +158,20 @@ export const DetailTimeReport: FC<DetailTimeReportProps> = ({
             )}
           </Accordion>
           <div>
-            <div>{`Total d'heures des séances  : ${sumWorkScheduleTasks}h`}</div>
+            <div>{`Total d'heures des séances  : ${sumWorkScheduleTasks.toFixed(
+              2
+            )}h`}</div>
             <div>{`Total d'heures des travaux internes : ${sumInternalWorks.toFixed(
               2
             )}h`}</div>
             <Divider mt={"sm"} mb={"sm"} />
-            <div>{`Formule du total des heures à déclarer : ${sumWorkScheduleTasks} + ${sumInternalWorks.toFixed(
+            <div>{`Formule du total des heures à déclarer : ${sumWorkScheduleTasks.toFixed(
               2
-            )} + ((${sumWorkScheduleTasks} + ${sumInternalWorks.toFixed(
+            )} + ${sumInternalWorks.toFixed(
               2
-            )}) / 5)`}</div>
+            )} + ((${sumWorkScheduleTasks.toFixed(
+              2
+            )} + ${sumInternalWorks.toFixed(2)}) / 5)`}</div>
             <div
               style={{ fontWeight: "bold" }}
             >{`Total des heures à déclarer : ${declaredHours.toFixed(

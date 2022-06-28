@@ -32,7 +32,7 @@ export const CardEventSimplifiedWST: FC<CardEventSimplifiedWSTProps> = ({
   );
 
   const dateString = useMemo(() => {
-    return `${new Date(startDate).toLocaleDateString("fr", {
+    return `${dayjs(startDate).toDate().toLocaleDateString("fr", {
       weekday: "long",
       month: "long",
       day: "numeric",

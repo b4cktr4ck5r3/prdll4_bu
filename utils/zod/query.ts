@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { z } from "zod";
 
 export const ZodQueryString = z.string().optional();
@@ -15,6 +16,6 @@ export const ZodQueryDate = z
   .string()
   .optional()
   .transform((value) => {
-    if (value && value !== "") return new Date(value);
+    if (value && value !== "") return dayjs(value).toDate();
     else return undefined;
   });

@@ -69,7 +69,7 @@ const HistoryComponent: React.ForwardRefRenderFunction<
         .then(({ data }) => {
           setItems(
             data.map<InternalWorkEventSimplified>((props) => {
-              const date = new Date(props.date);
+              const date = dayjs(props.date).toDate();
               return {
                 ...props,
                 date: {
@@ -95,8 +95,8 @@ const HistoryComponent: React.ForwardRefRenderFunction<
         .then(({ data }) => {
           setItems(
             data.map<UnavailabilityEventSimplified>((props) => {
-              const startDate = new Date(props.startDate);
-              const endDate = new Date(props.endDate);
+              const startDate = dayjs(props.startDate).toDate();
+              const endDate = dayjs(props.endDate).toDate();
               return {
                 ...props,
                 startDate,
@@ -159,7 +159,11 @@ const HistoryComponent: React.ForwardRefRenderFunction<
       {type === Event.InternalWork &&
         (items as InternalWorkEventSimplified[]).map((event, i) => {
           const { id, date, duration, status } = event;
-          const dateObject = new Date(date.year, date.month, date.date);
+          const dateObject = dayjs()
+            .year(date.year)
+            .month(date.month)
+            .date(date.date)
+            .toDate();
           return (
             <MiniEvent
               key={i}
@@ -207,7 +211,9 @@ const HistoryComponent: React.ForwardRefRenderFunction<
               infoLeft={[leftTime, rightTime]}
               onDelete={() => deleteEvent(id)}
               onEdit={(data) => updateEvent(id, data)}
-              allowEdit={new Date().getTime() < new Date(startDate).getTime()}
+              allowEdit={
+                dayjs().toDate().getTime() < dayjs(startDate).toDate().getTime()
+              }
               type={type}
             />
           );

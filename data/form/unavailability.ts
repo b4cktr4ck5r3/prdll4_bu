@@ -1,8 +1,9 @@
 import { BasicFormProps } from "@components/molecules";
+import dayjs from "dayjs";
 
 const defaultInitialValues = {
-  date: new Date(),
-  time: [new Date(), new Date()],
+  date: dayjs().toDate(),
+  time: [dayjs().toDate(), dayjs().toDate()],
 };
 
 export type UnavailabilityFormType = typeof defaultInitialValues;
@@ -13,7 +14,7 @@ export const unavailabilityInputs = (
 ): BasicFormProps<UnavailabilityFormType> => ({
   validationRules: {
     date: (value: Date) => {
-      const today = new Date();
+      const today = dayjs().toDate();
       return (
         value.getTime() > today.getTime() ||
         (value.getFullYear() === today.getFullYear() &&
@@ -28,7 +29,7 @@ export const unavailabilityInputs = (
     time: "Horaire de l'indisponibilité",
   },
   typeInputs: {
-    date: { type: "DATE", minDate: new Date() },
+    date: { type: "DATE", minDate: dayjs().toDate() },
     time: { type: "TIMERANGE" },
   },
   onChange,

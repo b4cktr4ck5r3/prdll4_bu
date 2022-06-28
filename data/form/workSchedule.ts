@@ -1,9 +1,10 @@
 import { BasicFormProps } from "@components/molecules";
+import dayjs from "dayjs";
 
 const defaultInitialValues = {
   name: "",
-  startDate: new Date(),
-  endDate: new Date(),
+  startDate: dayjs().toDate(),
+  endDate: dayjs().toDate(),
 };
 
 export type WorkScheduleFormType = typeof defaultInitialValues;

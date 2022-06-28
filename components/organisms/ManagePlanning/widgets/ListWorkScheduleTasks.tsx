@@ -3,8 +3,9 @@ import { CardEventWorkScheduleTask } from "@components/molecules/CardEvent/CardE
 import { usePlannings, useWorkScheduleTasks } from "@hooks";
 import { ActionIcon } from "@mantine/core";
 import { styled } from "@stitches";
-import { GetDaysInMonth, GetMonthLabel } from "@utils/calendar";
+import { GetMonthLabel } from "@utils/calendar";
 import clsx from "clsx";
+import dayjs from "dayjs";
 import { FC, useEffect, useMemo, useState } from "react";
 
 export type ListWorkScheduleTasksProps = {
@@ -45,15 +46,24 @@ export const ListWorkScheduleTasks: FC<ListWorkScheduleTasksProps> = ({
   hidden = false,
   workScheduleId,
 }) => {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(dayjs().toDate());
   const { startDate, endDate } = useMemo(() => {
-    const weeksOfMonth = GetDaysInMonth(currentDate);
-    const firstDate = weeksOfMonth[0][0];
-    const lastDate = weeksOfMonth[weeksOfMonth.length - 1][6];
-
+    const start = dayjs(currentDate)
+      .date(1)
+      .hour(0)
+      .minute(0)
+      .second(0)
+      .millisecond(0);
+    const end = dayjs(start)
+      .month(start.month() + 1)
+      .date(0)
+      .hour(23)
+      .minute(59)
+      .second(59)
+      .millisecond(999);
     return {
-      startDate: new Date(firstDate.year, firstDate.month, firstDate.date),
-      endDate: new Date(lastDate.year, lastDate.month, lastDate.date),
+      startDate: start.toDate(),
+      endDate: end.toDate(),
     };
   }, [currentDate]);
 
@@ -67,8 +77,8 @@ export const ListWorkScheduleTasks: FC<ListWorkScheduleTasksProps> = ({
   useEffect(() => {
     const currentPlanning = plannings.find(({ id }) => id === workScheduleId);
     if (currentPlanning) {
-      setCurrentDate(new Date(currentPlanning.startDate));
-    } else setCurrentDate(new Date());
+      setCurrentDate(dayjs(currentPlanning.startDate).toDate());
+    } else setCurrentDate(dayjs().toDate());
   }, [plannings, workScheduleId]);
 
   const monthLabel = useMemo(() => GetMonthLabel(currentDate), [currentDate]);
@@ -81,7 +91,7 @@ export const ListWorkScheduleTasks: FC<ListWorkScheduleTasksProps> = ({
           variant="default"
           onClick={() =>
             setCurrentDate((date) => {
-              const newDate = new Date(date);
+              const newDate = dayjs(date).toDate();
               newDate.setMonth(newDate.getMonth() - 1);
               return newDate;
             })
@@ -94,7 +104,7 @@ export const ListWorkScheduleTasks: FC<ListWorkScheduleTasksProps> = ({
           variant="default"
           onClick={() =>
             setCurrentDate((date) => {
-              const newDate = new Date(date);
+              const newDate = dayjs(date).toDate();
               newDate.setMonth(newDate.getMonth() + 1);
               return newDate;
             })

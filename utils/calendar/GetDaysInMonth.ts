@@ -1,10 +1,11 @@
+import dayjs from "dayjs";
 import { DateSimplified } from "./Date";
 
 export function GetDaysInMonth(current_date: Date): DateSimplified[][] {
   const before_days: DateSimplified[] = [];
   const after_days: DateSimplified[] = [];
 
-  let date: Date = new Date(current_date);
+  let date: Date = dayjs(current_date).toDate();
 
   while (true) {
     date.setDate(date.getDate() - 1);
@@ -17,7 +18,7 @@ export function GetDaysInMonth(current_date: Date): DateSimplified[][] {
     });
   }
 
-  date = new Date(current_date);
+  date = dayjs(current_date).toDate();
   while (true) {
     date.setDate(date.getDate() + 1);
     if (date.getMonth() !== current_date.getMonth() && date.getDay() === 1)

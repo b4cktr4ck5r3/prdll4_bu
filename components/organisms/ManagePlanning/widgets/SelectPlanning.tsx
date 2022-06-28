@@ -2,6 +2,7 @@ import { usePlannings } from "@hooks";
 import { Button, Group, Select, Text } from "@mantine/core";
 import { useModals } from "@mantine/modals";
 import axios from "axios";
+import dayjs from "dayjs";
 import { FC, forwardRef, useCallback, useMemo } from "react";
 
 type SelectPlanningItemProps = {
@@ -10,7 +11,7 @@ type SelectPlanningItemProps = {
 };
 
 const CompareDate = (date1: Date | string, date2: Date | string) => {
-  return new Date(date1).getTime() - new Date(date2).getTime();
+  return dayjs(date1).toDate().getTime() - dayjs(date2).toDate().getTime();
 };
 
 const SelectPlanningItem = forwardRef<HTMLDivElement, SelectPlanningItemProps>(
@@ -81,7 +82,7 @@ export const SelectPlanning: FC<SelectPlanningProps> = ({
           <br />
           <br />
           {currentPlanning &&
-            CompareDate(new Date(), currentPlanning.endDate) < 0 && (
+            CompareDate(dayjs().toDate(), currentPlanning.endDate) < 0 && (
               <Text color="red" weight="bold" size="sm">
                 {"- Ce planning n'est pas encore terminé"}
               </Text>
@@ -114,11 +115,11 @@ export const SelectPlanning: FC<SelectPlanningProps> = ({
           itemComponent={SelectPlanningItem}
           data={plannings.map((planning) => ({
             label: planning.name,
-            description: `Du ${new Date(
-              planning.startDate
-            ).toLocaleDateString()} au ${new Date(
-              planning.endDate
-            ).toLocaleDateString()}`,
+            description: `Du ${dayjs(planning.startDate)
+              .toDate()
+              .toLocaleDateString()} au ${dayjs(planning.endDate)
+              .toDate()
+              .toLocaleDateString()}`,
             value: planning.id,
           }))}
           value={value}

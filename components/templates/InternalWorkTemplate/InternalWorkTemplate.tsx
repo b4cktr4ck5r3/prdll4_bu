@@ -11,6 +11,7 @@ import { PlanningContext } from "@lib/contexts";
 import { useNotifications } from "@mantine/notifications";
 import { styled } from "@stitches";
 import { Event } from "@utils/calendar";
+import dayjs from "dayjs";
 import React, { FC, useCallback, useState } from "react";
 
 export const InternalWorkTemplateSC = styled("div", {
@@ -31,7 +32,7 @@ export const InternalWorkToValidateSC = styled("div", {
 
 export const InternalWorkTemplate: FC = () => {
   const { isAdmin } = useCurrentUser();
-  const [synchronizedDate, setSynchronizedDate] = useState(new Date());
+  const [synchronizedDate, setSynchronizedDate] = useState(dayjs().toDate());
   const [refresh, setRefresh] = useState(false);
 
   type HistoryHandle = React.ElementRef<typeof History>;

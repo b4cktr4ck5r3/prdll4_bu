@@ -89,7 +89,7 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
   }));
   const { synchronizedDate } = useContext(PlanningContext);
   const { syncCalendarForm } = useSyncCalendarForm();
-  const [dateSelected, setDateSelected] = useState(new Date());
+  const [dateSelected, setDateSelected] = useState(dayjs().toDate());
   const [internalWorks, setInternalWorks] = useState<
     InternalWorkEventSimplified[]
   >([]);
@@ -154,7 +154,7 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
         .then(({ data }) =>
           setInternalWorks(
             data.map<InternalWorkEventSimplified>((props) => {
-              const date = new Date(props.date);
+              const date = dayjs(props.date).toDate();
               return {
                 ...props,
                 date: {
@@ -181,8 +181,8 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
         .then(({ data }) =>
           setUnavailabilities(
             data.map<UnavailabilityEventSimplified>((props) => {
-              const startDate = new Date(props.startDate);
-              const endDate = new Date(props.endDate);
+              const startDate = dayjs(props.startDate).toDate();
+              const endDate = dayjs(props.endDate).toDate();
               return {
                 ...props,
                 startDate,
@@ -334,7 +334,9 @@ const SimplePlanningComponent: React.ForwardRefRenderFunction<
                   endDate: end.toDate(),
                 });
               }}
-              allowEdit={new Date().getTime() < new Date(startDate).getTime()}
+              allowEdit={
+                dayjs().toDate().getTime() < dayjs(startDate).toDate().getTime()
+              }
               type={Event.Unavailability}
             />
           );
